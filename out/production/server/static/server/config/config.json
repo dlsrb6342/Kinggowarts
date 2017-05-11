@@ -1,0 +1,61 @@
+{
+    "development": {
+        "title": "",            
+        "port": 3000,
+        "db": {
+            "host2" : "localhost",
+            "host": "128.199.244.247",
+            "port": "5432",      
+            "username": "scg-cms",     
+            "password": "@dnjrtlf(*&",     
+            "database": "scg-cms",     
+            "dialect": "postgres",
+            "logging": true,
+	        "multipleStatements": true,
+            "timezone": "+09:00",
+            "upload_path": "public/",
+            "upload_image": "public/image/",
+            "define" : {
+                "charset": "utf8",
+                "collate": "utf8_general_ci"
+            }
+        },
+        "email" : {
+            "id" : "",          
+            "password" : ""     
+        },
+        "path" : {
+            "view" : "/../src",
+            "index" : "/../.tmp/serve"  
+        }
+    },
+    "production": {
+        "title": "",
+        "port": 3000,
+        "db": {
+            "host": "127.0.0.1",
+            "port": "5432",
+            "username": "scg-cms",     
+            "password": "@dnjrtlf(*&",     
+            "database": "hcmt",     
+            "dialect": "postgres",
+            "logging": true,
+            "multipleStatements": true,
+            "timezone": "+09:00",
+            "upload_path": "public/",
+            "upload_image": "public/image/",
+            "define" : {
+                "charset": "utf8",
+                "collate": "utf8_general_ci"
+            }
+        },
+        "email" : {
+            "id" : "",
+            "password" : ""
+        },
+        "path" : {
+            "view" : "/../dist",
+            "index" : "/../dist"   
+        }
+    }
+}
