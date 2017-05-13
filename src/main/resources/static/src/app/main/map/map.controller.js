@@ -7,14 +7,15 @@
         .controller('MapController', MapController);
 
     /** @ngInject */
-    function MapController()
+    function MapController($mdDialog)
     {
         var vm = this;
 
         vm.userLat = 0;
         vm.userLng = 0;
         vm.curMapLevel = 3;     //현재 지도의 zoom level
-
+        //category status type : {bank, toilet, print, restaurant, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region
+        vm.categoryStatus = "none"; 
         var container = document.getElementById('map');
         var options = {
             center: new daum.maps.LatLng(37.2939170, 126.9753990),
@@ -22,6 +23,50 @@
         };
 
         var map = new daum.maps.Map(container, options);
+
+
+
+        vm.showAdvanced = function(ev) {
+            $mdDialog.show({
+              controller: CategoryDialogController,
+              templateUrl: 'app/main/map/dialog1.tmpl.html',
+              parent: angular.element(document.body),
+              targetEvent: ev,
+              clickOutsideToClose:true,
+      fullscreen: false // Only for -xs, -sm breakpoints.
+            })
+            .then(function(answer) {
+                //category status type : {bank, toilet, print, restaurant, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region 
+              vm.categoryStatus = answer;
+              alert('vm.categoryStatus = '+ vm.categoryStatus);
+          }, function() {
+              vm.categoryStatus = "none";
+              alert('vm.categoryStatus = '+ vm.categoryStatus);
+          });
+        };
+
+        function CategoryDialogController($scope, $mdDialog) {
+            //카테고리 분류를 위한 카테고리 레벨. none, Restaurant, Major, Group이 존재하며 region은 바로 적용?
+            $scope.categoryLevel = "none";
+            //Major category ng-bind
+            $scope.major = "none";
+            //set category level
+            $scope.categoryLevelChangefunc = function(strLevel){
+                $scope.categoryLevel = strLevel;
+            };
+            $scope.hide = function() {
+              $mdDialog.hide();
+          };
+          $scope.cancel = function() {
+              $mdDialog.cancel();
+          };
+          $scope.answer = function(answer) {
+              $mdDialog.hide(answer);
+          };
+      }
+
+
+
 
 
         //확대 축소 버튼 

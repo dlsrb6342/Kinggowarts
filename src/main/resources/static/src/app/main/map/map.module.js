@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.map', [])
+        .module('app.map', ['ngMaterial'])
         .config(config);
 
     /** @ngInject */
