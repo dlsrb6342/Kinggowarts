@@ -21,6 +21,15 @@
             'app.quick-panel',
 
             // Sample
-            'app.sample'
+            'app.sample',
+
+            //daum map module
+            'app.map',
+
+            //wiki module
+            'app.wiki',
+
+            //notice module
+            'app.notice'
         ]);
 })();
