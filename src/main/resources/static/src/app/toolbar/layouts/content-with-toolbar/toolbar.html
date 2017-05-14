@@ -2,16 +2,48 @@
 
     <div layout="row" layout-align="start center">
         <div class="logo" layout="row" layout-align="start center">
-            <span class="logo-image">F</span>
-            <span class="logo-text">FUSE</span>
-        </div>
 
+<!-- drop down menu (map, wiki, notice) -->
+
+        <md-menu-bar id="user-menu">  
+            <md-menu md-position-mode="left bottom">
+                <md-button class="user-button" ng-click="$mdOpenMenu()"
+                           aria-label="User settings"
+                           translate translate-attr-aria-label="TOOLBAR.USER_SETTINGS">
+                    <div layout="row" layout-align="space-between center">
+
+                     <span class="logo-image">K</span>
+                     <span class="logo-text">KINGOWART</span>
+                     <md-icon md-font-icon="icon-chevron-down"
+                         class="icon s16" hide-sm></md-icon>
+                    </div>
+        </md-button>
+
+            <md-menu-content width="3">
+                    <md-menu-item class="md-indent" ui-sref="app.map">
+                        <md-icon md-font-icon="icon-map" class="icon"></md-icon>
+                        <md-button>Map</md-button>
+                    </md-menu-item>
+
+                    <md-menu-item class="md-indent" ui-sref="app.wiki">
+                        <md-icon md-font-icon="icon-file-document" class="icon"></md-icon>
+                        <md-button>Wiki explorer</md-button>
+                    </md-menu-item>
+
+                    <md-menu-item class="md-indent" ui-sref="app.notice">
+                        <md-icon md-font-icon="icon-comment-alert" class="icon"></md-icon>
+                        <md-button>Notice</md-button>
+                    </md-menu-item>
+            </md-menu-content>
+            </md-menu>
+            </md-menu-bar>
+            </div>
         <div class="toolbar-separator"></div>
 
-        <ms-shortcuts></ms-shortcuts>
-
-        <div class="toolbar-separator"></div>
+        
     </div>
+
+<!-- right toolbar (user menu, search, quick panel) -->
 
     <div layout="row" layout-align="start center">
 
@@ -46,11 +78,7 @@
                         <md-button>My Profile</md-button>
                     </md-menu-item>
 
-                    <md-menu-item class="md-indent" ui-sref="app.mail">
-                        <md-icon md-font-icon="icon-email" class="icon"></md-icon>
-                        <md-button>Inbox</md-button>
-                    </md-menu-item>
-
+                   
                     <md-menu-item class="md-indent">
                         <md-icon md-font-icon ng-class="vm.userStatus.icon"
                                  ng-style="{'color': vm.userStatus.color }" class="icon"></md-icon>
@@ -88,29 +116,7 @@
 
         <div class="toolbar-separator"></div>
 
-        <md-menu id="language-menu" md-offset="0 72" md-position-mode="target-right target">
-            <md-button class="language-button" ng-click="$mdOpenMenu()"
-                       aria-label="Language" md-menu-origin md-menu-align-target>
-                <div layout="row" layout-align="center center">
-                    <img class="flag" ng-src="assets/images/flags/{{vm.selectedLanguage.flag}}.png">
-                    <span class="iso">{{vm.selectedLanguage.code}}</span>
-                </div>
-            </md-button>
-
-            <md-menu-content width="3" id="language-menu-content">
-                <md-menu-item ng-repeat="(iso, lang) in vm.languages">
-                    <md-button ng-click="vm.changeLanguage(lang)" aria-label="{{lang.title}}" translate
-                               translate-attr-aria-label="{{lang.title}}">
-                        <span layout="row" layout-align="start center">
-                            <img class="flag" ng-src="assets/images/flags/{{lang.flag}}.png">
-                            <span translate="{{lang.translation}}">{{lang.title}}</span>
-                        </span>
-                    </md-button>
-                </md-menu-item>
-            </md-menu-content>
-        </md-menu>
-
-        <div class="toolbar-separator"></div>
+       
 
         <md-button id="quick-panel-toggle" class="md-icon-button" ng-click="vm.toggleSidenav('quick-panel')"
                    aria-label="Toggle quick panel" translate translate-attr-aria-label="TOOLBAR.TOGGLE_QUICK_PANEL">
