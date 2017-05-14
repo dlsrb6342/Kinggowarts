@@ -1,0 +1,33 @@
+<div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
+    <div class="h3">Peer</div>
+    
+    <div class="pv-16">
+        <md-select class="simplified" ng-model="vm.currentlocation" aria-label="Change range">
+            <md-option ng-repeat="(key, range) in vm.peerrange" value="{{key}}">
+                {{range}}
+            </md-option>
+        </md-select>
+    </div>
+</div>
+
+<p align="right">
+    <md-checkbox aria-label="Select All" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()">
+        Reverse Select
+    </md-checkbox>
+    <md-checkbox aria-label="Select All" ng-checked="vm.isChecked()"  md-indeterminate="vm.isIndeterminate()" ng-click="vm.untoggleAll()">
+        UnSelect All
+    </md-checkbox>
+</p>
+
+
+<md-list-item class="contact" ng-repeat="contact in vm.peer.location[vm.currentlocation]">
+    <img ng-src="{{contact.avatar}}" class="md-avatar" alt="{{contact.name}}"/>
+
+    <div class="status {{contact.status}}"></div>
+
+        <div class="md-list-item-text">
+            <h3>{{contact.name}}</h3>
+            <md-checkbox ng-checked="vm.exists(contact.weight, vm.selected)" ng-click="vm.toggle(contact.weight, vm.selected)"></md-checkbox>
+        </div>
+                            
+</md-list-item>

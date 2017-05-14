@@ -11,7 +11,7 @@
     {
         $locationProvider.html5Mode(true);
 
-        $urlRouterProvider.otherwise('/sample');
+        $urlRouterProvider.otherwise('/login');
 
         /**
          * Layout Style Switcher
@@ -70,6 +70,7 @@
         // END - Layout Style Switcher
 
         // State definitions
+
         $stateProvider
             .state('app', {
                 abstract: true,
