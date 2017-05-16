@@ -7,6 +7,7 @@
         .controller('MapController', MapController);
 
     /** @ngInject */
+
     function MapController($mdDialog)
     {
         var vm = this;
@@ -572,6 +573,7 @@
 
             // 재설정된 좌표로 부드러운 이동
             //map.panTo(dragendMoveLatLon);
+
             return dragendMoveLatLon;
     }
 

@@ -19,31 +19,24 @@
         vm.bodyEl = angular.element('body');
         vm.userStatusOptions = [
             {
-                'title': 'Online',
-                'icon' : 'icon-checkbox-marked-circle',
-                'color': '#4CAF50'
-            },
-            {
-                'title': 'Away',
+                'title': 'User choose',
                 'icon' : 'icon-clock',
                 'color': '#FFC107'
             },
             {
-                'title': 'Do not Disturb',
+                'title': 'Always accept',
+                'icon' : 'icon-checkbox-marked-circle',
+                'color': '#4CAF50'
+            },
+            {
+                'title': 'Always refuse',
                 'icon' : 'icon-minus-circle',
                 'color': '#F44336'
-            },
-            {
-                'title': 'Invisible',
-                'icon' : 'icon-checkbox-blank-circle-outline',
-                'color': '#BDBDBD'
-            },
-            {
-                'title': 'Offline',
-                'icon' : 'icon-checkbox-blank-circle-outline',
-                'color': '#616161'
             }
         ];
+
+        vm.userID = $rootScope.email;
+
         vm.languages = {
             en: {
                 'title'      : 'English',
@@ -116,6 +109,7 @@
          */
         function logout()
         {
+            $state.go('login');
             // Do logout here..
         }
 
