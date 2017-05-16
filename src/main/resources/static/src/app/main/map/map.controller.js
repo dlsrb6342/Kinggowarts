@@ -166,7 +166,7 @@
         function getLocation() {
             if (navigator.geolocation) { // GPS를 지원하는 경우
                 navigator.geolocation.getCurrentPosition(function(position) {
-                  alert(position.coords.latitude + ' ' + position.coords.longitude);
+                 // alert(position.coords.latitude + ' ' + position.coords.longitude);
                   //현재 user의 위치를 얻는다.
                   vm.userLng = position.coords.longitude;
                   vm.userLat = position.coords.latitude;
