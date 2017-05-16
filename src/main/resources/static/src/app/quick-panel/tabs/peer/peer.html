@@ -11,10 +11,10 @@
 </div>
 
 <p align="right">
-    <md-checkbox aria-label="Select All" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()">
+    <md-checkbox aria-label="Reverse Select" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()">
         Reverse Select
     </md-checkbox>
-    <md-checkbox aria-label="Select All" ng-checked="vm.isChecked()"  md-indeterminate="vm.isIndeterminate()" ng-click="vm.untoggleAll()">
+    <md-checkbox aria-label="UnSelect All" ng-checked="vm.isChecked()"  md-indeterminate="vm.isIndeterminate()" ng-click="vm.untoggleAll()">
         UnSelect All
     </md-checkbox>
 </p>
@@ -27,7 +27,7 @@
 
         <div class="md-list-item-text">
             <h3>{{contact.name}}</h3>
-            <md-checkbox ng-checked="vm.exists(contact.weight, vm.selected)" ng-click="vm.toggle(contact, vm.selected)"></md-checkbox>
+            <md-checkbox aria-label="Peer Select" ng-checked="vm.exists(contact.weight, vm.selected)" ng-click="vm.toggle(contact, vm.selected)"></md-checkbox>
         </div>
                             
 </md-list-item>
