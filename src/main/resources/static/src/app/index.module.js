@@ -30,6 +30,9 @@
             'app.wiki',
 
             //notice module
-            'app.notice'
+            'app.notice',
+
+            //login module
+            'app.login'
         ]);
 })();
