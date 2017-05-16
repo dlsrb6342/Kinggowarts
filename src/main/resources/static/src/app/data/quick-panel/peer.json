@@ -1,0 +1,85 @@
+{
+    "data": {
+        "location": {
+            "ST": [
+                {
+                    "name": "친구1",
+                    "avatar": "assets/images/avatars/alice.jpg",
+                    "weight": [1]
+                },
+                {
+                    "name": "친구2",
+                    "avatar": "assets/images/avatars/danielle.jpg",
+                    "weight": [2]
+                },
+                {
+                    "name": "친구3",
+                    "avatar": "assets/images/avatars/garry.jpg",
+                    "weight": [3]
+                },
+                {
+                    "name": "친구4",
+                    "avatar": "assets/images/avatars/james.jpg",
+                    "weight": [4]
+                },
+                {
+                    "name": "친구5",
+                    "avatar": "assets/images/avatars/joyce.jpg",
+                    "weight": [5]
+                },
+                {
+                    "name": "친구6",
+                    "avatar": "assets/images/avatars/vincent.jpg",
+                    "weight": [6]
+                },
+                {
+                    "name": "친구1",
+                    "avatar": "assets/images/avatars/alice.jpg",
+                    "weight": [1]
+                },
+                {
+                    "name": "친구2",
+                    "avatar": "assets/images/avatars/danielle.jpg",
+                    "weight": [2]
+                },
+                {
+                    "name": "친구3",
+                    "avatar": "assets/images/avatars/garry.jpg",
+                    "weight": [3]
+                },
+                {
+                    "name": "친구4",
+                    "avatar": "assets/images/avatars/james.jpg",
+                    "weight": [4]
+                },
+                {
+                    "name": "친구5",
+                    "avatar": "assets/images/avatars/joyce.jpg",
+                    "weight": [5]
+                },
+                {
+                    "name": "친구6",
+                    "avatar": "assets/images/avatars/vincent.jpg",
+                    "weight": [6]
+                }
+            ],
+            "PF": [
+                {
+                    "name": "교수1",
+                    "avatar": "assets/images/avatars/alice.jpg",
+                    "weight": [1]
+                },
+                {
+                    "name": "교수2",
+                    "avatar": "assets/images/avatars/alice.jpg",
+                    "weight": [2]
+                },
+                {
+                    "name": "교수3",
+                    "avatar": "assets/images/avatars/alice.jpg",
+                    "weight": [3]
+                }
+            ]
+        }
+    }
+}
