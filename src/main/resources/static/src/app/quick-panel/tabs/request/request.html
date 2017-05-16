@@ -1,0 +1,19 @@
+<div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
+    <div class="h3" style="margin-top: 18px; margin-bottom: 18px;">Request</div>
+</div>
+
+
+<md-list class="checklist" ng-if="vm.request.request.length > 0">
+
+    <md-list-item ng-repeat="item in vm.request.request">
+        <p>{{item.text}}</p>
+        <md-icon ng-click="vm.requestaccept(item)"
+            class="md-secondary"
+            md-font-icon="icon-check" aria-label="remove">
+        </md-icon>
+        <md-icon ng-click="vm.requestdenied(item)"
+            class="md-secondary"
+            md-font-icon="icon-close-circle" aria-label="remove">
+        </md-icon>
+    </md-list-item>
+</md-list>

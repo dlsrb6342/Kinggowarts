@@ -1,33 +1,42 @@
 <md-content>
-    <md-tabs md-no-pagination md-swipe-content md-stretch-tabs="always">
+    <md-tabs>
         <md-tab>
             <md-tab-label>
-                <span translate="QUICKPANEL.TODAY">TODAY</span>
+                <span>Timeline</span>
             </md-tab-label>
             <md-tab-body>
                 <md-content class="today-tab scrollable" ms-scroll
-                            ng-include="'app/quick-panel/tabs/today/today-tab.html'">
+                            ng-include="'app/quick-panel/tabs/timeline/timeline.html'">
                 </md-content>
             </md-tab-body>
         </md-tab>
         <md-tab>
             <md-tab-label>
-                <span translate="QUICKPANEL.CHAT">CHAT</span>
+                <span>Peer</span>
             </md-tab-label>
             <md-tab-body>
                 <md-content class="chat-tab scrollable" ms-scroll
-                            ng-include="'app/quick-panel/tabs/chat/chat-tab.html'"
-                            ng-controller="ChatTabController as vm">
+                            ng-include="'app/quick-panel/tabs/peer/peer.html'">
                 </md-content>
             </md-tab-body>
         </md-tab>
         <md-tab>
             <md-tab-label>
-                <span translate="QUICKPANEL.ACTIVITY">ACTIVITY</span>
+                <span>Request</span>
             </md-tab-label>
             <md-tab-body>
                 <md-content class="activity-tab scrollable" ms-scroll
-                            ng-include="'app/quick-panel/tabs/activity/activity-tab.html'">
+                            ng-include="'app/quick-panel/tabs/request/request.html'">
+                </md-content>
+            </md-tab-body>
+        </md-tab>
+        <md-tab>
+            <md-tab-label>
+                <span>RecentWiki</span>
+            </md-tab-label>
+            <md-tab-body>
+                <md-content class="activity-tab scrollable" ms-scroll
+                            ng-include="'app/quick-panel/tabs/recentwiki/recentwiki.html'">
                 </md-content>
             </md-tab-body>
         </md-tab>
