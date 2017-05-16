@@ -24,7 +24,7 @@
 
         var map = new daum.maps.Map(container, options),
         customOverlay = new daum.maps.CustomOverlay({}),
-        infowindow = new daum.maps.InfoWindow({removable: true});;
+        infowindow = new daum.maps.InfoWindow({removable: true});
 
 
 
@@ -80,7 +80,7 @@
         };
 
 
-        function DetailedDialogController($scope, $mdDialog) {
+        function DetailedDialogController($scope, $mdDialog, $state) {
           $scope.hide = function() {
               $mdDialog.hide();
           };
@@ -89,6 +89,10 @@
           };
           $scope.answer = function(answer) {
               $mdDialog.hide(answer);
+          };
+          $scope.movemap = function(){
+              $mdDialog.cancel();
+              $state.go('app.wiki');
           };
         }
 
