@@ -7,15 +7,8 @@
         .config(config);
 
     /** @ngInject */
-    function config($translatePartialLoaderProvider, msApiProvider)
+    function config(msApiProvider)
     {
-        // Translation
-        $translatePartialLoaderProvider.addPart('app/quick-panel');
 
-        // Api
-        msApiProvider.register('quickPanel.timeline', ['app/data/quick-panel/timeline.json']);
-        msApiProvider.register('quickPanel.peer', ['app/data/quick-panel/peer.json']);
-        msApiProvider.register('quickPanel.request', ['app/data/quick-panel/request.json']);
-        msApiProvider.register('quickPanel.recentwiki', ['app/data/quick-panel/recentwiki.json']);
     }
 })();
