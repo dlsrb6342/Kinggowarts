@@ -134,8 +134,8 @@
       OVER_OFFSET_X = 13, // 오버 마커의 기준 X좌표
       OVER_OFFSET_Y = OVER_MARKER_HEIGHT, // 오버 마커의 기준 Y좌표
       //SPRITE_MARKER_URL = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markers_sprites2.png', // 스프라이트 마커 이미지 URL
-      SPRITE_MARKER_URL = 'https://imageshack.com/i/pmv6VYYJp', // 스프라이트 마커 임시 이미지 URL
-      SPRITE_WIDTH = 126, // 스프라이트 이미지 너비
+      SPRITE_MARKER_URL = 'http://imageshack.com/a/img922/8380/GgDPqi.png', // 스프라이트 마커 임시 이미지 URL
+      SPRITE_WIDTH = 125, // 스프라이트 이미지 너비
       SPRITE_HEIGHT = 307, // 스프라이트 이미지 높이. 이미지 변경시 너비와 높이 변경 필수.
       SPRITE_GAP = 10; // 스프라이트 이미지에서 마커간 간격
 
