@@ -20,13 +20,15 @@
                     }
                 },
                 resolve: {
-                    SampleData: function (msApi)
+                    MarkerData: function (msApi)
                     {
-                        return msApi.resolve('sample@get');
+                        return msApi.resolve('marker@get');
                     }
                 }
             });
 
-       
+        // Api
+        msApiProvider.register('marker', ['app/data/map/marker.json']);
+
     }
 })();
