@@ -1,0 +1,61 @@
+{
+    "data": {
+        "range": {
+            "SE": "School event",
+            "CE": "Club event",
+            "SN": "School notice"
+        },
+        "schedule": {
+            "SE": [
+                {
+                    "title": "채용설명회",
+                    "time": "5/3 3:00PM",
+                    "location": "제 1 공학관 리쿠르팅 부스",
+                    "locationID" : "0"
+                },
+                {
+                    "title": "킹고 RUN!",
+                    "time": "5/10",
+                    "location": "기숙사 신관",
+                    "locationID" : "1"
+                },
+                {
+                    "title": "행사",
+                    "time": "5/10"
+                }
+            ],
+            "CE": [
+                {
+                    "title": "정기모임",
+                    "time": "5/4 7:00 PM",
+                    "location" : "22003",
+                    "locationID" : "2"
+                },
+                {
+                    "title": "홈커밍",
+                    "time": "5/7"
+                },
+                {
+                    "title": "집행부회의",
+                    "time": "5/9 8:00 PM",
+                    "location" : "22005",
+                    "locationID" : "3"
+                }
+            ],
+            "SN": [
+                {
+                    "title": "중간고사",
+                    "time": "4/20 ~ 4/26"
+                },
+                {
+                    "title": "수강철회 기간",
+                    "time": "5/10 ~ 5/12"
+                },
+                {
+                    "title": "강의평가 기간",
+                    "time": "5/14 ~ 5/20"
+                }
+            ]
+        }
+    }
+}
