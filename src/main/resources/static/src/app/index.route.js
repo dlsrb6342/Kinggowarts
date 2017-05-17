@@ -7,7 +7,7 @@
         .config(routeConfig);
 
     /** @ngInject */
-    function routeConfig($stateProvider, $urlRouterProvider, $locationProvider)
+    function routeConfig(msApiProvider, $stateProvider, $urlRouterProvider, $locationProvider)
     {
         $locationProvider.html5Mode(true);
 
@@ -91,8 +91,31 @@
                         templateUrl: 'app/quick-panel/quick-panel.html',
                         controller : 'QuickPanelController as vm'
                     }
+                },
+                resolve: {
+                    TimelineData: function (msApi)
+                    {
+                        return msApi.resolve('quickPanel.timeline@get');
+                    },
+                    PeerData: function (msApi)
+                    {
+                        return msApi.resolve('quickPanel.peer@get');
+                    },
+                    RequestData: function (msApi)
+                    {
+                        return msApi.resolve('quickPanel.request@get');
+                    },
+                    RecentwikiData: function (msApi)
+                    {
+                        return msApi.resolve('quickPanel.recentwiki@get');
+                    }
                 }
             });
+
+        msApiProvider.register('quickPanel.timeline', ['app/data/quick-panel/timeline.json']);
+        msApiProvider.register('quickPanel.peer', ['app/data/quick-panel/peer.json']);
+        msApiProvider.register('quickPanel.request', ['app/data/quick-panel/request.json']);
+        msApiProvider.register('quickPanel.recentwiki', ['app/data/quick-panel/recentwiki.json']);
     }
 
 })();

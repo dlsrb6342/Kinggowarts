@@ -7,41 +7,14 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(msApi, peerLocation)
+    function QuickPanelController(msApi, peerLocation, TimelineData, PeerData, RequestData, RecentwikiData)
     {
         var vm = this;
-
-        msApi.request('quickPanel.timeline@get', {},
-            // Success
-            function (response)
-            {
-                vm.timeline = response.data;
-            }
-        );
-
-        msApi.request('quickPanel.peer@get', {},
-            // Success
-            function (response)
-            {
-                vm.peer = response.data;
-            }
-        );
-
-        msApi.request('quickPanel.request@get', {},
-            // Success
-            function (response)
-            {
-                vm.request = response.data;
-            }
-        );
-
-        msApi.request('quickPanel.recentwiki@get', {},
-            // Success
-            function (response)
-            {
-                vm.recentwiki = response.data;
-            }
-        );
+        
+        vm.timeline = TimelineData.data;
+        vm.peer = PeerData.data;
+        vm.request = RequestData.data;
+        vm.recentwiki = RecentwikiData.data;
 
         vm.currenttimeline = "SE";
         vm.currentlocation = "ST";
@@ -53,11 +26,28 @@
 
         };
 
+        vm.selected = [];
+
+        
+
         vm.findtimelinelocation = function(ID) {
             //구역 ID로 이동
         }
 
-        vm.selected = [];
+        function init()
+        {
+            for (var value in vm.peer.location["ST"]){
+                if(vm.peer.location["ST"][value].checked == true){
+                    vm.toggle(vm.peer.location["ST"][value],vm.selected);
+                }
+            }
+            for (var value in vm.peer.location["PF"]){
+                if(vm.peer.location["PF"][value].checked == true){
+                    vm.toggle(vm.peer.location["PF"][value],vm.selected);
+                }
+            }
+        }
+
         vm.toggle = function (peer, list) {
             var idx = list.indexOf(peer.weight);
             if (idx > -1) {
@@ -68,7 +58,7 @@
               list.push(peer.weight);
               peer.checked = true;
             }
-            peerLocation.lpeer = vm.peer;
+            peerLocation.peer = vm.peer;
         };
 
         vm.exists = function (item, list) {
@@ -99,7 +89,7 @@
             for (var value in vm.peer.location[vm.currentlocation]){
                 vm.peer.location[vm.currentlocation][value].checked = false;
             }
-            peerLocation.lpeer = vm.peer;
+            peerLocation.peer = vm.peer;
         };
 
 
@@ -126,7 +116,7 @@
         }
 
 
-
+        init();
 
         // Methods
 
