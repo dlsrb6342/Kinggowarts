@@ -7,7 +7,7 @@
         .controller('MapController', MapController);
 
     /** @ngInject */
-    function MapController($mdDialog, MarkerData, $scope)
+    function MapController($mdDialog, MarkerData, $scope, $interval)
     {
         var vm = this;
         vm.markerData = MarkerData.data;
@@ -106,10 +106,11 @@
         }
         printedCategoryMarkers = [];
 
+        //카테고리가 정해져있으면 printedCategoryMarkers에 해당 카테고리 마커들을 저장하고 출력한다.
         if(vm.categoryStatus != "none"){
           for(var i=0; i<categoryMarkers[vm.categoryStatus].length; i++){
-              categoryMarkers[vm.categoryStatus][i].setMap(map);
-              printedCategoryMarkers[i] =  categoryMarkers[vm.categoryStatus][i];
+            categoryMarkers[vm.categoryStatus][i].setMap(map);
+            printedCategoryMarkers[i] =  categoryMarkers[vm.categoryStatus][i];
           }
         }
       }, true);
@@ -133,7 +134,7 @@
       OVER_OFFSET_X = 13, // 오버 마커의 기준 X좌표
       OVER_OFFSET_Y = OVER_MARKER_HEIGHT, // 오버 마커의 기준 Y좌표
       //SPRITE_MARKER_URL = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markers_sprites2.png', // 스프라이트 마커 이미지 URL
-      SPRITE_MARKER_URL = 'https://imageshack.com/i/pmv6VYYJp', // 스프라이트 마커 이미지 URL
+      SPRITE_MARKER_URL = 'https://imageshack.com/i/pmv6VYYJp', // 스프라이트 마커 임시 이미지 URL
       SPRITE_WIDTH = 126, // 스프라이트 이미지 너비
       SPRITE_HEIGHT = 307, // 스프라이트 이미지 높이. 이미지 변경시 너비와 높이 변경 필수.
       SPRITE_GAP = 10; // 스프라이트 이미지에서 마커간 간격
@@ -186,12 +187,13 @@
       // 마커를 생성하고 이미지는 해당 카테고리의 마커 이미지를 사용합니다
           var marker = new daum.maps.Marker({
             position: new daum.maps.LatLng(vm.markerData[categoryTypes[typeI]][typeIdx]["lat"], vm.markerData[categoryTypes[typeI]][typeIdx]["lng"]),
-            image: normalImage[categoryTypes[typeI]]
+            image: normalImage[categoryTypes[typeI]],
+            title: vm.markerData[categoryTypes[typeI]][typeIdx]["name"]   //set marker title. If mouse cursor is on the marker, can see title.
           });
 
           // 마커 객체에 마커아이디와 마커의 기본 이미지를 추가합니다
           marker.normalImage = normalImage[categoryTypes[typeI]];
-           
+
           // 마커에 mouseover 이벤트를 등록합니다
           daum.maps.event.addListener(marker, 'mouseover', function () {
 
@@ -268,10 +270,6 @@
         var zoomControl = new daum.maps.ZoomControl();
         map.addControl(zoomControl, daum.maps.ControlPosition.BOTTOMLEFT);
 
-        
-        //get user location
-        getLocation();
-
         // Zoom change Listener(zoom 범위 벗어났을대 재조정)
         //zoom_start listener 있음.
         daum.maps.event.addListener(map, 'zoom_changed', function() {        
@@ -328,11 +326,12 @@
             }
         };
 
-        //Get User Location
+        //Get User Location every 3 min. 1sec == 1000
+        $interval(getLocation, 180000); 
         function getLocation() {
             if (navigator.geolocation) { // GPS를 지원하는 경우
                 navigator.geolocation.getCurrentPosition(function(position) {
-                  alert(position.coords.latitude + ' ' + position.coords.longitude);
+                  //alert(position.coords.latitude + ' ' + position.coords.longitude);
                   //현재 user의 위치를 얻는다.
                   vm.userLng = position.coords.longitude;
                   vm.userLat = position.coords.latitude;
