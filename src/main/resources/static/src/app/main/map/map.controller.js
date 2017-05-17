@@ -312,10 +312,13 @@
         
         //사용자의 위치로 이동한다. 맵의 범위를 벗어나는 경우 표시하지 않는다.(alert 처리해놓음)
         vm.moveToUserLocation = function(){
+          getLocation();
+          //alert(vm.userLat + " " + vm.userLng);
             if(vm.userLat != 0 && vm.userLng != 0){
                 var dragendListenerLat = angular.copy(vm.userLat);
                 var dragendListenerLng = angular.copy(vm.userLng);
                 var dragendMoveLatLon = isLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
+                //alert(dragendMoveLatLon);
                 if(false == dragendMoveLatLon){
                     alert('out of region');
                 }
@@ -327,6 +330,7 @@
         };
 
         //Get User Location every 3 min. 1sec == 1000
+        getLocation();
         $interval(getLocation, 180000); 
         function getLocation() {
             if (navigator.geolocation) { // GPS를 지원하는 경우
@@ -338,9 +342,9 @@
               }, function(error) {
                   console.error(error);
               }, {
-                  enableHighAccuracy: false,
+                  enableHighAccuracy: true, //high Accuracy
                   maximumAge: 0,
-                  timeout: Infinity
+                  timeout: 10000  //timeout Infinity시에 error 상태의 function이 절대 호출되지 않음.
               });
             } else {
                 alert('GPS를 지원하지 않습니다');
