@@ -92,7 +92,11 @@
             peerLocation.peer = vm.peer;
         };
 
+        vm.deletepeer = function(delpeer) {
 
+            //peer 위치 공유 제거 했을 때
+            
+        }
 
         vm.requestaccept = function(item) {
             //수락 했을 때

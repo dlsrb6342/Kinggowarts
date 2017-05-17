@@ -14,8 +14,8 @@
     <md-checkbox aria-label="Reverse Select" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()">
         Reverse Select
     </md-checkbox>
-    <md-checkbox aria-label="UnSelect All" ng-checked="vm.isChecked()"  md-indeterminate="vm.isIndeterminate()" ng-click="vm.untoggleAll()">
-        UnSelect All
+    <md-checkbox aria-label="UnSelect All" ng-checked="vm.isChecked()"  md-indeterminate="vm.isIndeterminate()" ng-click="vm.untoggleAll()" style="margin-right: 20px;">
+        UnSelect All 
     </md-checkbox>
 </p>
 
@@ -25,9 +25,11 @@
 
     <div class="status {{contact.status}}"></div>
 
-        <div class="md-list-item-text">
+        <div class="md-list-item-text" style="margin-bottom: 10px;">
             <h3>{{contact.name}}</h3>
-            <md-checkbox aria-label="Peer Select" ng-checked="vm.exists(contact.weight, vm.selected)" ng-click="vm.toggle(contact, vm.selected)"></md-checkbox>
         </div>
-                            
+        <md-checkbox aria-label="Peer Select" ng-checked="vm.exists(contact.weight, vm.selected)" ng-click="vm.toggle(contact, vm.selected)" style="position: absolute;right:40px;top:7px;"></md-checkbox>
+        <md-button class="edit-button md-icon-button" ng-click="vm.deletepeer(contact)" aria-label="Delete peer" style="position: absolute;right:10px;top:0px;z-index:99990;">
+            <md-icon class="md-secondary" md-font-icon="icon-cancel red-500-fg" aria-label="remove"></md-icon> 
+        </md-button>    
 </md-list-item>
