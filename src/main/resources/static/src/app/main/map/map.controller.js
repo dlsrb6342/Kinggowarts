@@ -7,15 +7,16 @@
         .controller('MapController', MapController);
 
     /** @ngInject */
-
-    function MapController($mdDialog)
+    function MapController($mdDialog, MarkerData, $scope, $interval)
     {
         var vm = this;
-
+        vm.markerData = MarkerData.data;
+        
+        
         vm.userLat = 0;
         vm.userLng = 0;
         vm.curMapLevel = 3;     //현재 지도의 zoom level
-        //category status type : {bank, toilet, print, restaurant, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region
+        //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region
         vm.categoryStatus = "none"; 
         var container = document.getElementById('map');
         var options = {
@@ -29,6 +30,7 @@
 
 
 
+//----------------------------------카테고리 선택 메뉴 -------------------------------
         vm.showAdvanced = function(ev) {
             $mdDialog.show({
               controller: CategoryDialogController,
@@ -39,7 +41,7 @@
               fullscreen: false // Only for -xs, -sm breakpoints.
             })
             .then(function(answer) {
-                //category status type : {bank, toilet, print, restaurant, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region 
+                //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region 
               vm.categoryStatus = answer;
               alert('vm.categoryStatus = '+ vm.categoryStatus);
           }, function() {
@@ -80,6 +82,175 @@
             })
         };
 
+//-------------------------------------카테고리 마커 출력-----------------------------------------------
+    /*
+    카테고리 등록하는법.
+    1. marker Json 파일의 data object에 categoryName : [{}, {} ...] 추가
+    2. sprites 이미지에 해당하는 마커 이미지 추가(SPRITE_WIDTH, SPRITE_HEIGHT 변경 필수)
+    3. categoryTypes[]에 추가하고자 하는 category name 추가.
+    4. category dialog에서 해당 카테고리 선택시 vm.categoryStatus를 categoryName으로 변경
+    *. categoryTypes[]와 sprites 이미지 순서가 같아야함. JSON 파일 카테고리 순서는 무관.
+    */
+
+    var printedCategoryMarkers = [];
+    //categoryStatus가 바뀔 때 맵 위에 marker를 갱신하는 watch
+     $scope.$watch(function() { return vm.categoryStatus}, function(newVal, oldVal) {
+        //선택된 marker의 clicked image상태를 normal image로 되돌려놓는다.
+        if(selectedMarker != null){
+            selectedMarker.setImage(selectedMarker.normalImage);
+            selectedMarker = null;
+        }   
+        //delete all marker on map. Init printedCategoryMarkers
+        for(var i=0; i<printedCategoryMarkers.length; i++){
+          printedCategoryMarkers[i].setMap(null);
+        }
+        printedCategoryMarkers = [];
+
+        //카테고리가 정해져있으면 printedCategoryMarkers에 해당 카테고리 마커들을 저장하고 출력한다.
+        if(vm.categoryStatus != "none"){
+          for(var i=0; i<categoryMarkers[vm.categoryStatus].length; i++){
+            categoryMarkers[vm.categoryStatus][i].setMap(map);
+            printedCategoryMarkers[i] =  categoryMarkers[vm.categoryStatus][i];
+          }
+        }
+      }, true);
+   
+    //Marker Image Process------------------------------------------
+    var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant"];
+    var categoryMarkers = {};
+    var selectedMarker = null; // 클릭한 마커를 담을 변수
+
+    var normalImage = {};   //Image[categoryIndex]
+    var overImage = {};
+    var clickImage = {};
+
+
+    var MARKER_WIDTH = 33, // 기본, 클릭 마커의 너비
+      MARKER_HEIGHT = 36, // 기본, 클릭 마커의 높이
+      OFFSET_X = 12, // 기본, 클릭 마커의 기준 X좌표
+      OFFSET_Y = MARKER_HEIGHT, // 기본, 클릭 마커의 기준 Y좌표
+      OVER_MARKER_WIDTH = 40, // 오버 마커의 너비
+      OVER_MARKER_HEIGHT = 42, // 오버 마커의 높이
+      OVER_OFFSET_X = 13, // 오버 마커의 기준 X좌표
+      OVER_OFFSET_Y = OVER_MARKER_HEIGHT, // 오버 마커의 기준 Y좌표
+      //SPRITE_MARKER_URL = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markers_sprites2.png', // 스프라이트 마커 이미지 URL
+      SPRITE_MARKER_URL = 'http://imageshack.com/a/img922/8380/GgDPqi.png', // 스프라이트 마커 임시 이미지 URL
+      SPRITE_WIDTH = 125, // 스프라이트 이미지 너비
+      SPRITE_HEIGHT = 307, // 스프라이트 이미지 높이. 이미지 변경시 너비와 높이 변경 필수.
+      SPRITE_GAP = 10; // 스프라이트 이미지에서 마커간 간격
+
+    var markerSize = new daum.maps.Size(MARKER_WIDTH, MARKER_HEIGHT), // 기본, 클릭 마커의 크기
+      markerOffset = new daum.maps.Point(OFFSET_X, OFFSET_Y), // 기본, 클릭 마커의 기준좌표
+      overMarkerSize = new daum.maps.Size(OVER_MARKER_WIDTH, OVER_MARKER_HEIGHT), // 오버 마커의 크기
+      overMarkerOffset = new daum.maps.Point(OVER_OFFSET_X, OVER_OFFSET_Y), // 오버 마커의 기준 좌표
+      spriteImageSize = new daum.maps.Size(SPRITE_WIDTH, SPRITE_HEIGHT); // 스프라이트 이미지의 크기
+
+    // 마커 이미지를 생성합니다.
+    for (var i = 0; i < categoryTypes.length; i++) {
+        var gapX = (MARKER_WIDTH + SPRITE_GAP), // 스프라이트 이미지에서 마커로 사용할 이미지 X좌표 간격 값
+          originY = (MARKER_HEIGHT + SPRITE_GAP) * i, // 스프라이트 이미지에서 기본, 클릭 마커로 사용할 Y좌표 값
+          overOriginY = (OVER_MARKER_HEIGHT + SPRITE_GAP) * i, // 스프라이트 이미지에서 오버 마커로 사용할 Y좌표 값
+          normalOrigin = new daum.maps.Point(0, originY), // 스프라이트 이미지에서 기본 마커로 사용할 영역의 좌상단 좌표
+          clickOrigin = new daum.maps.Point(gapX, originY), // 스프라이트 이미지에서 마우스오버 마커로 사용할 영역의 좌상단 좌표
+          overOrigin = new daum.maps.Point(gapX * 2, overOriginY); // 스프라이트 이미지에서 클릭 마커로 사용할 영역의 좌상단 좌표
+        // 마커를 생성하고 지도위에 표시합니다
+        addMarkerImage(i, normalOrigin, overOrigin, clickOrigin);
+      }
+
+
+// 마커를 생성하고 지도 위에 표시하고, imageIndex 만큼의 마커에 mouseover, mouseout, click 이벤트를 등록하는 함수입니다
+    function addMarkerImage(imageIndex, normalOrigin, overOrigin, clickOrigin) {
+      // 기본 마커이미지, 오버 마커이미지, 클릭 마커이미지를 생성합니다
+      var imageType = categoryTypes[imageIndex];
+      normalImage[imageType] = createMarkerImage(markerSize, markerOffset, normalOrigin);
+      overImage[imageType] = createMarkerImage(overMarkerSize, overMarkerOffset, overOrigin);
+      clickImage[imageType] = createMarkerImage(markerSize, markerOffset, clickOrigin);
+
+    };
+// MakrerImage 객체를 생성하여 반환하는 함수입니다
+    function createMarkerImage(markerSize, offset, spriteOrigin) {
+      //var markerImage = new daum.maps.MarkerImage(
+      return new daum.maps.MarkerImage(
+        SPRITE_MARKER_URL, // 스프라이트 마커 이미지 URL
+        markerSize, // 마커의 크기
+        {
+          offset: offset, // 마커 이미지에서의 기준 좌표
+          spriteOrigin: spriteOrigin, // 스트라이프 이미지 중 사용할 영역의 좌상단 좌표
+          spriteSize: spriteImageSize // 스프라이트 이미지의 크기
+        }
+      );
+
+    };
+
+    //marker creation process about category(image, clickListener...)
+   var createCategoryMarkers = function(typeI, typeIdx) {
+      // 마커를 생성하고 이미지는 해당 카테고리의 마커 이미지를 사용합니다
+          var marker = new daum.maps.Marker({
+            position: new daum.maps.LatLng(vm.markerData[categoryTypes[typeI]][typeIdx]["lat"], vm.markerData[categoryTypes[typeI]][typeIdx]["lng"]),
+            image: normalImage[categoryTypes[typeI]],
+            title: vm.markerData[categoryTypes[typeI]][typeIdx]["name"]   //set marker title. If mouse cursor is on the marker, can see title.
+          });
+
+          // 마커 객체에 마커아이디와 마커의 기본 이미지를 추가합니다
+          marker.normalImage = normalImage[categoryTypes[typeI]];
+
+          // 마커에 mouseover 이벤트를 등록합니다
+          daum.maps.event.addListener(marker, 'mouseover', function () {
+
+          // 클릭된 마커가 없거나 mouseover된 마커가 클릭된 마커가 아니면
+          // 마커의 이미지를 오버 이미지로 변경합니다
+          if (!selectedMarker || selectedMarker !== marker) {
+            marker.setImage(overImage[categoryTypes[typeI]]);
+         }
+       });
+
+          // 마커에 mouseout 이벤트를 등록합니다
+          daum.maps.event.addListener(marker, 'mouseout', function () {
+          // 클릭된 마커가 없거나 mouseout된 마커가 클릭된 마커가 아니면
+          // 마커의 이미지를 기본 이미지로 변경합니다
+          if (!selectedMarker || selectedMarker !== marker) {
+            //marker.setImage(normalImage[categoryTypes[i]]);
+            marker.setImage(normalImage[categoryTypes[typeI]]);
+          }
+        });
+
+          // 마커에 click 이벤트를 등록합니다
+          daum.maps.event.addListener(marker, 'click', function () {
+
+          // 클릭된 마커가 없거나 click 마커가 클릭된 마커가 아니면
+          // 마커의 이미지를 클릭 이미지로 변경합니다
+          if (!selectedMarker || selectedMarker !== marker) {
+
+            // 클릭된 마커 객체가 null이 아니면
+            // 클릭된 마커의 이미지를 마커에 등록해놓았던 기본 이미지로 변경하고
+            //!!selectedMarker && selectedMarker.setImage(selectedMarker.normalImage[categoryTypes[i]]);
+            !!selectedMarker && selectedMarker.setImage(selectedMarker.normalImage);
+
+            // 현재 클릭된 마커의 이미지는 클릭 이미지로 변경합니다
+            //marker.setImage(clickImage[categoryTypes[i]]);
+            marker.setImage(clickImage[categoryTypes[typeI]]);
+          }
+
+          // 클릭된 마커를 현재 클릭된 마커 객체로 설정합니다
+          selectedMarker = marker;
+          });
+
+
+          //생성한 마커를 categoryMarkers에 저장.
+          categoryMarkers[categoryTypes[typeI]][typeIdx] = marker;
+      };
+
+    //marker.json 정보에서 categoryMarkers obj 생성.
+     for(var i = 0; i<categoryTypes.length; i++){
+        //set empty array in categoryMarkers{"categoryType" : [], "categoryType2" : [] ...}
+        categoryMarkers[categoryTypes[i]] = [];
+        //카테고리 타입별 위치정보 개수 만큼 loop
+        for(var idx = 0; idx< vm.markerData[categoryTypes[i]].length; idx++){
+            createCategoryMarkers(i, idx);
+        }
+    }
+
+
 
         function DetailedDialogController($scope, $mdDialog) {
           $scope.hide = function() {
@@ -93,14 +264,11 @@
           };
         }
 
+//------------------------------------------------------------------------------
 
         //확대 축소 버튼 
         var zoomControl = new daum.maps.ZoomControl();
         map.addControl(zoomControl, daum.maps.ControlPosition.BOTTOMLEFT);
-
-        
-        //get user location
-        getLocation();
 
         // Zoom change Listener(zoom 범위 벗어났을대 재조정)
         //zoom_start listener 있음.
@@ -144,10 +312,13 @@
         
         //사용자의 위치로 이동한다. 맵의 범위를 벗어나는 경우 표시하지 않는다.(alert 처리해놓음)
         vm.moveToUserLocation = function(){
+          getLocation();
+          //alert(vm.userLat + " " + vm.userLng);
             if(vm.userLat != 0 && vm.userLng != 0){
                 var dragendListenerLat = angular.copy(vm.userLat);
                 var dragendListenerLng = angular.copy(vm.userLng);
                 var dragendMoveLatLon = isLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
+                //alert(dragendMoveLatLon);
                 if(false == dragendMoveLatLon){
                     alert('out of region');
                 }
@@ -158,20 +329,22 @@
             }
         };
 
-        //Get User Location
+        //Get User Location every 3 min. 1sec == 1000
+        getLocation();
+        $interval(getLocation, 180000); 
         function getLocation() {
             if (navigator.geolocation) { // GPS를 지원하는 경우
                 navigator.geolocation.getCurrentPosition(function(position) {
-                  alert(position.coords.latitude + ' ' + position.coords.longitude);
+                  //alert(position.coords.latitude + ' ' + position.coords.longitude);
                   //현재 user의 위치를 얻는다.
                   vm.userLng = position.coords.longitude;
                   vm.userLat = position.coords.latitude;
               }, function(error) {
                   console.error(error);
               }, {
-                  enableHighAccuracy: false,
+                  enableHighAccuracy: true, //high Accuracy
                   maximumAge: 0,
-                  timeout: Infinity
+                  timeout: 10000  //timeout Infinity시에 error 상태의 function이 절대 호출되지 않음.
               });
             } else {
                 alert('GPS를 지원하지 않습니다');
