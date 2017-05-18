@@ -27,6 +27,7 @@
         infowindow = new daum.maps.InfoWindow({removable: true});
 
         //----------------------------------친구 위치 맵에 올리기-----------------------
+        var isPeerOnMap = false;            //peer가 맵 위에 있는지 여부
         var peerOnMapCustomOverlays = [];   //현재 맵 위에 있는 peer custom overlay들.
         var peerOnMapTransparnetMarkers = [];   //현재 맵 위에 있는 투명 markers
         var arrIdx = 0; //peerCustomOverlays[]의 index
@@ -36,58 +37,71 @@
         
         //이전에 출력된 marker들을 제거한다.
         vm.peerOnMapFunciton = function(){
+            //remove all peers on map
             for(var value = 0; value < arrIdx; ++value){
                 peerOnMapCustomOverlays[value].setMap(null);
             }
-            //peer type == Studnet
-            for (var value in peerLocation.peer.location["ST"]){
-                if(peerLocation.peer.location["ST"][value].checked == true){
-                    var peerContent = '<div><img class="avatar" src="'+
-                    peerLocation.peer.location["ST"][value].avatar+
-                    '"></img></div>';
-                    var peerPosition = new daum.maps.LatLng(peerLocation.peer.location["ST"][value].locationx, peerLocation.peer.location["ST"][value].locationy);
-                    var peerCustomOverlay = new daum.maps.CustomOverlay({
-                        position: peerPosition,
-                        content: peerContent,
-                        xAnchor: 0.5,
-                        yAnchor: 0.5
-                    });
-                    // 투명 avatar 마커 이미지 생성
-                    var peerTransparentMarkerImage = new daum.maps.MarkerImage(peerTransparentImageSrc, peerTransparentImageSize, peerTransparentImageOption),
-                        peerTransparentMarkerPosition = peerPosition; // 마커가 표시될 위치입니다
+            arrIdx = 0;
 
-                    var peerTransparentMarker = new daum.maps.Marker({
-                        position: peerTransparentMarkerPosition, 
-                        image: peerTransparentMarkerImage, // 마커이미지 설정 
-                        title: peerLocation.peer.location["ST"][value].name
-                    });
+            //on off isPeerOnMap
+            if(isPeerOnMap == true){
+                isPeerOnMap = false;
+            }
+            else{
+                isPeerOnMap = true;
+                //peer type == Studnet
+                for (var value in peerLocation.peer.location["ST"]){
+                    if(peerLocation.peer.location["ST"][value].checked == true){
+                        var peerContent = '<div><img class="avatar" src="'+
+                        peerLocation.peer.location["ST"][value].avatar+
+                        '"></img></div>';
+                        var peerPosition = new daum.maps.LatLng(peerLocation.peer.location["ST"][value].locationx, peerLocation.peer.location["ST"][value].locationy);
+                        var peerCustomOverlay = new daum.maps.CustomOverlay({
+                            position: peerPosition,
+                            content: peerContent,
+                            xAnchor: 0.5,
+                            yAnchor: 0.5
+                        });
+                        // 투명 avatar 마커 이미지 생성
+                        var peerTransparentMarkerImage = new daum.maps.MarkerImage(peerTransparentImageSrc, peerTransparentImageSize, peerTransparentImageOption),
+                            peerTransparentMarkerPosition = peerPosition; // 마커가 표시될 위치입니다
+
+                        var peerTransparentMarker = new daum.maps.Marker({
+                            position: peerTransparentMarkerPosition, 
+                            image: peerTransparentMarkerImage, // 마커이미지 설정 
+                            title: peerLocation.peer.location["ST"][value].name
+                        });
 
 
-                    peerCustomOverlay.setMap(map);
-                    peerOnMapCustomOverlays[arrIdx] = peerCustomOverlay;
-                    peerTransparentMarker.setMap(map);
-                    peerOnMapTransparnetMarkers[arrIdx] = peerTransparentMarker;
-                    arrIdx++;
+                        peerCustomOverlay.setMap(map);
+                        peerOnMapCustomOverlays[arrIdx] = peerCustomOverlay;
+                        peerTransparentMarker.setMap(map);
+                        peerOnMapTransparnetMarkers[arrIdx] = peerTransparentMarker;
+                        arrIdx++;
+                    }
+                }
+                //peer type == Professor
+                for (var value in peerLocation.peer.location["PF"]){
+                    if(peerLocation.peer.location["PF"][value].checked == true){
+                        var peerContent = '<div><img class="avatar" src="'+
+                        peerLocation.peer.location["PF"][value].avatar+
+                        '"></img></div>';
+                        var peerPosition = new daum.maps.LatLng(peerLocation.peer.location["PF"][value].locationx, peerLocation.peer.location["PF"][value].locationy);
+                        var peerCustomOverlay = new daum.maps.CustomOverlay({
+                            position: peerPosition,
+                            content: peerContent,
+                            xAnchor: 0.5,
+                            yAnchor: 0.5
+                        });
+
+                        peerCustomOverlay.setMap(map);
+                        peerOnMapCustomOverlays[arrIdx++] = peerCustomOverlay;
+                    }
                 }
             }
-            //peer type == Professor
-            for (var value in peerLocation.peer.location["PF"]){
-                if(peerLocation.peer.location["PF"][value].checked == true){
-                    var peerContent = '<div><img class="avatar" src="'+
-                    peerLocation.peer.location["PF"][value].avatar+
-                    '"></img></div>';
-                    var peerPosition = new daum.maps.LatLng(peerLocation.peer.location["PF"][value].locationx, peerLocation.peer.location["PF"][value].locationy);
-                    var peerCustomOverlay = new daum.maps.CustomOverlay({
-                        position: peerPosition,
-                        content: peerContent,
-                        xAnchor: 0.5,
-                        yAnchor: 0.5
-                    });
 
-                    peerCustomOverlay.setMap(map);
-                    peerOnMapCustomOverlays[arrIdx++] = peerCustomOverlay;
-                }
-            }
+            
+            
         };
 
         //----------------------------------카테고리 선택 메뉴 -------------------------------
@@ -368,12 +382,17 @@
             map.panTo(dragendMoveLatLon);
         });
 
-
+        //사용자 위치 깃발 image
+        var arriveSrc = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png', // 도착 마커이미지 주소입니다    
+            arriveSize = new daum.maps.Size(50, 45), // 도착 마커이미지의 크기입니다 
+            arriveOption = { 
+            offset: new daum.maps.Point(15, 43) // 도착 마커이미지에서 마커의 좌표에 일치시킬 좌표를 설정합니다 (기본값은 이미지의 가운데 아래입니다)
+        };
+        var arriveImage = new daum.maps.MarkerImage(arriveSrc, arriveSize, arriveOption);
         
-        //사용자의 위치로 이동한다. 맵의 범위를 벗어나는 경우 표시하지 않는다.(alert 처리해놓음)
+        //사용자의 위치로 이동한다. 맵의 범위를 벗어나는 경우 표시하지 않는다. 위치로 이동하면서 위치 깃발을 생성한다.
         vm.moveToUserLocation = function(){
             getLocation();
-            //alert(vm.userLat + " " + vm.userLng);
             if(vm.userLat != 0 && vm.userLng != 0){
                 var dragendListenerLat = angular.copy(vm.userLat);
                 var dragendListenerLng = angular.copy(vm.userLng);
@@ -384,6 +403,7 @@
                 }
                 else{
                     map.panTo(dragendMoveLatLon);
+                    
                 }
                                 
             }
