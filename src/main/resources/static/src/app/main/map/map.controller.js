@@ -120,8 +120,9 @@
             });
         };
 
+
         function MarkerDialogController($scope, $mdDialog) {
-            
+            $scope.data = selectedMarker.getTitle();
             $scope.hide = function() {
                 $mdDialog.hide();
             };
