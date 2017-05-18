@@ -1,0 +1,29 @@
+<md-dialog>
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+       <h2> {{MDCvm.data}} </h2> <!-- 위키 제목 -->
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="MDCvm.cancel()">
+          <md-icon md-font-icon="icon-close-circle-outline" class="icon"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+
+    <!-- iframe 이용 wiki page dialog -->
+      <iframe frameborder=" 0" id="domainframe" src="http://m.naver.com" width="500px" height = "400px" scrolling="auto";></iframe> 
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button>
+        More on Wikipedia
+      </md-button>
+      <span flex></span>
+      <md-button ng-click="MDCvm.cancel()">
+        Cancel
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
