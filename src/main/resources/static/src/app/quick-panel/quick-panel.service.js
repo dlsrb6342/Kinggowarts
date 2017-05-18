@@ -18,6 +18,7 @@
             peerLocation.peer.location["ST"][n].checked -> true면 표시
             peerLocation.peer.location["ST"][n].locationx -> x좌표
             peerLocation.peer.location["ST"][n].locationy -> y좌표
+            peerLocation.peer.location["ST"][n].avatar -> 이미지 src
 
         peerLocation.peer.location["PF"]로 교수 접근.
 
