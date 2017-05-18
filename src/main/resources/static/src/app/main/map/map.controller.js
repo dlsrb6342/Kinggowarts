@@ -28,7 +28,12 @@
 
         //----------------------------------친구 위치 맵에 올리기-----------------------
         var peerOnMapCustomOverlays = [];   //현재 맵 위에 있는 peer custom overlay들.
+        var peerOnMapTransparnetMarkers = [];   //현재 맵 위에 있는 투명 markers
         var arrIdx = 0; //peerCustomOverlays[]의 index
+        var peerTransparentImageSrc = 'assets/images/marker/marker_avatar_transparent.png', // 마커이미지의 주소입니다    
+            peerTransparentImageSize = new daum.maps.Size(35, 35), // 마커이미지의 크기입니다
+            peerTransparentImageOption = {offset: new daum.maps.Point(21, 18)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+        
         //이전에 출력된 marker들을 제거한다.
         vm.peerOnMapFunciton = function(){
             for(var value = 0; value < arrIdx; ++value){
@@ -47,9 +52,22 @@
                         xAnchor: 0.5,
                         yAnchor: 0.5
                     });
+                    // 투명 avatar 마커 이미지 생성
+                    var peerTransparentMarkerImage = new daum.maps.MarkerImage(peerTransparentImageSrc, peerTransparentImageSize, peerTransparentImageOption),
+                        peerTransparentMarkerPosition = peerPosition; // 마커가 표시될 위치입니다
+
+                    var peerTransparentMarker = new daum.maps.Marker({
+                        position: peerTransparentMarkerPosition, 
+                        image: peerTransparentMarkerImage, // 마커이미지 설정 
+                        title: peerLocation.peer.location["ST"][value].name
+                    });
+
 
                     peerCustomOverlay.setMap(map);
-                    peerOnMapCustomOverlays[arrIdx++] = peerCustomOverlay;
+                    peerOnMapCustomOverlays[arrIdx] = peerCustomOverlay;
+                    peerTransparentMarker.setMap(map);
+                    peerOnMapTransparnetMarkers[arrIdx] = peerTransparentMarker;
+                    arrIdx++;
                 }
             }
             //peer type == Professor
