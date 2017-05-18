@@ -10,7 +10,9 @@
     function MapController($mdDialog, MarkerData, $scope, $interval, peerLocation)
     {
         var vm = this;
-        vm.markerData = MarkerData.data;        
+        vm.markerData = MarkerData.data;
+        vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
+        var tempint = 10;
         vm.userLat = 0;
         vm.userLng = 0;
         vm.curMapLevel = 3;     //현재 지도의 zoom level
@@ -103,10 +105,10 @@
             .then(function(answer) {
                 //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region 
                 vm.categoryStatus = answer;
-                alert('vm.categoryStatus = '+ vm.categoryStatus);
+               // alert('vm.categoryStatus = '+ vm.categoryStatus);
             }, function() {
                 vm.categoryStatus = "none";
-                alert('vm.categoryStatus = '+ vm.categoryStatus);
+               // alert('vm.categoryStatus = '+ vm.categoryStatus);
             });
         };
 
@@ -131,7 +133,7 @@
             };
         }
 
-        //구역 다이얼로그 
+        //구역 클릭시 다이얼로그 
         vm.showDetailed = function(ev) {
             $mdDialog.show({
                 controller: DetailedDialogController,
@@ -139,7 +141,12 @@
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose:true,
-                fullscreen: false // Only for -xs, -sm breakpoints.
+                fullscreen: false, // Only for -xs, -sm breakpoints.
+                resolve: {
+                  clickName: function(){
+                    return vm.clickName;
+                  }
+                }
             })
         };
 
@@ -308,7 +315,8 @@
             }
         }
 
-        function DetailedDialogController($scope, $mdDialog, $state) {
+        //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
+        function DetailedDialogController($scope, $mdDialog, $state, clickName) {
             $scope.hide = function() {
                 $mdDialog.hide();
             };
@@ -318,10 +326,11 @@
             $scope.answer = function(answer) {
                 $mdDialog.hide(answer);
             };
-            $scope.movemap = function(){
+            $scope.movewiki = function(){  //wiki page로 이동 
                 $mdDialog.cancel();
                 $state.go('app.wiki');
             };
+            $scope.clickName = clickName;
         }
 
 //------------------------------------------------------------------------------
@@ -768,6 +777,7 @@
             }); 
 
             daum.maps.event.addListener(polygon, 'click', function(mouseEvent) {
+                vm.clickName = area.name;
                 vm.showDetailed();
             });
         }
