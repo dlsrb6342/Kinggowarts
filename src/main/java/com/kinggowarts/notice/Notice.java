@@ -18,4 +18,6 @@ public class Notice {
     @Lob @Column(columnDefinition="TEXT")
     private String contents;
     private Date time;
+    private String link;
+    private String img_src;
 }

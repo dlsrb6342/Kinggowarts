@@ -9,13 +9,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/notice/")
+@RequestMapping("/api/notice")
 public class NoticeController {
-    @Autowired
-    private NoticeRepository noticeDao;
 
-    @ResponseBody @RequestMapping(value="",method=RequestMethod.GET)
+    @Autowired
+    private NoticeService noticeService;
+
+    @ResponseBody @RequestMapping(value="/",method=RequestMethod.GET)
     public List<Notice> noticeList(){
-        return noticeDao.findAllByOrderByTime();
+        return noticeService.findAll();
     }
+
 }
