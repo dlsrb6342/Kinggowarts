@@ -418,6 +418,8 @@
             }
         };
 
+        //퀵패널 timeline에서 위치 클릭할 경우 그 위치로 지도가 이동합니다. 구역 중심 좌표가 나중에 생기면 그 좌표로 이동하면 될 것 같습니다.
+
         $scope.$watch(
             function watchEvent(scope){
                 return(peerLocation.eventlocation);
