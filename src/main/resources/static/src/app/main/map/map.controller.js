@@ -104,6 +104,7 @@
             
         };
         //----------------------------------마커 다이얼로그 --------------------------------
+
         vm.showMarkerDialog = function(ev) {
             $mdDialog.show({
                 controller: MarkerDialogController,
@@ -133,6 +134,7 @@
                 $mdDialog.hide(answer);
             };
         }
+
 
         //----------------------------------카테고리 선택 메뉴 -------------------------------
         vm.showAdvanced = function(ev) {
@@ -415,7 +417,7 @@
         });
 
         //사용자 위치 깃발 image
-        var arriveSrc = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png', // 도착 마커이미지 주소입니다    
+        var arriveSrc = 'assets/images/marker/blueflag.png', // 도착 마커이미지 주소입니다    
             arriveSize = new daum.maps.Size(50, 45), // 도착 마커이미지의 크기입니다 
             arriveOption = { 
             offset: new daum.maps.Point(15, 43) // 도착 마커이미지에서 마커의 좌표에 일치시킬 좌표를 설정합니다 (기본값은 이미지의 가운데 아래입니다)
