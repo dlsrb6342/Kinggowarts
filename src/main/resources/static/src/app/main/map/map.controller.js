@@ -7,7 +7,7 @@
         .controller('MapController', MapController);
 
     /** @ngInject */
-    function MapController($mdDialog, MarkerData, $scope, $interval, peerLocation)
+    function MapController($mdDialog, MarkerData, $scope, $interval, $timeout, peerLocation)
     {
         var vm = this;
         vm.markerData = MarkerData.data;
@@ -139,6 +139,75 @@
 
 
         //----------------------------------카테고리 선택 메뉴 -------------------------------
+        var categoryLevel = "none";
+
+        vm.categoryMenu = [
+            {"name":"편의시설", "type":"Facilities", "icon" : "icon-emoticon-happy", "inner" : 
+                [
+                    {"name":"은행/ATM", "type":"bank", "icon" : "icon-square-inc-cash"},
+                    {"name":"화장실", "type":"toilet", "icon" : "icon-human-male-female"},
+                    {"name":"정류장", "type":"Restaurant", "icon" : "icon-subway"},
+                    {"name":"복사/제본", "type":"print", "icon" : "icon-printer"},
+                    {"name":"자판기", "type":"vendingmachine", "icon" : "icon-washing-machine"}
+                ]
+            },
+            {"name":"음식점", "type":"Restaurant", "icon" : "icon-emoticon-happy", "inner" : 
+                [
+                    {"name":"교내식당", "type":"insideRestaurant", "icon" : "icon-food-apple"},
+                    {"name":"교외식당", "type":"outsideRestaurant", "icon" : "icon-food"}
+                ]
+            },
+            {"name":"학과", "type":"Major", "icon" : "icon-food-variant", "inner" : 
+                [
+                    {"name":"학부", "type":"standard", "icon" : ""},
+                    {"name":"공과", "type":"engineer", "icon" : ""},
+                    {"name":"소프트", "type":"soft", "icon" : ""},
+                    {"name":"정보통신", "type":"comm", "icon" : ""}
+                ]
+            },
+            {"name":"동아리", "type":"club", "icon" : "icon-book-open", "inner" : null},
+            {"name":"지역/구역", "type":"region", "icon" : "icon-vector-square", "inner" : null}
+        ];
+
+        vm.categorySelect = function(answer){
+            //answer가 leaf category(categoryTypes 배열의 요소)에 없으면 categoryLevel에 해당.
+            if(-1 != categoryTypes.indexOf(answer)){
+                vm.categoryStatus = answer;
+            }
+            else{
+                categoryLevel = answer;
+            }
+        }
+        vm.categoryIsOpen = false;
+        vm.tooltipVisible = false;
+
+        //카테고리 툴팁 띄우기 지연
+        $scope.$watch(function() { return vm.categoryIsOpen}, function(newVal) {
+            if (newVal) {
+                $timeout(function() {
+                    vm.tooltipVisible = vm.categoryIsOpen;     //delay open
+                }, 600);
+            } else {
+                    vm.tooltipVisible = vm.categoryIsOpen;     //바로 close
+            }
+        }, true);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         vm.showAdvanced = function(ev) {
             $mdDialog.show({
                 controller: CategoryDialogController,
@@ -194,6 +263,7 @@
             })
         };
 
+
 //-------------------------------------카테고리 마커 출력-----------------------------------------------
         /*
         카테고리 등록하는법.
@@ -226,10 +296,11 @@
                 }
             }
         }, true);
-   
+
         //Marker Image Process------------------------------------------
+
         var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant"];
-        var categoryMarkers = {};
+        var categoryMarkers = {};   
         var selectedMarker = null; // 클릭한 마커를 담을 변수
 
         var normalImage = {};   //Image[categoryIndex]
