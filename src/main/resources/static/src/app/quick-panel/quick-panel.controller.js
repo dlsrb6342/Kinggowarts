@@ -81,14 +81,10 @@
           };
           
         vm.toggleAll = function() {
-            if (vm.selected[vm.currentlocation].length === vm.peer.location[vm.currentlocation].length+1) {
-              vm.selected[vm.currentlocation] = [];
-            } else if (vm.selected[vm.currentlocation].length === 0 || vm.selected[vm.currentlocation].length > 0) {
-                for (var value in vm.peer.location[vm.currentlocation]){
-                    vm.toggle(vm.peer.location[vm.currentlocation][value],vm.selected[vm.currentlocation]);
-                }
+            for (var value in vm.peer.location[vm.currentlocation]){
+                vm.toggle(vm.peer.location[vm.currentlocation][value],vm.selected[vm.currentlocation]);
             }
-         };
+        };
          
         vm.untoggleAll = function() {
             vm.selected[vm.currentlocation] = [];
@@ -99,18 +95,28 @@
         };
 
         vm.deletepeer = function(delpeer) {
+            if(delpeer.checked == true){
+                vm.toggle(delpeer,vm.selected[vm.currentlocation]);
+            }
+            console.log(vm.selected[vm.currentlocation]);
+            vm.peer.location[vm.currentlocation].splice(vm.peer.location[vm.currentlocation].indexOf(delpeer),1);
+            focusChecklistInput();
 
-            //peer 위치 공유 제거 했을 때
+            //peer 위치 공유 제거 했을 때 서버에 post 추가 필요
             
         }
 
         vm.requestaccept = function(item) {
-            //수락 했을 때
+
+            //수락 했을 때 서버에 post 추가 필요 
+
             vm.deleteCheckItem(item);
         }
 
         vm.requestdenied = function(item) {
-            //거절 했을 때
+
+            //거절 했을 때 서버에 post 추가 필요
+
             vm.deleteCheckItem(item);
         }
 
