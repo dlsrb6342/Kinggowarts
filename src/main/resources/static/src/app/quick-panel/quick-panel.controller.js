@@ -26,7 +26,10 @@
 
         };
 
-        vm.selected = [];
+        vm.selected = {
+            ST : [],
+            PF : []
+        };
 
         
 
@@ -38,13 +41,15 @@
         function init()
         {
             for (var value in vm.peer.location["ST"]){
+                vm.peer.location["ST"][value].weight = [value];
                 if(vm.peer.location["ST"][value].checked == true){
-                    vm.toggle(vm.peer.location["ST"][value],vm.selected);
+                    vm.toggle(vm.peer.location["ST"][value],vm.selected["ST"]);
                 }
             }
             for (var value in vm.peer.location["PF"]){
+                vm.peer.location["PF"][value].weight = [value];
                 if(vm.peer.location["PF"][value].checked == true){
-                    vm.toggle(vm.peer.location["PF"][value],vm.selected);
+                    vm.toggle(vm.peer.location["PF"][value],vm.selected["PF"]);
                 }
             }
         };
@@ -67,26 +72,26 @@
         };
 
         vm.isIndeterminate = function() {
-            return (vm.selected.length !== 0 &&
-                vm.selected.length !== vm.peer.location[vm.currentlocation].length+1);
+            return (vm.selected[vm.currentlocation].length !== 0 &&
+                vm.selected[vm.currentlocation].length !== vm.peer.location[vm.currentlocation].length+1);
         };
 
         vm.isChecked = function() {
-            return vm.selected.length === vm.peer.location[vm.currentlocation].length+1;
+            return vm.selected[vm.currentlocation].length === vm.peer.location[vm.currentlocation].length+1;
           };
           
         vm.toggleAll = function() {
-            if (vm.selected.length === vm.peer.location[vm.currentlocation].length+1) {
-              vm.selected = [];
-            } else if (vm.selected.length === 0 || vm.selected.length > 0) {
+            if (vm.selected[vm.currentlocation].length === vm.peer.location[vm.currentlocation].length+1) {
+              vm.selected[vm.currentlocation] = [];
+            } else if (vm.selected[vm.currentlocation].length === 0 || vm.selected[vm.currentlocation].length > 0) {
                 for (var value in vm.peer.location[vm.currentlocation]){
-                    vm.toggle(vm.peer.location[vm.currentlocation][value],vm.selected);
+                    vm.toggle(vm.peer.location[vm.currentlocation][value],vm.selected[vm.currentlocation]);
                 }
             }
          };
          
         vm.untoggleAll = function() {
-            vm.selected = [];
+            vm.selected[vm.currentlocation] = [];
             for (var value in vm.peer.location[vm.currentlocation]){
                 vm.peer.location[vm.currentlocation][value].checked = false;
             }
