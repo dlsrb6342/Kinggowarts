@@ -105,6 +105,38 @@
             
             
         };
+        //----------------------------------마커 다이얼로그 --------------------------------
+
+        vm.showMarkerDialog = function(ev) {
+            $mdDialog.show({
+                controller: MarkerDialogController,
+                templateUrl: 'app/main/map/markerDialog.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose:true,
+                fullscreen: false // Only for -xs, -sm breakpoints.
+            })
+            .then(function(answer) {
+                alert('answer');
+            }, function() {
+                alert('none..');
+            });
+        };
+
+
+        function MarkerDialogController($scope, $mdDialog) {
+            $scope.data = selectedMarker.getTitle();
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
+            $scope.answer = function(answer) {
+                $mdDialog.hide(answer);
+            };
+        }
+
 
         //----------------------------------카테고리 선택 메뉴 -------------------------------
         vm.showAdvanced = function(ev) {
@@ -119,10 +151,8 @@
             .then(function(answer) {
                 //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region 
                 vm.categoryStatus = answer;
-               // alert('vm.categoryStatus = '+ vm.categoryStatus);
             }, function() {
                 vm.categoryStatus = "none";
-               // alert('vm.categoryStatus = '+ vm.categoryStatus);
             });
         };
 
@@ -137,13 +167,13 @@
                 //$scope.tempA = tempint + 5;
             };
             $scope.hide = function() {
-              $mdDialog.hide();
+                $mdDialog.hide();
             };
             $scope.cancel = function() {
-            $mdDialog.cancel();
+                $mdDialog.cancel();
             };
             $scope.answer = function(answer) {
-            $mdDialog.hide(answer);
+                $mdDialog.hide(answer);
             };
         }
 
@@ -313,6 +343,8 @@
 
                 // 클릭된 마커를 현재 클릭된 마커 객체로 설정합니다
                 selectedMarker = marker;
+                //dialog 띄우기
+                vm.showMarkerDialog();
             });
 
             //생성한 마커를 categoryMarkers에 저장.
@@ -392,7 +424,7 @@
         });
 
         //사용자 위치 깃발 image
-        var arriveSrc = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/blue_b.png', // 도착 마커이미지 주소입니다    
+        var arriveSrc = 'assets/images/marker/blueflag.png', // 도착 마커이미지 주소입니다    
             arriveSize = new daum.maps.Size(50, 45), // 도착 마커이미지의 크기입니다 
             arriveOption = { 
             offset: new daum.maps.Point(15, 43) // 도착 마커이미지에서 마커의 좌표에 일치시킬 좌표를 설정합니다 (기본값은 이미지의 가운데 아래입니다)
@@ -400,19 +432,35 @@
         var arriveImage = new daum.maps.MarkerImage(arriveSrc, arriveSize, arriveOption);
         
         //사용자의 위치로 이동한다. 맵의 범위를 벗어나는 경우 표시하지 않는다. 위치로 이동하면서 위치 깃발을 생성한다.
+        var arriveMarker = null;
+        var isArriveMarkerOn = false;
         vm.moveToUserLocation = function(){
             getLocation();
+            alert(vm.userLat + " " + vm.userLng);
             if(vm.userLat != 0 && vm.userLng != 0){
                 var dragendListenerLat = angular.copy(vm.userLat);
                 var dragendListenerLng = angular.copy(vm.userLng);
                 var dragendMoveLatLon = isLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
-                //alert(dragendMoveLatLon);
                 if(false == dragendMoveLatLon){
                     alert('out of region');
                 }
                 else{
-                    map.panTo(dragendMoveLatLon);
-                    
+                    if(arriveMarker != null){
+                        arriveMarker.setMap(null);
+                    }
+                    if(isArriveMarkerOn == true){
+                        isArriveMarkerOn = false;
+                    }
+                    else{
+                        isArriveMarkerOn = true;
+                        arriveMarker = new daum.maps.Marker({  
+                            position: dragendMoveLatLon,
+                            draggable: false, // 도착 마커가 드래그 가능하도록 설정합니다
+                            image: arriveImage // 도착 마커이미지를 설정합니다
+                        });
+                        map.panTo(dragendMoveLatLon);
+                    }
+                   
                 }
                                 
             }
