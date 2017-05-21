@@ -30,9 +30,11 @@
 
         
 
-        vm.findtimelinelocation = function(ID) {
+        vm.findtimelinelocation = function (event) {
             //구역 ID로 이동
-        }
+            console.log(event.location);
+            peerLocation.eventlocation = event.location;
+        };
 
         function init()
         {
@@ -46,7 +48,7 @@
                     vm.toggle(vm.peer.location["PF"][value],vm.selected);
                 }
             }
-        }
+        };
 
         vm.toggle = function (peer, list) {
             var idx = list.indexOf(peer.weight);

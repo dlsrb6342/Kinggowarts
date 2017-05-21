@@ -418,6 +418,19 @@
             }
         };
 
+        $scope.$watch(
+            function watchEvent(scope){
+                return(peerLocation.eventlocation);
+            },
+            function handleEvent(newValue, oldValue){
+                for (var value in areas){
+                    if (peerLocation.eventlocation == areas[value].name){
+                        var moveEventLocation = areas[value].path[0];
+                        map.panTo(moveEventLocation);
+                    }
+                }
+            }, true);
+
         //Get User Location every 3 min. 1sec == 1000
         getLocation();
         $interval(getLocation, 180000); 
@@ -857,4 +870,5 @@
         //map.panTo(dragendMoveLatLon);
         return dragendMoveLatLon;
     }
+
 })();
