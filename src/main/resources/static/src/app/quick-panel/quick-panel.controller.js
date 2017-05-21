@@ -32,7 +32,6 @@
 
         vm.findtimelinelocation = function (event) {
             //구역 ID로 이동
-            console.log(event.location);
             peerLocation.eventlocation = event.location;
         };
 
