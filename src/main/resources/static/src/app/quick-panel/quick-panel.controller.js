@@ -7,14 +7,14 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(msApi, peerLocation, TimelineData, PeerData, RequestData, RecentwikiData)
+    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, RecentwikiData)
     {
         var vm = this;
-        
-        vm.timeline = TimelineData.data;
-        vm.peer = PeerData.data;
-        vm.request = RequestData.data;
-        vm.recentwiki = RecentwikiData.data;
+
+        vm.timeline = TimelineData.content.data.data;
+        vm.peer = PeerData.content.data.data;
+        vm.request = RequestData.content.data.data;
+        vm.recentwiki = RecentwikiData.content.data.data;
 
         vm.currenttimeline = "SE";
         vm.currentlocation = "ST";

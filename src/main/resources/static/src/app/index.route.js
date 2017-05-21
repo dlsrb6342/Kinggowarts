@@ -7,7 +7,7 @@
         .config(routeConfig);
 
     /** @ngInject */
-    function routeConfig(msApiProvider, $stateProvider, $urlRouterProvider, $locationProvider)
+    function routeConfig($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider)
     {
         $locationProvider.html5Mode(true);
 
@@ -93,29 +93,46 @@
                     }
                 },
                 resolve: {
+                    /*
                     TimelineData: function (msApi)
                     {
                         return msApi.resolve('quickPanel.timeline@get');
                     },
-                    PeerData: function (msApi)
+                    */
+                    TimelineData: function ($http)
                     {
-                        return msApi.resolve('quickPanel.peer@get');
+                        var obj = {content:null};
+                        $http.get('app/data/quick-panel/timeline.json').then(function (response){
+                            obj.content = response;
+                        });
+                        return obj;
                     },
-                    RequestData: function (msApi)
+                    PeerData: function ($http)
                     {
-                        return msApi.resolve('quickPanel.request@get');
+                        var obj = {content:null};
+                        $http.get('app/data/quick-panel/peer.json').then(function (response){
+                            obj.content = response;
+                        });
+                        return obj;
                     },
-                    RecentwikiData: function (msApi)
+                    RequestData: function ($http)
                     {
-                        return msApi.resolve('quickPanel.recentwiki@get');
+                        var obj = {content:null};
+                        $http.get('app/data/quick-panel/request.json').then(function (response){
+                            obj.content = response;
+                        });
+                        return obj;
+                    },
+                    RecentwikiData: function ($http)
+                    {
+                        var obj = {content:null};
+                        $http.get('app/data/quick-panel/recentwiki.json').then(function (response){
+                            obj.content = response;
+                        });
+                        return obj;
                     }
                 }
             });
-
-        msApiProvider.register('quickPanel.timeline', ['app/data/quick-panel/timeline.json']);
-        msApiProvider.register('quickPanel.peer', ['app/data/quick-panel/peer.json']);
-        msApiProvider.register('quickPanel.request', ['app/data/quick-panel/request.json']);
-        msApiProvider.register('quickPanel.recentwiki', ['app/data/quick-panel/recentwiki.json']);
     }
 
 })();
