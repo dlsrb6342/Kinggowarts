@@ -1,4 +1,4 @@
-package com.kinggowarts.notice;
+package com.kinggowarts.notice.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
