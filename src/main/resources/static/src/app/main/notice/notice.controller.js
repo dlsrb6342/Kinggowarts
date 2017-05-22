@@ -7,10 +7,8 @@
         .controller('NoticeController', NoticeController);
 
     /** @ngInject */
-    function NoticeController()
+    function NoticeController($scope, $timeout)
     {
-        var vm = this;
-
-       
+    	var vm = this;
     }
 })();

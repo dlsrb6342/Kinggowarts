@@ -23,12 +23,21 @@
                     MarkerData: function (msApi)
                     {
                         return msApi.resolve('marker@get');
+                    },
+                    CategoryMarkerData: function(msApi)
+                    {
+                        return msApi.resolve('categoryMarker@get');
+                    },
+                    SubAreaData: function(msApi)
+                    {
+                        return msApi.resolve('subArea@get');
                     }
                 }
             });
 
         // Api
         msApiProvider.register('marker', ['app/data/map/marker.json']);
-
+        msApiProvider.register('categoryMarker', ['app/data/map/categoryMarker.json']);
+        msApiProvider.register('subArea', ['app/data/map/subArea.json']);
     }
 })();
