@@ -482,7 +482,7 @@
                 $mdDialog.cancel();
                 $state.go('app.wiki');
             };
-            $scope.clickName = clickName;
+            $scope.clickName = vm.clickName;
         }
 
 //------------------------------------------------------------------------------
@@ -899,7 +899,7 @@
             center : new daum.maps.LatLng(37.29408318116908,126.97367135765238)
         },
         {
-            name : '삼성학술정보관',
+            name : '학술정보관',
             path : [
                 new daum.maps.LatLng(37.29438287438327, 126.97411673852834),
                 new daum.maps.LatLng(37.2941669820941, 126.9758028850296),
