@@ -1,0 +1,29 @@
+{
+	"data":[
+            {"name":"편의시설", "type":"Facilities", "icon" : "icon-emoticon-happy", "inner" : 
+                [
+                    {"name":"은행/ATM", "type":"bank", "icon" : "icon-square-inc-cash"},
+                    {"name":"화장실", "type":"toilet", "icon" : "icon-human-male-female"},
+                    {"name":"정류장", "type":"busstop", "icon" : "icon-subway"},
+                    {"name":"복사/제본", "type":"print", "icon" : "icon-printer"},
+                    {"name":"자판기", "type":"vendingmachine", "icon" : "icon-washing-machine"}
+                ]
+            },
+            {"name":"음식점", "type":"Restaurant", "icon" : "icon-food-variant", "inner" : 
+                [
+                    {"name":"교내식당", "type":"insideRestaurant", "icon" : "icon-food-apple"},
+                    {"name":"교외식당", "type":"outsideRestaurant", "icon" : "icon-food"}
+                ]
+            },
+            {"name":"학과", "type":"Major", "icon" : "icon-book-open", "inner" : 
+                [
+                    {"name":"학부", "type":"standard", "icon" : ""},
+                    {"name":"공과", "type":"engineer", "icon" : ""},
+                    {"name":"소프트", "type":"soft", "icon" : ""},
+                    {"name":"정보통신", "type":"comm", "icon" : ""}
+                ]
+            },
+            {"name":"동아리", "type":"club", "icon" : "icon-radio-tower", "inner" : null},
+            {"name":"지역/구역", "type":"region", "icon" : "icon-vector-square", "inner" : null}
+        ]
+}
