@@ -14,13 +14,13 @@
 
 
     <!-- iframe 이용 wiki page dialog -->
-    <!-- <md-dialog-content> -->
+    <!-- <md-dialog-content> 
     <script>
         document.getElementById("clickWiki").src = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
-    </script>
-    <!--
-      <iframe frameborder=" 0" id="domainframe" src="http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" width="500px" height = "400px" scrolling="auto";></iframe> -->
-      <iframe frameborder="0" id="clickWiki" src=" " width="500px" height = "400px" scrolling="auto";></iframe>
+    </script>-->
+    
+      <iframe frameborder=" 0" id="domainframe" src= "{{clickUrl | trustAsResourceUrl}}" width="500px" height = "400px" scrolling="auto";></iframe> 
+     <!-- <iframe frameborder="0" id="clickWiki" src=" " width="500px" height = "400px" scrolling="auto";></iframe>-->
     <!-- </md-dialog-content> -->
     <md-dialog-actions layout="row">
       <md-button ng-click= "movewiki()">

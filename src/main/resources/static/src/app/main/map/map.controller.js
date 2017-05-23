@@ -2,9 +2,11 @@
 {
     'use strict';
 
+
     angular
         .module('app.map')
         .controller('MapController', MapController);
+
 
     /** @ngInject */
     function MapController($mdDialog, SubAreaData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation)
@@ -12,6 +14,7 @@
         var vm = this;
         vm.markerData = MarkerData.data;
         vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
+        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
         var tempint = 10;
         vm.userLat = 0;
         vm.userLng = 0;
@@ -293,6 +296,9 @@
                 resolve: {
                   clickName: function(){
                     return vm.clickName;
+                  },
+                  clickUrl: function(){
+                    return vm.clickUrl;  
                   }
                 }
             })
@@ -468,7 +474,7 @@
         }
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
-        function DetailedDialogController($scope, $mdDialog, $state, clickName) {
+        function DetailedDialogController($scope, $mdDialog, $state, clickName, $sce) {
             $scope.hide = function() {
                 $mdDialog.hide();
             };
@@ -483,6 +489,10 @@
                 $state.go('app.wiki');
             };
             $scope.clickName = vm.clickName;
+           // $scope.clickUrl = function(){
+           //     return $sce.trustAsResourceUrl(vm.clickUrl);
+           // };
+           $scope.clickUrl = vm.clickUrl;
         }
 
 //------------------------------------------------------------------------------
@@ -995,6 +1005,7 @@
 
             daum.maps.event.addListener(polygon, 'click', function(mouseEvent) {
                 vm.clickName = area.name;
+                vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/"+area.name;
                 vm.showDetailed();
             });
         }
@@ -1044,6 +1055,7 @@
 
             daum.maps.event.addListener(polygon, 'click', function(mouseEvent) {
                 vm.clickName = area["name"];
+                vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/"+area.name;;
                 vm.showDetailed();
             });
         }
