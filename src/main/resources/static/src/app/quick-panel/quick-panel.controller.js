@@ -7,14 +7,14 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, RecentwikiData)
+    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, $http)
     {
         var vm = this;
 
         vm.timeline = TimelineData.content.data.data;
         vm.peer = PeerData.content.data.data;
         vm.request = RequestData.content.data.data;
-        vm.recentwiki = RecentwikiData.content.data.data;
+        vm.recentwiki;
 
         vm.currenttimeline = "SE";
         vm.currentlocation = "ST";
@@ -31,7 +31,10 @@
             PF : []
         };
 
-        
+        vm.wikihistory = {
+            Name : [],
+            Link : []
+        };
 
         vm.findtimelinelocation = function (event) {
             //구역 ID로 이동
@@ -52,6 +55,30 @@
                     vm.toggle(vm.peer.location["PF"][value],vm.selected["PF"]);
                 }
             }
+
+            vm.getWikiLink();
+
+        };
+
+        vm.getWikiLink = function () //http async 때문에 $http.get안에서 처리
+        {
+                var obj = {content:null};
+                $http.get('http://fanatic1.iptime.org:8080/xwiki/rest/wikis/xwiki/modifications?start=0&number=30').then(function (response){
+                    obj.content = response;
+
+                    for (var i=0; i<obj.content.data.historySummaries.length; i++){
+                        if((vm.wikihistory.Name.indexOf(obj.content.data.historySummaries[i].pageId) == -1) && (obj.content.data.historySummaries[i].modifier != "XWiki.Admin")){
+                            vm.wikihistory.Name.push(obj.content.data.historySummaries[i].pageId);
+
+                            $http.get(obj.content.data.historySummaries[i].links[0].href).then(function (response){
+                                vm.wikihistory.Link.push(response);
+                            });
+                        }
+                    }
+                    console.log(vm.wikihistory);
+
+                });
+                return obj;
         };
 
         vm.toggle = function (peer, list) {

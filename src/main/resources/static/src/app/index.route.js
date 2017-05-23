@@ -93,16 +93,10 @@
                     }
                 },
                 resolve: {
-                    /*
-                    TimelineData: function (msApi)
-                    {
-                        return msApi.resolve('quickPanel.timeline@get');
-                    },
-                    */
                     TimelineData: function ($http)
                     {
                         var obj = {content:null};
-                        $http.get('app/data/quick-panel/timeline.json').then(function (response){
+                        $http.get('/app/data/quick-panel/timeline.json').then(function (response){
                             obj.content = response;
                         });
                         return obj;
@@ -110,7 +104,7 @@
                     PeerData: function ($http)
                     {
                         var obj = {content:null};
-                        $http.get('app/data/quick-panel/peer.json').then(function (response){
+                        $http.get('/app/data/quick-panel/peer.json').then(function (response){
                             obj.content = response;
                         });
                         return obj;
@@ -118,15 +112,7 @@
                     RequestData: function ($http)
                     {
                         var obj = {content:null};
-                        $http.get('app/data/quick-panel/request.json').then(function (response){
-                            obj.content = response;
-                        });
-                        return obj;
-                    },
-                    RecentwikiData: function ($http)
-                    {
-                        var obj = {content:null};
-                        $http.get('app/data/quick-panel/recentwiki.json').then(function (response){
+                        $http.get('/app/data/quick-panel/request.json').then(function (response){
                             obj.content = response;
                         });
                         return obj;
