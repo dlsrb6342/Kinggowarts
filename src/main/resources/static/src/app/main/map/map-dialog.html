@@ -22,8 +22,25 @@
       <iframe frameborder=" 0" id="domainframe" src= "{{clickUrl | trustAsResourceUrl}}" width="500px" height = "400px" scrolling="auto";></iframe> 
      <!-- <iframe frameborder="0" id="clickWiki" src=" " width="500px" height = "400px" scrolling="auto";></iframe>-->
     <!-- </md-dialog-content> -->
+
+<!--
     <md-dialog-actions layout="row">
-      <md-button ng-click= "movewiki()">
+    <md-chips ng-model="ctrl.tags" md-removable="true" placeholder="Enter a tag" secondary-placeholder="+Tag"></md-chips>
+    </md-dialog-actions> -->
+
+    
+    <md-dialog-actions layout="row">
+    <div class="tags">
+      <md-chips ng-model= "tags" placeholder="Enter a tag">
+
+      </md-chips>
+    </div>
+    </md-dialog-actions>
+
+
+    <md-dialog-actions layout="row">
+     <!-- <md-button ng-click= "movewiki()" ui-sref = "{{clickUrl | trustAsResourceUrl}}"> -->
+     <md-button ng-click= "movewiki()">
         More on Wikipedia
       </md-button>
       <span flex></span>
