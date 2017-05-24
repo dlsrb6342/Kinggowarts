@@ -157,6 +157,35 @@
 						"lat":"37.29439858054493",
 						"lng":"126.9738347803545"
 					}
-				]
+				],
+			"regions":[
+				{
+						"name": "regionss",
+						"lat":"37.29493545294717",
+						"lng":"126.97750846542124"
+					},
+					{
+						"name": "regionss",
+						"lat":"37.29439858054493",
+						"lng":"126.9738347803545"
+					}
+			],
+			"customevent":[
+				{
+						"name": "events",
+						"creater" : "",
+						"dateFrom" : "",
+						"dateTo" : "",
+						"location" : "",
+						"lat": 37.29439858054493,
+						"lng":"126.9738347803545",
+						"type" : "CIRCLE",
+						"circleRadius" : 30,
+						"circleLat" : 37.29439858054493,
+						"circleLng" : 126.9738347803545,
+						"detailed" : "this is customEvent"
+						
+					}
+			]
 			}
 		}

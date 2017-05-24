@@ -7,7 +7,7 @@
         .controller('MapController', MapController);
 
     /** @ngInject */
-    function MapController($mdDialog, SubAreaData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation)
+    function MapController($mdDialog, CustomEventMarkerData, SubAreaData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation)
     {
         var vm = this;
         vm.markerData = MarkerData.data;
@@ -27,6 +27,198 @@
         var map = new daum.maps.Map(container, options),
         customOverlay = new daum.maps.CustomOverlay({}),
         infowindow = new daum.maps.InfoWindow({removable: true});
+
+        //-------------------------------custom evnet Drawing---------------------------------------
+        //vm.customEventData = CustomEventData.data;
+        var drawingManager = null;
+        vm.customEventMarkerData = CustomEventMarkerData.data;
+
+        //drawing 툴팁 띄우기 지연
+        $scope.$watch(function() { return vm.customEventIsOpen}, function(newVal) {
+            if (newVal) {
+                $timeout(function() {
+                    vm.customEvnetTooltipVisible = vm.customEventIsOpen;     //delay open
+                }, 600);
+            } else {
+                    vm.customEvnetTooltipVisible = vm.customEventIsOpen;     //delay 없이 바로 close
+            }
+        }, true);
+
+        //drawing 툴팁 고정
+        $scope.$watch(function() { return vm.customEvnetTooltipVisible}, function(newVal) {
+            if(vm.customEventIsOpen){
+                vm.customEvnetTooltipVisible = vm.customEventIsOpen;
+            }
+        }, true);
+
+
+        var drawCustomEvnetOptions = { // Drawing Manager를 생성할 때 사용할 옵션입니다
+            map: map, // Drawing Manager로 그리기 요소를 그릴 map 객체입니다
+            drawingMode: [ // Drawing Manager로 제공할 그리기 요소 모드입니다
+                daum.maps.Drawing.OverlayType.MARKER,
+                daum.maps.Drawing.OverlayType.POLYLINE,
+                daum.maps.Drawing.OverlayType.RECTANGLE,
+                daum.maps.Drawing.OverlayType.CIRCLE,
+                daum.maps.Drawing.OverlayType.POLYGON
+            ],
+            // 사용자에게 제공할 그리기 가이드 툴팁입니다
+            // 사용자에게 도형을 그릴때, 드래그할때, 수정할때 가이드 툴팁을 표시하도록 설정합니다
+            guideTooltip: ['draw', 'drag', 'edit'], 
+            markerOptions: { // 마커 옵션입니다 
+                draggable: true, // 마커를 그리고 나서 드래그 가능하게 합니다 
+                removable: true // 마커를 삭제 할 수 있도록 x 버튼이 표시됩니다  
+            },
+            rectangleOptions: {
+                draggable: true,
+                removable: true,
+                editable: true,
+                strokeColor: '#39f', // 외곽선 색
+                fillColor: '#39f', // 채우기 색
+                fillOpacity: 0.5 // 채우기색 투명도
+            },
+            circleOptions: {
+                draggable: true,
+                removable: true,
+                editable: true,
+                strokeColor: '#39f',
+                fillColor: '#39f',
+                fillOpacity: 0.5
+            },
+            polygonOptions: {
+                draggable: true,
+                removable: true,
+                editable: true,
+                strokeColor: '#39f',
+                fillColor: '#39f',
+                fillOpacity: 0.5,
+                hintStrokeStyle: 'dash',
+                hintStrokeOpacity: 0.5
+            }
+        };
+
+        // 위에 작성한 옵션으로 Drawing Manager를 생성합니다
+        drawingManager = new daum.maps.Drawing.DrawingManager(drawCustomEvnetOptions);
+        vm.makeCustomEventDetail = function(answer){
+            //answer route : CreateCustomEventDialogController->vm.showCreateCustomEventDialog->this
+            //var answer = {"title" : $scope.title, "detailed" : $scope.detailed};
+            vm.categoryStatus = "none";
+            var curDrawingObj = drawingManager.getData();
+            //register custom event
+            var newCustomEventObj = {
+                "name": answer["title"],
+                "lat": curDrawingObj["marker"][0]["y"],
+                "lng": curDrawingObj["marker"][0]["x"],
+                "type" : "none",
+                "detailed" : answer["detailed"]         
+            };
+            if(curDrawingObj["circle"].length != 0){
+                newCustomEventObj["type"] = "CIRCLE";
+                newCustomEventObj["circleLat"] = curDrawingObj["circle"][0]["center"]["y"];
+                newCustomEventObj["circleLng"] = curDrawingObj["circle"][0]["center"]["x"];
+                newCustomEventObj["circleRadius"] = curDrawingObj["circle"][0]["radius"];
+            }
+            else if(curDrawingObj["rectangle"].length != 0){
+                newCustomEventObj["type"] = "RECTANGLE";
+                newCustomEventObj["rectangleSPointLat"] = curDrawingObj["rectangle"][0]["sPoint"]["y"];
+                newCustomEventObj["rectangleSPointLng"] = curDrawingObj["rectangle"][0]["sPoint"]["x"];
+                newCustomEventObj["rectangleEPointLat"] = curDrawingObj["rectangle"][0]["ePoint"]["y"];
+                newCustomEventObj["rectangleEPointLng"] = curDrawingObj["rectangle"][0]["ePoint"]["x"];
+            }
+            else if(curDrawingObj["polygon"].length != 0){
+                newCustomEventObj["type"] = "POLYGON";
+                newCustomEventObj["polygonPath"] = [];
+                for(var i = 0; i< curDrawingObj["polygon"][0]["points"].length; i++){
+                    newCustomEventObj["polygonPath"][i] = {"lat" : curDrawingObj["polygon"][0]["points"][i]["y"], "lng" : curDrawingObj["polygon"][0]["points"][i]["x"]};
+                }
+            }
+            //TODO : register newCustomEventObj on client data + server data
+            var customLen = vm.markerData["customevent"].length;
+            //vm.markerData에 현재 data 추가.
+            vm.markerData["customevent"][customLen] = newCustomEventObj;
+            //markerData에 있는 데이터를 기반으로 마커 재작성.
+            createCategoryMarkersInJson();
+            //console.log(vm.markerData);
+            vm.categoryStatus = "customevent";
+        }
+
+        //커스텀이벤트 생성 다이얼로그
+        vm.showCreateCustomEventDialog = function(ev) {
+            $mdDialog.show({
+                controller: CreateCustomEventDialogController,
+                templateUrl: 'app/main/map/dialogCreateCustomEvent.html',
+                parent: angular.element(document.body),
+                targetEvent: ev,
+                clickOutsideToClose:true,
+                fullscreen: false // Only for -xs, -sm breakpoints.
+            })
+            .then(function(answer) {
+                //alert(answer);
+                vm.makeCustomEventDetail(answer);
+            }, function() {
+                alert('none..');
+            });
+        };
+
+
+        function CreateCustomEventDialogController($scope, $mdDialog) {
+            $scope.title = "";
+            $scope.detailed = "";
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
+            $scope.answer = function() {
+                var answer = {"title" : $scope.title, "detailed" : $scope.detailed};
+                $mdDialog.hide(answer);
+            };
+        }
+        // 버튼 클릭 시 호출되는 핸들러 입니다
+        vm.selectDrawOverlay = function(type) {
+            if(type == "CREATE"){
+                // 현재 drawingManger에 있는 데이터 획득
+                var curDrawingObj = drawingManager.getData();
+                //마커하나 도형하나 있는지 체크
+                if(curDrawingObj["marker"].length == 1 && (curDrawingObj["circle"].length != 0 
+                    || curDrawingObj["rectangle"].length != 0 || curDrawingObj["polygon"].length != 0)){
+                    //make dialog //생성 및 등록
+                    vm.showCreateCustomEventDialog();
+                }
+                else{
+                    alert('need to make at least 1 marker and 1 region');
+                }
+            }
+            else{
+                // 그리기 중이면 그리기를 취소합니다
+                drawingManager.cancel();
+                
+                // 현재 drawingManger에 있는 데이터 획득
+                var curDrawingObj = drawingManager.getData();
+
+                // 중복 그림 제거
+                var drawingManagerOverlays = drawingManager.getOverlays();
+                if(type == "MARKER" && curDrawingObj["marker"].length != 0){
+                    drawingManager.remove(drawingManagerOverlays["marker"][0]);
+                }
+                else{
+                    if(curDrawingObj["circle"].length != 0){
+                        drawingManager.remove(drawingManagerOverlays["circle"][0]);
+                    }
+                    else if(curDrawingObj["rectangle"].length != 0){
+                        drawingManager.remove(drawingManagerOverlays["rectangle"][0]);
+                    }
+                    else if(curDrawingObj["polygon"].length != 0){
+                        drawingManager.remove(drawingManagerOverlays["polygon"][0]);
+                    }
+                }
+
+                // 클릭한 그리기 요소 타입을 선택합니다
+                drawingManager.select(daum.maps.Drawing.OverlayType[type]);
+            }
+            
+        }
+
 
         //---------------------------------mapLocation service에 주기적으로 map 상태 갱신하기-------------------
         $interval(updateMapLocationService, 10000); 
@@ -148,34 +340,6 @@
         //----------------------------------카테고리 선택 메뉴 -------------------------------
         var categoryLevel = "none";
         vm.categoryMenu = CategoryMarkerData.data;
-        
-        /*vm.categoryMenu = [
-            {"name":"편의시설", "type":"Facilities", "icon" : "icon-emoticon-happy", "inner" : 
-                [
-                    {"name":"은행/ATM", "type":"bank", "icon" : "icon-square-inc-cash"},
-                    {"name":"화장실", "type":"toilet", "icon" : "icon-human-male-female"},
-                    {"name":"정류장", "type":"busstop", "icon" : "icon-subway"},
-                    {"name":"복사/제본", "type":"print", "icon" : "icon-printer"},
-                    {"name":"자판기", "type":"vendingmachine", "icon" : "icon-washing-machine"}
-                ]
-            },
-            {"name":"음식점", "type":"Restaurant", "icon" : "icon-food-variant", "inner" : 
-                [
-                    {"name":"교내식당", "type":"insideRestaurant", "icon" : "icon-food-apple"},
-                    {"name":"교외식당", "type":"outsideRestaurant", "icon" : "icon-food"}
-                ]
-            },
-            {"name":"학과", "type":"Major", "icon" : "icon-book-open", "inner" : 
-                [
-                    {"name":"학부", "type":"standard", "icon" : ""},
-                    {"name":"공과", "type":"engineer", "icon" : ""},
-                    {"name":"소프트", "type":"soft", "icon" : ""},
-                    {"name":"정보통신", "type":"comm", "icon" : ""}
-                ]
-            },
-            {"name":"동아리", "type":"club", "icon" : "icon-radio-tower", "inner" : null},
-            {"name":"지역/구역", "type":"region", "icon" : "icon-vector-square", "inner" : null}
-        ];*/
 
         //answer가 leaf category(categoryTypes 배열의 요소)에 없으면 categoryLevel에 해당.
         vm.categorySelect = function(answer){
@@ -211,6 +375,22 @@
             if(vm.categoryStatus != "none" && catCount == 1){
                 vm.categoryStatus = "none";
                 catCount = 0;
+                //DrawingManager가 존재하는 경우 그림그리는 도중일 수 있으므로 남은 그림을 제거한다.
+                if(drawingManager != null){
+                    var drawingManagerOverlays = drawingManager.getOverlays();
+                    if(drawingManagerOverlays["marker"].length != 0){
+                        drawingManager.remove(drawingManagerOverlays["marker"][0]);
+                    }
+                    if(drawingManagerOverlays["circle"].length != 0){
+                        drawingManager.remove(drawingManagerOverlays["circle"][0]);
+                    }
+                    else if(drawingManagerOverlays["rectangle"].length != 0){
+                        drawingManager.remove(drawingManagerOverlays["rectangle"][0]);
+                    }
+                    else if(drawingManagerOverlays["polygon"].length != 0){
+                        drawingManager.remove(drawingManagerOverlays["polygon"][0]);
+                    }
+                }
             }
             else
                 vm.categoryIsOpen = !vm.categoryIsOpen;
@@ -239,47 +419,6 @@
                 vm.tooltipVisible = vm.categoryIsOpen;
             }
         }, true);
-
-
-/*
-        vm.showAdvanced = function(ev) {
-            $mdDialog.show({
-                controller: CategoryDialogController,
-                templateUrl: 'app/main/map/dialog1.tmpl.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose:true,
-                fullscreen: false // Only for -xs, -sm breakpoints.
-            })
-            .then(function(answer) {
-                //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region 
-                vm.categoryStatus = answer;
-            }, function() {
-                vm.categoryStatus = "none";
-            });
-        };
-
-        function CategoryDialogController($scope, $mdDialog) {
-            //카테고리 분류를 위한 카테고리 레벨. none, Restaurant, Major, Group이 존재하며 region은 바로 적용?
-            $scope.categoryLevel = "none";
-            //Major category ng-bind
-            $scope.major = "none";
-            //set category level
-            $scope.categoryLevelChangefunc = function(strLevel){
-                $scope.categoryLevel = strLevel;
-                //$scope.tempA = tempint + 5;
-            };
-            $scope.hide = function() {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function() {
-                $mdDialog.cancel();
-            };
-            $scope.answer = function(answer) {
-                $mdDialog.hide(answer);
-            };
-        }
-        */
 
         //구역 클릭시 다이얼로그 
         vm.showDetailed = function(ev) {
@@ -333,8 +472,8 @@
         }, true);
 
         //Marker Image Process------------------------------------------
-
-        var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant"];
+       
+        var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant", "regions", "customevent"];
         var categoryMarkers = {};   
         var selectedMarker = null; // 클릭한 마커를 담을 변수
 
@@ -365,7 +504,11 @@
             spriteImageSize = new daum.maps.Size(SPRITE_WIDTH, SPRITE_HEIGHT); // 스프라이트 이미지의 크기
 
         // 마커 이미지를 생성합니다.
-        for (var i = 0; i < categoryTypes.length; i++) {
+        for (var i = 0, k=0; k < categoryTypes.length; i++, k++) {
+            //every 6 marker, change marker url.
+            if(k % 6 == 0){
+                i = 0 ;
+            }
             var gapX = (MARKER_WIDTH + SPRITE_GAP), // 스프라이트 이미지에서 마커로 사용할 이미지 X좌표 간격 값
                 originY = (MARKER_HEIGHT + SPRITE_GAP) * i, // 스프라이트 이미지에서 기본, 클릭 마커로 사용할 Y좌표 값
                 overOriginY = (OVER_MARKER_HEIGHT + SPRITE_GAP) * i, // 스프라이트 이미지에서 오버 마커로 사용할 Y좌표 값
@@ -373,7 +516,7 @@
                 clickOrigin = new daum.maps.Point(gapX, originY), // 스프라이트 이미지에서 마우스오버 마커로 사용할 영역의 좌상단 좌표
                 overOrigin = new daum.maps.Point(gapX * 2, overOriginY); // 스프라이트 이미지에서 클릭 마커로 사용할 영역의 좌상단 좌표
                 // 마커를 생성하고 지도위에 표시합니다
-                addMarkerImage(i, normalOrigin, overOrigin, clickOrigin);
+                addMarkerImage(k, normalOrigin, overOrigin, clickOrigin);
         }
 
 
@@ -457,15 +600,19 @@
             categoryMarkers[categoryTypes[typeI]][typeIdx] = marker;
         };
 
-        //marker.json 정보에서 categoryMarkers obj 생성.
-        for(var i = 0; i<categoryTypes.length; i++){
-            //set empty array in categoryMarkers{"categoryType" : [], "categoryType2" : [] ...}
-            categoryMarkers[categoryTypes[i]] = [];
-            //카테고리 타입별 위치정보 개수 만큼 loop
-            for(var idx = 0; idx< vm.markerData[categoryTypes[i]].length; idx++){
-                createCategoryMarkers(i, idx);
+        function createCategoryMarkersInJson(){
+            //marker.json 정보에서 categoryMarkers obj 생성.
+            for(var i = 0; i<categoryTypes.length; i++){
+                //set empty array in categoryMarkers{"categoryType" : [], "categoryType2" : [] ...}
+                categoryMarkers[categoryTypes[i]] = [];
+                //카테고리 타입별 위치정보 개수 만큼 loop
+                for(var idx = 0; idx< vm.markerData[categoryTypes[i]].length; idx++){
+                    createCategoryMarkers(i, idx);
+                }
             }
-        }
+        };
+        
+        createCategoryMarkersInJson();
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
         function DetailedDialogController($scope, $mdDialog, $state, clickName) {
@@ -598,32 +745,6 @@
         //여기부터 구역 오버레이
         var areas = [
         {
-            name : '신관 A동',
-            path : [
-                new daum.maps.LatLng(37.296704968860624, 126.97265256324391),
-                new daum.maps.LatLng(37.29690979382814, 126.97196450141166),
-                new daum.maps.LatLng(37.29682191460552, 126.97184611005511),
-                new daum.maps.LatLng(37.29673406617434, 126.97185742125625),
-                new daum.maps.LatLng(37.2965785549857, 126.97151348685938),
-                new daum.maps.LatLng(37.29620235704303, 126.97145159762604),
-                new daum.maps.LatLng(37.29602692537724, 126.97259641693125),
-                new daum.maps.LatLng(37.2962250951866, 126.97234540099207),
-                new daum.maps.LatLng(37.296360251416225, 126.97234817111507),
-                new daum.maps.LatLng(37.29638054907893, 126.97245248895516),
-                new daum.maps.LatLng(37.296373805066956, 126.97251170304891)],
-            center : new daum.maps.LatLng(37.29656291056642,126.9720323007584)
-        },
-        {
-            name : '신관 왼쪽',
-            path : [
-                new daum.maps.LatLng(37.29658756467791, 126.97151066385224),
-                new daum.maps.LatLng(37.29661889154948, 126.9706534903612),
-                new daum.maps.LatLng(37.29633053586964, 126.97055773598099),
-                new daum.maps.LatLng(37.29619109339872, 126.97144878228792),
-                new daum.maps.LatLng(37.2965785549857, 126.97151348685938)],
-            center : new daum.maps.LatLng(37.29647482696954, 126.97106520871584)
-        },
-        {
             name : '대운동장',
             path : [
                 new daum.maps.LatLng(37.29633053586964, 126.97055773598099),
@@ -642,23 +763,6 @@
                 new daum.maps.LatLng(37.292760364156194, 126.97132884174466),
                 new daum.maps.LatLng(37.29412099749306, 126.97160463810239)],
             center : new daum.maps.LatLng(37.293724357306424,126.97084916044457)
-        },
-        {
-            name : '학군단+우체국',
-            path : [
-                new daum.maps.LatLng(37.2938191370707, 126.9715511809384),
-                new daum.maps.LatLng(37.29372469677456, 126.97226173119748),
-                new daum.maps.LatLng(37.29350859537792, 126.97289901634265),
-                new daum.maps.LatLng(37.29348162974963, 126.97318661437316),
-                new daum.maps.LatLng(37.29523872261613, 126.97349614225901),
-                new daum.maps.LatLng(37.29574771449301, 126.97307866610024),
-                new daum.maps.LatLng(37.29568913166175, 126.97301101715107),
-                new daum.maps.LatLng(37.29602241953844, 126.97259359897726),
-                new daum.maps.LatLng(37.29607189643125, 126.97224959100222),
-                new daum.maps.LatLng(37.295828478783, 126.97166884667607),
-                new daum.maps.LatLng(37.29413898501734, 126.9714664749487),
-                new daum.maps.LatLng(37.29411649298212, 126.97160745931284)],
-            center : new daum.maps.LatLng(37.29459873146583,126.97238265030688)
         },
         {
             name : '체육관',
@@ -695,63 +799,6 @@
                 new daum.maps.LatLng(37.29184830099766, 126.97232726704469),
                 new daum.maps.LatLng(37.29211831166563, 126.97106969665386)],
             center : new daum.maps.LatLng(37.29137289184392,126.97185377944646)
-        },
-        {
-            name : '수성관',
-            path : [
-                new daum.maps.LatLng(37.29382138830898, 126.97154554107796),
-                new daum.maps.LatLng(37.29283019798922, 126.97134291259047),
-                new daum.maps.LatLng(37.29262335680978, 126.97303466804495),
-                new daum.maps.LatLng(37.29348162974979, 126.97318661437308),
-                new daum.maps.LatLng(37.29350633890937, 126.97288210018438),
-                new daum.maps.LatLng(37.29372244153725, 126.97225045401483)],
-            center : new daum.maps.LatLng(37.29329217425049,126.97215756899301)
-        },
-        {
-            name : '의학건물3',
-            path : [
-                new daum.maps.LatLng(37.292722270595995, 126.9721690568763),
-                new daum.maps.LatLng(37.29219066099043, 126.97218053048334),
-                new daum.maps.LatLng(37.29212312937981, 126.9723779163589),
-                new daum.maps.LatLng(37.29184379580857, 126.97232726869477),
-                new daum.maps.LatLng(37.29181686668676, 126.9727671098831),
-                new daum.maps.LatLng(37.291981311923124, 126.97279242554966),
-                new daum.maps.LatLng(37.29183972700573, 126.97426140083167),
-                new daum.maps.LatLng(37.29246597395776, 126.97437960463353)],
-            center : new daum.maps.LatLng(37.29239999671942,126.9715263402315)
-        },
-        {
-            name : '기숙사 의관',
-            path : [
-                new daum.maps.LatLng(37.29744868301134, 126.97425103088113),
-                new daum.maps.LatLng(37.29703891053236, 126.97518446692281),
-                new daum.maps.LatLng(37.29649375701809, 126.97506058333734),
-                new daum.maps.LatLng(37.29635162110362, 126.97402583675967)],
-            center : new daum.maps.LatLng(37.296860821604845,126.97455293058366)
-        },
-        {
-            name : '산학협력센터',
-            path : [
-                new daum.maps.LatLng(37.296493759394124, 126.97507186176118),
-                new daum.maps.LatLng(37.29594411721011, 126.97502692976583),
-                new daum.maps.LatLng(37.29577732564257, 126.97455893472468),
-                new daum.maps.LatLng(37.29526382693231, 126.97499331992931),
-                new daum.maps.LatLng(37.295435110277765, 126.97540491995802),
-                new daum.maps.LatLng(37.2953766701269, 126.97602524316154),
-                new daum.maps.LatLng(37.296210160319234, 126.97617723680133),
-                new daum.maps.LatLng(37.296462302067695, 126.97544969920628)],
-            center : new daum.maps.LatLng(37.296027611516244,126.97574025811434)
-        },
-        {
-            name : '기숙사 예관',
-            path : [
-                new daum.maps.LatLng(37.297041164307124, 126.97519010543559),
-                new daum.maps.LatLng(37.296390415187034, 126.97641402654843),
-                new daum.maps.LatLng(37.296264284570334, 126.97648737546612),
-                new daum.maps.LatLng(37.296210161454134, 126.9761828759921),
-                new daum.maps.LatLng(37.296462302067695, 126.97544969920628),
-                new daum.maps.LatLng(37.29650051598474, 126.97506622031872)],
-            center : new daum.maps.LatLng(37.29663352071468,126.97555396918185)
         },
         {
             name : '제2공학관',
@@ -796,19 +843,6 @@
             center : new daum.maps.LatLng(37.2930224109238,126.97459369615953)
         },
         {
-            name : '정문+주차장+환경플랜트',
-            path : [
-                new daum.maps.LatLng(37.29078546647779, 126.97405030548701),
-                new daum.maps.LatLng(37.29070014509219, 126.97534725415045),
-                new daum.maps.LatLng(37.29063712617037, 126.97560665836819),
-                new daum.maps.LatLng(37.29101564738801, 126.9760238076147),
-                new daum.maps.LatLng(37.29141662181959, 126.9760857075401),
-                new daum.maps.LatLng(37.29154258731094, 126.97521164705024),
-                new daum.maps.LatLng(37.29175884230062, 126.97523977039477),
-                new daum.maps.LatLng(37.29188478073619, 126.97426984378593)],
-            center : new daum.maps.LatLng(37.29109881845437,126.97517514037878)
-        },
-        {
             name : '농구장',
             path : [
                 new daum.maps.LatLng(37.29246146815878, 126.97437678670582),
@@ -816,130 +850,8 @@
                 new daum.maps.LatLng(37.29175884112093, 126.97523413153637),
                 new daum.maps.LatLng(37.29234004167909, 126.97538337193264)],
             center : new daum.maps.LatLng(37.29204707917918,126.97478856550696)
-        },
-        {
-            name : 'N센터+약학건물',
-            path : [
-                new daum.maps.LatLng(37.291015648530085, 126.97602944641773),
-                new daum.maps.LatLng(37.291062972966216, 126.97612811052508),
-                new daum.maps.LatLng(37.29109912853108, 126.97670043827863),
-                new daum.maps.LatLng(37.29184026263224, 126.97685527851512),
-                new daum.maps.LatLng(37.291815522518405, 126.97705264630208),
-                new daum.maps.LatLng(37.292171446104916, 126.97712302432127),
-                new daum.maps.LatLng(37.29233778849833, 126.97538055321574),
-                new daum.maps.LatLng(37.29176559949466, 126.97523694875066),
-                new daum.maps.LatLng(37.291540335306664, 126.97521446721032),
-                new daum.maps.LatLng(37.29141887441435, 126.9760857068271)],
-            center : new daum.maps.LatLng(37.29178381295072,126.97617581309002)
-        },
-        {
-            name : '생명공학실습동',
-            path : [
-                new daum.maps.LatLng(37.294099739108546, 126.97750025567385),
-                new daum.maps.LatLng(37.294027763003506, 126.97806981895974),
-                new daum.maps.LatLng(37.293870127146015, 126.97831798144205),
-                new daum.maps.LatLng(37.293771130030905, 126.97896649589669),
-                new daum.maps.LatLng(37.29523971540957, 126.97837961867245),
-                new daum.maps.LatLng(37.29560903318305, 126.97779868091187)],
-            center : new daum.maps.LatLng(37.29463823049576, 126.9781485887841)
-        },
-        {
-            name : '공학실습동',
-            path : [
-                new daum.maps.LatLng(37.29214445727149, 126.97734294911152),
-                new daum.maps.LatLng(37.291987063332265, 126.9788993260616),
-                new daum.maps.LatLng(37.29241960147523, 126.97912476158966),
-                new daum.maps.LatLng(37.292928692765805, 126.97915281565732),
-                new daum.maps.LatLng(37.29376662384084, 126.9789608581425),
-                new daum.maps.LatLng(37.29387463026725, 126.9783067021161),
-                new daum.maps.LatLng(37.29402326407988, 126.97810365443301),
-                new daum.maps.LatLng(37.29410424322399, 126.97749461529854),
-                new daum.maps.LatLng(37.29286977427243, 126.97724686958937),
-                new daum.maps.LatLng(37.29285627493668, 126.97733145776638)],
-            center : new daum.maps.LatLng(37.292908223773814,126.97807014392963)
-        },
-        {
-            name : '반도체관+화학관',
-            path : [
-                new daum.maps.LatLng(37.29217144719466, 126.97712866321062),
-                new daum.maps.LatLng(37.29182002716112, 126.97704982550225),
-                new daum.maps.LatLng(37.29184251357268, 126.97684681952796),
-                new daum.maps.LatLng(37.291094625560675, 126.97671171728578),
-                new daum.maps.LatLng(37.29109920120449, 126.97707259969202),
-                new daum.maps.LatLng(37.29113976208931, 126.9771458919486),
-                new daum.maps.LatLng(37.29129761240153, 126.97803677846522),
-                new daum.maps.LatLng(37.29126612702063, 126.97831308990075),
-                new daum.maps.LatLng(37.29121210073938, 126.97851046404055),
-                new daum.maps.LatLng(37.291996075720604, 126.97891060129781)],
-            center : new daum.maps.LatLng(37.29163315483732,126.97753482332149)
-        },
-        {
-            name : '학생회관',
-            path : [
-                new daum.maps.LatLng(37.29524322906529, 126.97350177979696),
-                new daum.maps.LatLng(37.29444594946978, 126.97412799503698),
-                new daum.maps.LatLng(37.293508833365564, 126.97395914627134),
-                new daum.maps.LatLng(37.29338714470254, 126.97373926798132),
-                new daum.maps.LatLng(37.29341855711919, 126.9731866367581)],
-            center : new daum.maps.LatLng(37.29408318116908,126.97367135765238)
-        },
-        {
-            name : '삼성학술정보관',
-            path : [
-                new daum.maps.LatLng(37.29438287438327, 126.97411673852834),
-                new daum.maps.LatLng(37.2941669820941, 126.9758028850296),
-                new daum.maps.LatLng(37.29348217045368, 126.97569032461274),
-                new daum.maps.LatLng(37.293482154213216, 126.97561137879333),
-                new daum.maps.LatLng(37.293446108059555, 126.97558883449042),
-                new daum.maps.LatLng(37.293603484336856, 126.97415083952792),
-                new daum.maps.LatLng(37.29351333731268, 126.97395350572909)],
-            center : new daum.maps.LatLng(37.29402939554477,126.9749457967929)
-        },
-        {
-            name : '학부대학',
-            path : [
-                new daum.maps.LatLng(37.296308752115365, 126.9737100563868),
-                new daum.maps.LatLng(37.296243436934056, 126.97375519266608),
-                new daum.maps.LatLng(37.29574771577553, 126.97308430525632),
-                new daum.maps.LatLng(37.294432436372965, 126.97413927778145),
-                new daum.maps.LatLng(37.294382876849056, 126.97412801663683),
-                new daum.maps.LatLng(37.29417599362165, 126.97580852118259),
-                new daum.maps.LatLng(37.29538793252204, 126.97602242002246),
-                new daum.maps.LatLng(37.29543736579969, 126.97541901705723),
-                new daum.maps.LatLng(37.29527058173278, 126.97497921989097),
-                new daum.maps.LatLng(37.295784085239696, 126.97456739118716),
-                new daum.maps.LatLng(37.29595087677365, 126.97503538628888),
-                new daum.maps.LatLng(37.29649826517353, 126.9750746798805)],
-            center : new daum.maps.LatLng(37.29518263679413,126.97453939809618)
-        },
-        {
-            name : '신관 B동',
-            path : [
-                new daum.maps.LatLng(37.29670046302381, 126.97264974526139),
-                new daum.maps.LatLng(37.296369300536256, 126.97251452428941),
-                new daum.maps.LatLng(37.29638280101547, 126.97244966853198),
-                new daum.maps.LatLng(37.29635799882358, 126.97234817193966),
-                new daum.maps.LatLng(37.29622284259379, 126.9723454018167),
-                new daum.maps.LatLng(37.295686879711646, 126.97301383753157),
-                new daum.maps.LatLng(37.29624569140227, 126.9737636506734),
-                new daum.maps.LatLng(37.29630650014887, 126.9737128767697),
-                new daum.maps.LatLng(37.29682227333353, 126.97339690003034),
-                new daum.maps.LatLng(37.29661942805414, 126.97290353957344)],
-            center : new daum.maps.LatLng(37.296337861052145,126.97293465617312)
-        },
-        {
-            name : '기숙사인관',
-            path : [
-                new daum.maps.LatLng(37.29744642980555, 126.97424821200755),
-                new daum.maps.LatLng(37.29744185300398, 126.973921135152),
-                new daum.maps.LatLng(37.29706565512484, 126.97385359396854),
-                new daum.maps.LatLng(37.29682903111131, 126.97339689765029),
-                new daum.maps.LatLng(37.29630875211548, 126.97371005638686),
-                new daum.maps.LatLng(37.29635162172224, 126.97402865636019)],
-            center : new daum.maps.LatLng(37.29683364679814,126.97389314893545)
         }
-
-        ];  
+        ];
 
         for (var i = 0, len = areas.length; i < len; i++) {
             //displayArea(areas[i]);
@@ -993,7 +905,7 @@
             var polyPath = [];
             for(var i=0; i<area["path"].length; i++){
                 polyPath[i] = new daum.maps.LatLng(area["path"][i]["lat"],area["path"][i]["lng"]);
-                console.log(area["path"][i]["lat"]);
+                //console.log(area["path"][i]["lat"]);
             }
 
             var polygon = new daum.maps.Polygon({

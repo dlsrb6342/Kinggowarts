@@ -24,6 +24,11 @@
                 ]
             },
             {"name":"동아리", "type":"club", "icon" : "icon-radio-tower", "inner" : null},
-            {"name":"지역/구역", "type":"region", "icon" : "icon-vector-square", "inner" : null}
+            {"name":"지역/구역", "type":"Region", "icon" : "icon-vector-square", "inner" :  
+            	[
+                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"},
+                    {"name":"이벤트", "type":"customevent", "icon" : "icon-vector-square"}
+                ]
+            }
         ]
 }

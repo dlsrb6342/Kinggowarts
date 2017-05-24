@@ -31,6 +31,14 @@
                     SubAreaData: function(msApi)
                     {
                         return msApi.resolve('subArea@get');
+                    },
+                    CustomEventData: function(msApi)
+                    {
+                        return msApi.resolve('customEvent@get');
+                    },
+                    CustomEventMarkerData: function(msApi)
+                    {
+                        return msApi.resolve('customEventMarker@get');
                     }
                 }
             });
@@ -39,5 +47,7 @@
         msApiProvider.register('marker', ['app/data/map/marker.json']);
         msApiProvider.register('categoryMarker', ['app/data/map/categoryMarker.json']);
         msApiProvider.register('subArea', ['app/data/map/subArea.json']);
+        msApiProvider.register('customEvent', ['app/data/map/customEvent.json']);
+         msApiProvider.register('customEventMarker', ['app/data/map/customEventMarker.json']);
     }
 })();
