@@ -7,14 +7,15 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, RecentwikiData)
+    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, RecentwikiData, $http)
     {
         var vm = this;
 
-        vm.timeline = TimelineData.content.data.data;
-        vm.peer = PeerData.content.data.data;
-        vm.request = RequestData.content.data.data;
-        vm.recentwiki = RecentwikiData.content.data.data;
+        vm.timeline = TimelineData.data.data;
+        vm.peer = PeerData.data.data;
+        vm.request = RequestData.data.data;
+
+        vm.recentwiki = RecentwikiData.data;
 
         vm.currenttimeline = "SE";
         vm.currentlocation = "ST";
@@ -31,8 +32,12 @@
             PF : []
         };
 
-        
+        vm.wikihistory = {
+            Name : [],
+            Link : []
+        };
 
+        
         vm.findtimelinelocation = function (event) {
             //구역 ID로 이동
             peerLocation.eventlocation = event.location;
@@ -52,7 +57,25 @@
                     vm.toggle(vm.peer.location["PF"][value],vm.selected["PF"]);
                 }
             }
+
+            vm.getWikiLink();
         };
+        
+        vm.getWikiLink = function () 
+        {
+            
+            for (var i=0; i<vm.recentwiki.historySummaries.length; i++){
+                if((vm.wikihistory.Name.indexOf(vm.recentwiki.historySummaries[i].pageId) == -1) && (vm.recentwiki.historySummaries[i].space.substring(0,6)=="XWiki."))
+                {
+                    vm.wikihistory.Name.push(vm.recentwiki.historySummaries[i].pageId);
+                    var obj = {};
+                    obj.Title = vm.recentwiki.historySummaries[i].space.substring(6);
+                    obj.Link = 'http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/' + vm.recentwiki.historySummaries[i].space.substring(6);
+                    vm.wikihistory.Link.push(obj);
+                }
+            }
+        };
+        
 
         vm.toggle = function (peer, list) {
             var idx = list.indexOf(peer.weight);

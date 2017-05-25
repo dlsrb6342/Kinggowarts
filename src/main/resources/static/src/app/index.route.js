@@ -93,42 +93,25 @@
                     }
                 },
                 resolve: {
-                    /*
-                    TimelineData: function (msApi)
-                    {
-                        return msApi.resolve('quickPanel.timeline@get');
-                    },
-                    */
+                    
                     TimelineData: function ($http)
                     {
-                        var obj = {content:null};
-                        $http.get('app/data/quick-panel/timeline.json').then(function (response){
-                            obj.content = response;
-                        });
+                        var obj = $http.get('/app/data/quick-panel/timeline.json');
                         return obj;
                     },
                     PeerData: function ($http)
                     {
-                        var obj = {content:null};
-                        $http.get('app/data/quick-panel/peer.json').then(function (response){
-                            obj.content = response;
-                        });
+                        var obj = $http.get('/app/data/quick-panel/peer.json');
                         return obj;
                     },
                     RequestData: function ($http)
                     {
-                        var obj = {content:null};
-                        $http.get('app/data/quick-panel/request.json').then(function (response){
-                            obj.content = response;
-                        });
+                        var obj = $http.get('/app/data/quick-panel/request.json');
                         return obj;
                     },
                     RecentwikiData: function ($http)
                     {
-                        var obj = {content:null};
-                        $http.get('app/data/quick-panel/recentwiki.json').then(function (response){
-                            obj.content = response;
-                        });
+                        var obj = $http.get('http://fanatic1.iptime.org:8080/xwiki/rest/wikis/xwiki/modifications?start=0&number=30');
                         return obj;
                     }
                 }
