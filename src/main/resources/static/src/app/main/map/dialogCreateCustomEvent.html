@@ -13,16 +13,34 @@
 
     <md-dialog-content>
 
-    <md-input-container class="md-block">
-      <label>Title</label>
-      <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="title">
-    </md-input-container>
+    <div layout-gt-sm="row">
+      <md-input-container class="md-block">
+        <label>제목</label>
+        <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="title">
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label>주최자</label>
+        <input md-maxlength="20" required="" md-no-asterisk="" name="description" ng-model="detailed">
+      </md-input-container>
+    </div>
+    <div layout-gt-sm="row">
+      <md-input-container class="md-block">
+        <label>시작일자</label>
+        <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="detailed">
+      </md-input-container>
+    </div>
 
+    <div layout-gt-sm="row">
     <md-input-container class="md-block">
-      <label>Detail</label>
+      <label>종료일자</label>
       <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="detailed">
     </md-input-container>
-
+    </div>
+    
+    <md-input-container class="md-block">
+      <label>위치(미정)</label>
+      <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="detailed">
+    </md-input-container>
 
     </md-dialog-content>
 
