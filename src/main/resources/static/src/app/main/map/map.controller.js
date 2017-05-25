@@ -1031,7 +1031,6 @@
             var polyPath = [];
             for(var i=0; i<area["path"].length; i++){
                 polyPath[i] = new daum.maps.LatLng(area["path"][i]["lat"],area["path"][i]["lng"]);
-                console.log(area["path"][i]["lat"]);
             }
 
             var polygon = new daum.maps.Polygon({

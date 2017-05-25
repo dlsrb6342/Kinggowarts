@@ -18,12 +18,6 @@
                         templateUrl: 'app/main/wiki/wiki.html',
                         controller : 'WikiController as vm'
                     }
-                },
-                resolve: {
-                    SampleData: function (msApi)
-                    {
-                        return msApi.resolve('sample@get');
-                    }
                 }
             });
 
