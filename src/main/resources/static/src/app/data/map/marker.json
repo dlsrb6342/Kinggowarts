@@ -157,6 +157,69 @@
 						"lat":"37.29439858054493",
 						"lng":"126.9738347803545"
 					}
+				],
+			"regions":[
+					{
+						"name": "regionss",
+						"lat":"37.29493545294717",
+						"lng":"126.97750846542124"
+					},
+					{
+						"name": "regionss",
+						"lat":"37.29439858054493",
+						"lng":"126.9738347803545"
+					}
+				],
+			"customevent":[
+					{
+						"name": "events",
+						"creater" : "",
+						"dateFrom" : "",
+						"dateTo" : "",
+						"location" : "",
+						"lat": 37.29439858054493,
+						"lng":"126.9738347803545",
+						"type" : "CIRCLE",
+						"circleRadius" : 15,
+						"circleLat" : 37.29448854054493,
+						"circleLng" : 126.9737347803545,
+						"detailed" : "this is customEvent"
+						
+					},
+					{
+						"name": "events2",
+						"creater" : "",
+						"dateFrom" : "",
+						"dateTo" : "",
+						"location" : "",
+						"detailed" : "this is customEvent",
+						"lat": 37.29439868054493,
+						"lng":"126.9736347803545",
+						"type" : "RECTANGLE",
+						"rectangleSPointLat" : "37.29429868054493",
+						"rectangleSPointLng" : "126.9726347803545",
+						"rectangleEPointLat" : "37.29449868054493",
+						"rectangleEPointLng" : "126.9737347803545",
+						"detailed" : "this is customEvent"
+						
+					},
+					{
+						"name": "events3",
+						"creater" : "",
+						"dateFrom" : "",
+						"dateTo" : "",
+						"location" : "",
+						"detailed" : "this is customEvent",
+						"lat": 37.29410858054493,
+						"lng":"126.9738347803545",
+						"type" : "POLYGON",
+						"polygonPath" : [
+							{"lat" : "37.29419858054493", "lng" : "126.9738347803545"},
+							{"lat" : "37.29429858054493", "lng" : "126.9737347803545"},
+							{"lat" : "37.29439858054493", "lng" : "126.9739347803545"},
+							{"lat" : "37.29429858054493", "lng" : "126.9736247803545"}
+						]						
+					}
 				]
 			}
 		}
