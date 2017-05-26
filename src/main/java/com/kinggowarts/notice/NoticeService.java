@@ -14,4 +14,12 @@ public class NoticeService {
     List<Notice> findAll(){
         return noticeDao.findAllByOrderByTimeDesc();
     }
+
+    Notice findById(long id) {
+        return noticeDao.findOne(id);
+    }
+
+    List<Notice> findAllByCategory(String category){
+        return noticeDao.findAllByCategory_Name(category);
+    }
 }
