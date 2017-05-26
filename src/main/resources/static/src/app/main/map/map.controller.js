@@ -329,10 +329,17 @@
                     }
                 }
             }
-
-            
-            
         };
+
+
+        // peer 변경 감시(watch)
+        $scope.$watch(function() { return peerLocation.peer}, function(newVal) {
+            if(isPeerOnMap == true){
+                vm.peerOnMapFunciton();
+                vm.peerOnMapFunciton();   
+            }
+        }, true);
+
         //----------------------------------마커 다이얼로그 --------------------------------
 
         vm.showMarkerDialog = function(ev) {
