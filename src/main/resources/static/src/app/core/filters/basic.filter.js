@@ -7,7 +7,12 @@
         .filter('toTrusted', toTrustedFilter)
         .filter('htmlToPlaintext', htmlToPlainTextFilter)
         .filter('nospace', nospaceFilter)
-        .filter('humanizeDoc', humanizeDocFilter);
+        .filter('humanizeDoc', humanizeDocFilter)
+        .filter('trustAsResourceUrl', ['$sce', function($sce) {
+            return function(val) {
+            return $sce.trustAsResourceUrl(val);
+            };
+        }]);
 
     /** @ngInject */
     function toTrustedFilter($sce)

@@ -10,14 +10,12 @@
                 {
                     "title": "채용설명회",
                     "time": "5/3 3:00PM",
-                    "location": "제 1 공학관 리쿠르팅 부스",
-                    "locationID" : "0"
+                    "location": "제1공학관"
                 },
                 {
                     "title": "킹고 RUN!",
                     "time": "5/10",
-                    "location": "기숙사 신관",
-                    "locationID" : "1"
+                    "location": "신관 A동"
                 },
                 {
                     "title": "행사",
@@ -28,8 +26,7 @@
                 {
                     "title": "정기모임",
                     "time": "5/4 7:00 PM",
-                    "location" : "22003",
-                    "locationID" : "2"
+                    "location" : "제2공학관"
                 },
                 {
                     "title": "홈커밍",
@@ -38,8 +35,7 @@
                 {
                     "title": "집행부회의",
                     "time": "5/9 8:00 PM",
-                    "location" : "22005",
-                    "locationID" : "3"
+                    "location" : "제2공학관"
                 }
             ],
             "SN": [

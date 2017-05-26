@@ -11,6 +11,7 @@
     {
         var service = this;
         service.peer = '';
+        service.eventlocation;
 
         /*
         peerLocation.peer.location["ST"]로 학생 접근. n은 index
