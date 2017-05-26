@@ -1,6 +1,6 @@
-#layout-vertical-navigation-fullwidth-toolbar-2 {
+#notice-layout-container {
 
-    #vertical-navigation {
+    #notice-vertical-navigation {
         width: $navigationWidth;
         min-width: $navigationWidth;
         max-width: $navigationWidth;
@@ -26,22 +26,22 @@
 
     .ms-navigation-folded {
 
-        #content-container {
+        #notice-content-container {
             margin-left: $navigationFoldedWidth;
         }
 
-        #layout-vertical-navigation-fullwidth-toolbar-2 {
+        #notice-layout-container {
 
-            #vertical-navigation {
+            #notice-vertical-navigation {
                 position: absolute;
             }
         }
 
         &:not(.ms-navigation-folded-open) {
 
-            #layout-vertical-navigation-fullwidth-toolbar-2 {
+            #notice-layout-container {
 
-                #vertical-navigation {
+                #notice-vertical-navigation {
                     position: absolute;
                     width: $navigationFoldedWidth;
                     min-width: $navigationFoldedWidth;
