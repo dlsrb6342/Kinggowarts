@@ -3,7 +3,15 @@
     'use strict';
 
     angular
-        .module('app.notice', [])
+        .module('app.notice', [
+
+            // Navigation
+            'app.notice.navigation',
+
+            // Facebook
+            'app.notice.facebook'
+
+            ])
         .config(config);
 
     /** @ngInject */
@@ -12,21 +20,24 @@
         // State
         $stateProvider
             .state('app.notice', {
+                abstract: true,
                 url    : '/notice',
                 views  : {
                     'content@app': {
                         templateUrl: 'app/main/notice/notice.html',
                         controller : 'NoticeController as vm'
-                    }
-                },
-                resolve: {
-                    SampleData: function (msApi)
-                    {
-                        return msApi.resolve('sample@get');
+                    },
+                    'notice-navigation@app.notice': {
+                        templateUrl: 'app/main/notice/notice-navigation/notice-navigation.html',
+                        controller : 'NavigationController as vm'
                     }
                 }
             });
 
-       
+        msNavigationServiceProvider.saveItem('notice', {
+            title : '공지사항',
+            group : true,
+            weight: 4
+        });
     }
 })();

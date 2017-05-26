@@ -1,1 +1,7 @@
-<p>this is notice page</p>
+<div id="notice-layout-container" flex layout="row">
+	<md-sidenav id="notice-vertical-navigation" class="md-primary-bg" md-is-locked-open="$mdMedia('gt-sm')"
+	            md-component-id="navigation" ms-scroll ui-view="notice-navigation"></md-sidenav>
+    <div id="notice-content-container" flex layout="column">
+        <md-content id="notice-content" class="animate-slide-up md-hue-2" ms-scroll ui-view="notice-content" flex></md-content>
+    </div>
+</div>
