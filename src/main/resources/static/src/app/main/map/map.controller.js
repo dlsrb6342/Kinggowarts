@@ -2,9 +2,11 @@
 {
     'use strict';
 
+
     angular
         .module('app.map')
         .controller('MapController', MapController);
+
 
     /** @ngInject */
     function MapController($mdDialog, SubAreaData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation)
@@ -12,6 +14,7 @@
         var vm = this;
         vm.markerData = MarkerData.data;
         vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
+        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
         var tempint = 10;
         vm.userLat = 0;
         vm.userLng = 0;
@@ -27,6 +30,56 @@
         var map = new daum.maps.Map(container, options),
         customOverlay = new daum.maps.CustomOverlay({}),
         infowindow = new daum.maps.InfoWindow({removable: true});
+
+        //-----------------구역 다이얼로그 - 칩, 컨트롤러, 다이얼로그 ---------------------------
+
+        vm.tags = [];
+
+        vm.openMapDialog = function(ev)
+        {
+            $mdDialog.show({
+                controller         : MapDialogController,
+                controllerAs       : 'vm',
+                templateUrl        : 'app/main/map/map-dialog.html',
+                parent             : angular.element(document.body),
+                targetEvent        : ev,
+                clickOutsideToClose: true,
+                fullscreen: false, // Only for -xs, -sm breakpoints.
+                resolve: {
+                  clickName: function(){
+                    return vm.clickName;
+                  },
+                  clickUrl: function(){
+                    return vm.clickUrl;  
+                  },
+                  tags: function(){
+                    return vm.tags;
+                  }
+              }
+            });
+        }
+
+        //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
+        function MapDialogController($scope, $mdDialog, $state, clickName) {
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
+            $scope.answer = function(answer) {
+                $mdDialog.hide(answer);
+            };
+            $scope.movewiki = function(){  //wiki page로 이동 
+                $mdDialog.cancel();
+                $state.go('app.wiki');
+                //$state.go(vm.clickUrl);
+            };
+            $scope.clickName = vm.clickName;
+            $scope.clickUrl = vm.clickUrl;
+            $scope.tags = vm.tags; 
+        }
+
 
         //---------------------------------mapLocation service에 주기적으로 map 상태 갱신하기-------------------
         $interval(updateMapLocationService, 10000); 
@@ -281,22 +334,7 @@
         }
         */
 
-        //구역 클릭시 다이얼로그 
-        vm.showDetailed = function(ev) {
-            $mdDialog.show({
-                controller: DetailedDialogController,
-                templateUrl: 'app/main/map/dialog2.tmpl.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose:true,
-                fullscreen: false, // Only for -xs, -sm breakpoints.
-                resolve: {
-                  clickName: function(){
-                    return vm.clickName;
-                  }
-                }
-            })
-        };
+        
 
 
 //-------------------------------------카테고리 마커 출력-----------------------------------------------
@@ -467,23 +505,7 @@
             }
         }
 
-        //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
-        function DetailedDialogController($scope, $mdDialog, $state, clickName) {
-            $scope.hide = function() {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function() {
-                $mdDialog.cancel();
-            };
-            $scope.answer = function(answer) {
-                $mdDialog.hide(answer);
-            };
-            $scope.movewiki = function(){  //wiki page로 이동 
-                $mdDialog.cancel();
-                $state.go('app.wiki');
-            };
-            $scope.clickName = vm.clickName;
-        }
+        
 
 //------------------------------------------------------------------------------
 
@@ -995,7 +1017,8 @@
 
             daum.maps.event.addListener(polygon, 'click', function(mouseEvent) {
                 vm.clickName = area.name;
-                vm.showDetailed();
+                vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/"+area.name;
+                vm.openMapDialog();
             });
         }
         var subAreaData = SubAreaData.data;
@@ -1044,7 +1067,8 @@
 
             daum.maps.event.addListener(polygon, 'click', function(mouseEvent) {
                 vm.clickName = area["name"];
-                vm.showDetailed();
+                vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/"+area.name;;
+                vm.openMapDialog();
             });
         }
     }
