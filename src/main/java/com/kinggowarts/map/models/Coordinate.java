@@ -14,4 +14,15 @@ public class Coordinate {
     private Location location;
     private double lng;
     private double lat;
+
+    public Coordinate(){
+
+    }
+
+    public Coordinate(long sequence_id, Location location, double lng, double lat){
+        this.sequence_id = sequence_id;
+        this.location = location;
+        this.lng = lng;
+        this.lat = lat;
+    }
 }
