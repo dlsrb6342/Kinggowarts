@@ -15,6 +15,8 @@ public class MapService {
     @Autowired
     private LocationRepository locationDao;
     @Autowired
+    private LocationSearchRepository locationSearchDao;
+    @Autowired
     private CoordinateRepository coordinateDao;
 
     List<HashMap<String, Object>> findAllCoordinate(String type){
@@ -46,7 +48,7 @@ public class MapService {
         return result;
     }
 
-    void saveLocation(String name, HashMap<String, Double>center, String shape,
+    void saveLocation(String name, HashMap<String, Double> center, String shape,
                       List<HashMap<String, Double>> path, String type, String detail){
         Location location = new Location(name, center, type, detail, shape);
         int sequence_id = 0;
@@ -57,5 +59,10 @@ public class MapService {
             sequence_id++;
         }
         locationDao.save(location);
+        locationSearchDao.save(location);
+    }
+
+    List<Location> searchLocation(String q){
+        return locationSearchDao.findAllByNameContainsOrDetailContains(q);
     }
 }

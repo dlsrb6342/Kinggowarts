@@ -16,7 +16,6 @@ public class Coordinate {
     private double lat;
 
     public Coordinate(){
-
     }
 
     public Coordinate(long sequence_id, Location location, double lng, double lat){

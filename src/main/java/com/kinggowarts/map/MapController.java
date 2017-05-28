@@ -4,7 +4,6 @@ import com.kinggowarts.map.models.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,5 +26,10 @@ public class MapController {
                              @RequestParam("type") String type,
                              @RequestParam("detail") String detail) {
         mapService.saveLocation(name, center, shape, path, type, detail);
+    }
+
+    @RequestMapping(value="/search", method=RequestMethod.GET)
+    public List<Location> searchLocation(@RequestParam("q") String q){
+        return mapService.searchLocation(q);
     }
 }
