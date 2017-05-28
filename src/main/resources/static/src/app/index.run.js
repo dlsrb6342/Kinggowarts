@@ -10,7 +10,7 @@
     function runBlock($rootScope, $timeout, $state, $sessionStorage)
     {
         // Activate loading indicator
-        var stateChangeStartEvent = $rootScope.$on('$stateChangeStart', function (evt, toState, toParams, fromState, fromParams)
+        var stateChangeStartEvent = $rootScope.$on('$stateChangeStart', function (evt, toState)
         {
 
             if( toState.name != 'login' && $sessionStorage.get('useremail') == undefined)
