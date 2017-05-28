@@ -1,4 +1,4 @@
-(functi(function ()
+(function ()
 {
     'use strict';
 
