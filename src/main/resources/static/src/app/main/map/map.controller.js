@@ -9,7 +9,7 @@
 
 
     /** @ngInject */
-    function MapController($mdDialog, CustomEventMarkerData, SubAreaData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation)
+    function MapController($mdDialog, CustomEventMarkerData, SubAreaData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
     {
         var vm = this;
         vm.markerData = MarkerData.data;
@@ -54,6 +54,18 @@
                 vm.customEvnetTooltipVisible = vm.customEventIsOpen;
             }
         }, true);
+
+        //로그인 되어있지 않은 사용자가 맵에 접근시 로그인 페이지로 돌려보냄
+        
+        function usercheck(){
+            var userval = $sessionStorage.get('useremail');
+            if(userval == undefined){
+                alert('로그인 되어 있지 않거나 세션 유효기간이 끝나 로그아웃 되었습니다.');
+                $state.go('login');
+            }
+        };
+        usercheck();
+
 
 
         var drawCustomEvnetOptions = { // Drawing Manager를 생성할 때 사용할 옵션입니다
