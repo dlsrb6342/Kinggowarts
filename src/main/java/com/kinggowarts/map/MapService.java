@@ -1,5 +1,6 @@
 package com.kinggowarts.map;
 
+import com.kinggowarts.map.models.Coordinate;
 import com.kinggowarts.map.models.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,8 @@ public class MapService {
     @Autowired
     private CoordinateRepository coordinateDao;
 
-    List<Location> findAllLocationByType(String type){
-        return locationDao.findAllByType(type);
-    }
-
-    List<HashMap<String, Object>> findAllCoordinate(){
-        List<Location> locationList = locationDao.findAll();
+    List<HashMap<String, Object>> findAllCoordinate(String type){
+        List<Location> locationList = locationDao.findAllByType(type);
         List<Object[]> coordinateList = coordinateDao.findAllByOrderByLocationIdAsc();
         List<HashMap<String, Object>> result = new ArrayList<>();
         for (Location location: locationList) {
@@ -49,4 +46,16 @@ public class MapService {
         return result;
     }
 
+    void saveLocation(String name, HashMap<String, Double>center, String shape,
+                      List<HashMap<String, Double>> path, String type, String detail){
+        Location location = new Location(name, center, type, detail, shape);
+        int sequence_id = 0;
+        for(HashMap<String, Double> p : path){
+            Coordinate coordinate = new Coordinate(sequence_id, location,
+                    p.get("lng"), p.get("lat"));
+            coordinateDao.save(coordinate);
+            sequence_id++;
+        }
+        locationDao.save(location);
+    }
 }

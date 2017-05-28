@@ -2,10 +2,11 @@ package com.kinggowarts.notice;
 
 import com.kinggowarts.notice.models.Notice;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -17,12 +18,12 @@ public class NoticeController {
     private NoticeService noticeService;
 
     @RequestMapping(value="", method=RequestMethod.GET)
-    public List<Notice> findAll(HttpServletRequest request){
-        String category = request.getParameter("category");
+    public Page<Notice> findAll(@RequestParam(value="category", required=false) String category,
+                                @PageableDefault(sort={ "id" }, direction= Sort.Direction.DESC) Pageable pageable){
         if(category instanceof String){
-            return noticeService.findAllByCategory(category);
+            return noticeService.findAllByCategory(category, pageable);
         }
-        return noticeService.findAll();
+        return noticeService.findAll(pageable);
     }
 
     @RequestMapping(value="/{id}", method=RequestMethod.GET)
