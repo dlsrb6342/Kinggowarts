@@ -15,6 +15,8 @@
         vm.peer = PeerData.data.data;
         vm.request = RequestData.data.data;
 
+        //console.log(Notice);
+
         //vm.recentwiki = RecentwikiData.data;
 
         vm.currenttimeline = "SE";
