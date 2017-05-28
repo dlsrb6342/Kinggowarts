@@ -7,7 +7,7 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $q, $state, $timeout, $mdSidenav, $translate, $mdToast, msNavigationService)
+    function ToolbarController($rootScope, $q, $state, $timeout, $mdSidenav, $translate, $mdToast, msNavigationService, $sessionStorage)
     {
         var vm = this;
 
@@ -35,7 +35,7 @@
             }
         ];
 
-        vm.userID = $rootScope.email;
+        vm.userID = $sessionStorage.get('useremail');
 
         vm.languages = {
             en: {
@@ -109,6 +109,7 @@
          */
         function logout()
         {
+            $sessionStorage.empty();
             $state.go('login');
             // Do logout here..
         }
