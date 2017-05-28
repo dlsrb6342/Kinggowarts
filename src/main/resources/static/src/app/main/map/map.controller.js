@@ -289,6 +289,12 @@
                 $state.go('app.wiki');
                 //$state.go(vm.clickUrl);
             };
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function() {
+                $mdDialog.cancel();
+            };
             $scope.clickName = vm.clickName;
             $scope.clickUrl = vm.clickUrl;
             $scope.tags = vm.tags; 
@@ -508,22 +514,6 @@
             }
         }, true);
 
-        //구역 클릭시 다이얼로그 
-        vm.showDetailed = function(ev) {
-            $mdDialog.show({
-                controller: DetailedDialogController,
-                templateUrl: 'app/main/map/dialog2.tmpl.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose:true,
-                fullscreen: false, // Only for -xs, -sm breakpoints.
-                resolve: {
-                  clickName: function(){
-                    return vm.clickName;
-                  }
-                }
-            })
-        };
 
 //-------------------------------------카테고리 마커 출력-----------------------------------------------
         /*
