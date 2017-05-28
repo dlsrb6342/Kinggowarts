@@ -25,7 +25,7 @@
                     }
                 },
                 resolve: {
-                    FacebookData: function ($http)
+                    FacebookList: function ($http)
                     {
                         return $http.get('/api/notice');
                     }

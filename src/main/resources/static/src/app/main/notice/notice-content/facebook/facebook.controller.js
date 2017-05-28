@@ -7,9 +7,10 @@
         .controller('FacebookController', FacebookController);
 
     /** @ngInject */
-    function FacebookController(FacebookData)
+    function FacebookController(FacebookList)
     {
         var vm = this;
+        vm.facebookList = FacebookList.data
 
         vm.dtOptions = {
             dom       : '<"top"f>rt<"bottom"<"left"<"length"l>><"right"<"info"i><"pagination"p>>>',
@@ -17,6 +18,7 @@
             autoWidth : false,
             responsive: true
         };
-        console.log(FacebookData);
+
+        console.log(FacebookList);
     }
 })();

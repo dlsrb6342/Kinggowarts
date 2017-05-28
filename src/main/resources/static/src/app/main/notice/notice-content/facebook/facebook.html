@@ -21,44 +21,32 @@
                     <tr>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">Name</span>
+                                <span class="column-title">번호</span>
                             </div>
                         </th>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">Position</span>
+                                <span class="column-title">제목</span>
                             </div>
                         </th>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">Office</span>
+                                <span class="column-title">업로드시간</span>
                             </div>
                         </th>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">Age</span>
-                            </div>
-                        </th>
-                        <th class="secondary-text">
-                            <div class="table-header">
-                                <span class="column-title">Start Date</span>
-                            </div>
-                        </th>
-                        <th class="secondary-text">
-                            <div class="table-header">
-                                <span class="column-title">Salary</span>
+                                <span class="column-title">장소</span>
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="employee in ::vm.employees">
-                        <td>{{ employee.name }}</td>
-                        <td>{{ employee.position }}</td>
-                        <td>{{ employee.office }}</td>
-                        <td>{{ employee.age }}</td>
-                        <td>{{ employee.startDate }}</td>
-                        <td>{{ employee.salary }}</td>
+                    <tr ng-repeat="row in ::vm.facebookList">
+                        <td>{{ row.id }}</td>
+                        <td>{{ row.title }}</td>
+                        <td>{{ row.time | date : 'yyyy-MM-dd'}}</td>
+                        <td>{{ row.location.name }}</td>
                     </tr>
                 </tbody>
             </table>
