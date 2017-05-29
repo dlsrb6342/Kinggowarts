@@ -2,23 +2,46 @@ package com.kinggowarts.notice;
 
 import com.kinggowarts.notice.models.Notice;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/api/notice")
+@RestController @RequestMapping("/api/notice")
 public class NoticeController {
 
     @Autowired
     private NoticeService noticeService;
 
-    @ResponseBody @RequestMapping(value="/",method=RequestMethod.GET)
-    public List<Notice> noticeList(){
-        return noticeService.findAll();
+    @RequestMapping(value="", method=RequestMethod.GET)
+    public Object findAll(@RequestParam(value="category", required=false) String category,
+                                @RequestParam(value="all") String all,
+                                @PageableDefault(sort={ "id" }, direction= Sort.Direction.DESC) Pageable pageable){
+        if(all.equals("true")){
+            if(category != null){
+                return noticeService.findAllByCategory(category);
+            } else {
+                return noticeService.findAll();
+            }
+        } else {
+            if(category != null){
+                return noticeService.findAllByCategory(category, pageable);
+            } else {
+                return noticeService.findAll(pageable);
+            }
+        }
     }
 
+    @RequestMapping(value="/{id}", method=RequestMethod.GET)
+    public Notice findById(@PathVariable("id") long id){
+        return noticeService.findById(id);
+    }
+
+    @RequestMapping(value="/search", method=RequestMethod.GET)
+    public List<Notice> searchNotice(@RequestParam("q") String q){
+        return noticeService.searchNotice(q);
+    }
 }

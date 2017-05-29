@@ -1,3 +1,5 @@
 <div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
     <div class="h3" style="margin-top: 18px; margin-bottom: 18px;">Recent wiki change</div>
 </div>
+
+<a ng-click ="vm.wikigo(wikipath.Link)" ng-repeat="wikipath in vm.wikihistory.Link">{{wikipath.Title}}</br></a>

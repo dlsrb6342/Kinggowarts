@@ -1,31 +1,47 @@
-{
-    "data": {
-        "change": [
-            {
-                "name": "산학관",
-                "message": "1-1 위치 항목이 수정되었습니다.",
-                "time": "5/3 4:40 AM"
-            },
-            {
-                "name": "산학관",
-                "message": "1-1 위치 항목이 수정되었습니다.",
-                "time": "5/3 4:40 AM"
-            },
-            {
-                "name": "산학관",
-                "message": "1-1 위치 항목이 수정되었습니다.",
-                "time": "5/3 4:40 AM"
-            },
-            {
-                "name": "산학관",
-                "message": "1-1 위치 항목이 수정되었습니다.",
-                "time": "5/3 4:40 AM"
-            },
-            {
-                "name": "산학관",
-                "message": "1-1 위치 항목이 수정되었습니다.",
-                "time": "5/3 4:40 AM"
-            }
-        ]
+
+[
+    {
+      "id": 109,
+      "category": {
+        "id": 2,
+        "name": "skku",
+        "page_id": 0,
+        "last_num": 35469
+      },
+      "location": {
+        "id": 1,
+        "name": "복지회관",
+        "center_lng": 37.29400634392711,
+        "center_lat": 126.97257459376289,
+        "type": "admin",
+        "shape": null
+      },
+      "title": "2017하계 SNEC 수강안내 (국제품 취득을 위한 집중 토익캠프)",
+      "contents": "○ SNEC (SKKU Natural sciences campus English Camp) 이란? \n본교 재학생의 국제품 취득 관련 어학능력함양을 목적으로 \n 자과캠 어학원에서 15일 동안 집중적으로 실용영어능력을 배양하는 프로그램 \n\n○ 대상: 본교 학부생(재학생, 휴학생) / 수료생 \n\n○ 교육일정 및 내용 \n- 기 간: 2017. 6. 22(목) ~ 2017. 7. 12(수) (15일간) \n- 수업시간: 09:00 ~ 12:20 \n- 장 소: 자연과학캠퍼스 \n- 과 정: Toeic RC, Toeic LC, Toeic Speaking \n\n○ 모집인원: 60명(선착순 마감) \n\n○ 신청기간: 2017.  5. 29(월) ~ 6. 9(금) \n\n○ 접 수 처: (자)성균어학원 (031-290-5232) \n- 접수방법: 성균어학원 홈페이지 온라인 지원 \nhttp://home.skku.edu/~sli → 로그인 → 강좌접수 → SNEC → 수강신청 \n\n○ 수 강 료: 320,000원 \n- 수강료 납부: 수강신청 후 가상계좌로 입금 (타 결제방식 사용불가) \n- 환불규정 \n; 수업 개시 전 - 100% 환불 \n; 수업 개시 후 - 계절수업 수강료 반환기준에 의거 환불처리(수업일수 3/4경과후는 환불액 없음) \n\n○ 오리엔테이션 : 2017. 6. 22(목) 09:00 / 자과캠 제2공학관 1층 27112호 \n\n○ 평가 및 수료 \n- 전체 70점(출석 60% / 평가시험 40%) 이상 획득시 PASS \n- 본 과정을 PASS한 자는 수료증 수여 \n- 한 과목 당 통산 3시간 초과 결석하는 경우 과정 미수료 \n- 한 과목이라도 FAIL 하는 경우 과정 미수료 \n\n○ 프로그램 특징 \n- 우리대학 외국인 교원이 직접 TOEIC 지도 \n- 본 과정을 수료한 학생 중 국제품 희망 시 국제품 취득자격 부여 \n\n\n성 균 어 학 원",
+      "time": 1495771203000,
+      "link": "http://www.skku.edu/new_home/campus/skk_comm/notice_view.jsp?bCode=0&page=1&boardNum=35469&virtualNum=0&skey=BOARD_SUBJECT&keyword=&bName=board_news&bCode=0",
+      "img_src": ""
+    },
+    {
+      "id": 109,
+      "category": {
+        "id": 2,
+        "name": "skku",
+        "page_id": 0,
+        "last_num": 35469
+      },
+      "location": {
+        "id": 1,
+        "name": "복지회관",
+        "center_lng": 37.29400634392711,
+        "center_lat": 126.97257459376289,
+        "type": "admin",
+        "shape": null
+      },
+      "title": "2017하계 SNEC 수강안내 (국제품 취득을 위한 집중 토익캠프)",
+      "contents": "○ SNEC (SKKU Natural sciences campus English Camp) 이란? \n본교 재학생의 국제품 취득 관련 어학능력함양을 목적으로 \n 자과캠 어학원에서 15일 동안 집중적으로 실용영어능력을 배양하는 프로그램 \n\n○ 대상: 본교 학부생(재학생, 휴학생) / 수료생 \n\n○ 교육일정 및 내용 \n- 기 간: 2017. 6. 22(목) ~ 2017. 7. 12(수) (15일간) \n- 수업시간: 09:00 ~ 12:20 \n- 장 소: 자연과학캠퍼스 \n- 과 정: Toeic RC, Toeic LC, Toeic Speaking \n\n○ 모집인원: 60명(선착순 마감) \n\n○ 신청기간: 2017.  5. 29(월) ~ 6. 9(금) \n\n○ 접 수 처: (자)성균어학원 (031-290-5232) \n- 접수방법: 성균어학원 홈페이지 온라인 지원 \nhttp://home.skku.edu/~sli → 로그인 → 강좌접수 → SNEC → 수강신청 \n\n○ 수 강 료: 320,000원 \n- 수강료 납부: 수강신청 후 가상계좌로 입금 (타 결제방식 사용불가) \n- 환불규정 \n; 수업 개시 전 - 100% 환불 \n; 수업 개시 후 - 계절수업 수강료 반환기준에 의거 환불처리(수업일수 3/4경과후는 환불액 없음) \n\n○ 오리엔테이션 : 2017. 6. 22(목) 09:00 / 자과캠 제2공학관 1층 27112호 \n\n○ 평가 및 수료 \n- 전체 70점(출석 60% / 평가시험 40%) 이상 획득시 PASS \n- 본 과정을 PASS한 자는 수료증 수여 \n- 한 과목 당 통산 3시간 초과 결석하는 경우 과정 미수료 \n- 한 과목이라도 FAIL 하는 경우 과정 미수료 \n\n○ 프로그램 특징 \n- 우리대학 외국인 교원이 직접 TOEIC 지도 \n- 본 과정을 수료한 학생 중 국제품 희망 시 국제품 취득자격 부여 \n\n\n성 균 어 학 원",
+      "time": 1495771203000,
+      "link": "http://www.skku.edu/new_home/campus/skk_comm/notice_view.jsp?bCode=0&page=1&boardNum=35469&virtualNum=0&skey=BOARD_SUBJECT&keyword=&bName=board_news&bCode=0",
+      "img_src": ""
     }
-}
+]
