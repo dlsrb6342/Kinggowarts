@@ -109,9 +109,7 @@
          */
         function logout()
         {
-            $sessionStorage.empty();
             $state.go('login');
-            // Do logout here..
         }
 
         /**

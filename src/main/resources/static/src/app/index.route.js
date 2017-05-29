@@ -7,7 +7,7 @@
         .config(routeConfig);
 
     /** @ngInject */
-    function routeConfig($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider)
+    function routeConfig($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $sessionStorageProvider)
     {
         $locationProvider.html5Mode(true);
 
@@ -49,12 +49,19 @@
                         var obj = $http.get('/app/data/quick-panel/request.json');
                         return obj;
                     },
-                    Notice: function ($http)
+                    
+                    Notice: function ($http, $sessionStorage)
                     {
                         //임시
-                        var obj = $http.get('/app/data/quick-panel/recentwiki.json');
+                        
+                        var obj = $http.get('/api/notice', {
+                            headers : {
+                                'Authorization' : $sessionStorage.get('AuthToken')
+                            }
+                        });
                         return obj;
                     },
+
                     
                     RecentwikiData: function ($http)
                     {
