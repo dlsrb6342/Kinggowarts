@@ -9,6 +9,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableJpaRepositories(
@@ -17,6 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableElasticsearchRepositories(
 		includeFilters = @ComponentScan.Filter(
 						type = FilterType.ASSIGNABLE_TYPE, classes = ElasticsearchRepository.class))
+@EnableAsync
 @PropertySource("sensitiveinfo.properties")
 public class ServerApplication {
 

@@ -1,15 +1,18 @@
 package com.kinggowarts.common;
 
+import com.kinggowarts.common.utils.EncryptString;
+import org.apache.catalina.util.URLEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.util.Random;
 
 @Service
 public class MailService {
@@ -20,11 +23,19 @@ public class MailService {
     @Autowired
     Environment env;
 
-    public boolean send(String subject, String text, String from, String to, String filePath) {
+    @Autowired
+    EncryptString encryptString;
+
+
+    public void send(String subject, String text, String from, String to, String filePath) {
         // javax.mail.internet.MimeMessage
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
+            System.out.println(subject);
+            System.out.println(text);
+            System.out.println(from);
+            System.out.println(to);
             // org.springframework.mail.javamail.MimeMessageHelper
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setSubject(subject);
@@ -41,20 +52,25 @@ public class MailService {
             }
 
             javaMailSender.send(message);
-            return true;
+           // return true;
         } catch (MessagingException e) {
             e.printStackTrace();
         }
-        return false;
+      //  return false;
+    }
+    @Async
+    public void sendMailAuth(String email, String url) {
+       // int ran = new Random().nextInt(100000000) + 10000; // 10000 ~ 99999
+       // String joinCode = String.valueOf(ran);
+        try {
+            String subject = "Kinggowarts 회원가입을 완료해 주세요.";
+            StringBuilder sb = new StringBuilder();
+            sb.append("<a href=\"" + url + "/api/mail/active?code=" + UriUtils.encodeQueryParam(encryptString.encrypt(email), "UTF-8") + "\">인증하기</a>");
+            send(subject, sb.toString(), env.getProperty("spring.mail.username"), email, null);
+        }catch (Exception e){
+
+        }
     }
 
-    public void sendMailAuth() {
-        int ran = new Random().nextInt(100000000) + 10000; // 10000 ~ 99999
-        String joinCode = String.valueOf(ran);
 
-        String subject = "회원가입 인증 코드 발급 안내 입니다.";
-        StringBuilder sb = new StringBuilder();
-        sb.append("귀하의 인증 코드는 " + joinCode + " 입니다.");
-        send(subject, sb.toString(), env.getProperty("spring.mail.username"), "", null);
-    }
 }

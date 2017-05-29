@@ -6,7 +6,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class IndexController {
     @RequestMapping(value = "/**/{[path:[^\\.]*}")
-    public String redirect() {
-        return "forward:/";
-    }
+    public String redirect() {return "forward:/";}
 }
