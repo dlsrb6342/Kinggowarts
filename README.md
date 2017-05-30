@@ -10,7 +10,10 @@ https://drive.google.com/drive/folders/0B7qbRQX6_VNxd0NabjNpSXAzRHc?usp=sharing
 
 #### 3. 기타
 * 포트번호 변경은 tomcat/conf/server.xml 의 8082 라 되어있는 부분을 바꾸면 됨
-
+* 캐싱 옵션을 끄기 위해서는 tomcat/conf/context.xml 파일의 context 태그를 다음과 같이 수정해준다.(static 파일만 해당)
+```xml
+<Context cacheMaxSize="0" cacheTTL="0" cachingAllowed="false">
+```
 
 ## RESTful API 명세
 
