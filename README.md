@@ -1,3 +1,17 @@
+## 배포파일
+
+#### 1. 주소
+https://drive.google.com/drive/folders/0B7qbRQX6_VNxd0NabjNpSXAzRHc?usp=sharing
+
+
+#### 2. 실행방법
+1. cmd 창에서 tomcat/bin/startup.bat 실행
+2. locathost:8082/kinggowarts 접속
+
+#### 3. 기타
+* 포트번호 변경은 tomcat/conf/server.xml 의 8082 라 되어있는 부분을 바꾸면 됨
+
+
 ## RESTful API 명세
 
 #### 1. 로그인
