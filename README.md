@@ -74,7 +74,7 @@ type: 회원 타입(S: 학생 T: 교수)
 * Response Types: text
 * Response Value
 ```
-Success: 성공적인 요청
+success: 성공적인 요청
 duplicateId: 아이디 겹침
 duplicateNickName: 닉네임 겹침
 ```
