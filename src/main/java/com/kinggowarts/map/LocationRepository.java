@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
     List<Location> findAllByType(String type);
+    Location findFirstByName(String name);
 }
