@@ -54,7 +54,7 @@
                     {
                         //임시
                         
-                        var obj = $http.get('/api/notice', {
+                        var obj = $http.get('/api/notice?all=true', {
                             headers : {
                                 'Authorization' : $sessionStorage.get('AuthToken')
                             }
