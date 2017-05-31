@@ -6,7 +6,7 @@
             <div class="breadcrumb" layout="row" layout-align="start center">
                 <md-icon md-font-icon="icon-home" class="s16"></md-icon>
                 <md-icon md-font-icon="icon-chevron-right" class="s16 separator"></md-icon>
-                <span class="parent">Facebook</span>
+                <span class="parent">공지사항</span>
             </div>
             <div class="title">Facebook</div>
         </div>
@@ -21,32 +21,44 @@
                     <tr>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">번호</span>
+                                <span class="column-title">Name</span>
                             </div>
                         </th>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">제목</span>
+                                <span class="column-title">Position</span>
                             </div>
                         </th>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">업로드시간</span>
+                                <span class="column-title">Office</span>
                             </div>
                         </th>
                         <th class="secondary-text">
                             <div class="table-header">
-                                <span class="column-title">장소</span>
+                                <span class="column-title">Age</span>
+                            </div>
+                        </th>
+                        <th class="secondary-text">
+                            <div class="table-header">
+                                <span class="column-title">Start Date</span>
+                            </div>
+                        </th>
+                        <th class="secondary-text">
+                            <div class="table-header">
+                                <span class="column-title">Salary</span>
                             </div>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="row in ::vm.facebookList">
-                        <td>{{ row.id }}</td>
-                        <td>{{ row.title }}</td>
-                        <td>{{ row.time | date : 'yyyy-MM-dd'}}</td>
-                        <td>{{ row.location.name }}</td>
+                    <tr ng-repeat="employee in ::vm.employees">
+                        <td>{{ employee.name }}</td>
+                        <td>{{ employee.position }}</td>
+                        <td>{{ employee.office }}</td>
+                        <td>{{ employee.age }}</td>
+                        <td>{{ employee.startDate }}</td>
+                        <td>{{ employee.salary }}</td>
                     </tr>
                 </tbody>
             </table>

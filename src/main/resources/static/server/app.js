@@ -23,7 +23,7 @@ if(process.env.NODE_ENV === "development"){
   app.use('/', express.static(path.join(__dirname, viewPath.index)));
   app.use('/app', express.static(path.join(__dirname, viewPath.view, 'app')));
   app.use('/assets', express.static(path.join(__dirname, viewPath.view, 'assets')));
-  app.use('/bower_components', express.static(path.join(__dirname, "/../bower_components")));
+  app.use('/bower_components', express.static(path.join(__dirname, viewPath.view, "bower_components")));
   app.use('/public', express.static(path.join(__dirname, "/../public")));
 }
 else{
