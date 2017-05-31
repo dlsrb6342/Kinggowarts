@@ -1,0 +1,29 @@
+{
+  "name": "datatables-responsive",
+  "main": [
+    "js/dataTables.responsive.js",
+    "css/responsive.dataTables.scss"
+  ],
+  "dependencies": {
+    "jquery": ">=1.7.0",
+    "datatables": ">=1.10.1"
+  },
+  "authors": [
+    {
+      "name": "SpryMedia Ltd",
+      "homepage": "https://datatables.net"
+    }
+  ],
+  "homepage": "https://datatables.net",
+  "license": "MIT",
+  "version": "2.1.0",
+  "_release": "2.1.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.1.0",
+    "commit": "c2688aef4b13e32a370a5fa20bbc1d29e1e1c6f6"
+  },
+  "_source": "https://github.com/DataTables/Responsive.git",
+  "_target": "2.1.0",
+  "_originalSource": "datatables-responsive"
+}

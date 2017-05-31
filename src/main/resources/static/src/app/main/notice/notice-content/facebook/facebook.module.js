@@ -25,9 +25,9 @@
                     }
                 },
                 resolve: {
-                    FacebookList: function ($http)
+                    FacebookData: function ($http)
                     {
-                        return $http.get('/api/notice?all=true&category=fb&size=30');
+                        return $http.get('./api/notice');
                     }
                 }
             });

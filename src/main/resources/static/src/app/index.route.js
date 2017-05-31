@@ -34,33 +34,33 @@
                     TimelineData: function ($http)
                     {
                         //임시
-                        var obj = $http.get('/app/data/quick-panel/timeline.json');
+                        var obj = $http.get('./app/data/quick-panel/timeline.json');
                         return obj;
                     },
                     PeerData: function ($http)
                     {
                         //임시
-                        var obj = $http.get('/app/data/quick-panel/peer.json');
+                        var obj = $http.get('./app/data/quick-panel/peer.json');
                         return obj;
                     },
                     RequestData: function ($http)
                     {
                         //임시
-                        var obj = $http.get('/app/data/quick-panel/request.json');
+                        var obj = $http.get('./app/data/quick-panel/request.json');
                         return obj;
                     },
                     
-                    Notice: function ($http, $sessionStorage)
-                    {
-                        //임시
+                    // Notice: function ($http, $sessionStorage)
+                    // {
+                    //     //임시
                         
-                        var obj = $http.get('/api/notice?all=true', {
-                            headers : {
-                                'Authorization' : $sessionStorage.get('AuthToken')
-                            }
-                        });
-                        return obj;
-                    },
+                    //     var obj = $http.get('./api/notice', {
+                    //         headers : {
+                    //             'Authorization' : $sessionStorage.get('AuthToken')
+                    //         }
+                    //     });
+                    //     return obj;
+                    // },
 
                     
                     RecentwikiData: function ($http)

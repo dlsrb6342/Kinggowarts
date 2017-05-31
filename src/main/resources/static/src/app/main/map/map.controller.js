@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 (function ()
 {
     'use strict';
@@ -255,15 +256,7 @@
 
         vm.tags = [];
 
-        /*
-        var subAreaData = SubAreaData.data;
-            for(var i=0; i<subAreaData.length; i++){
-                if(subAreaData[i].name == vm.clickName)
-                {
-                        vm.tags = subAreaData[i].tag;
-                }
-            }
-        */
+
         vm.openMapDialog = function(ev)
         {
             $mdDialog.show({
@@ -286,9 +279,7 @@
                   }
               }
             });
-          /*  .then(function(answer){
-                vm.getTags(answer);
-            });*/
+        
         }
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
@@ -325,21 +316,7 @@
             $scope.clickUrl = vm.clickUrl;
             $scope.tags = vm.tags; 
         }
-/*
-        vm.getTags = function(answer){
-                //var tags = answer["tags"];
-                var tags = [];
-                var subAreaData = SubAreaData.data;
-                for(var i=0; i<subAreaData.length; i++){
-                    if(subAreaData[i].name == vm.clickName)
-                    {
-                        for( var j=0; j<subAreaData[i].tag.length; j++)
-                            tags[j] = subAreaData[i].tag[j];
-                    }
-                }
-            
-            }
-*/
+
         //---------------------------------mapLocation service에 주기적으로 map 상태 갱신하기-------------------
         $interval(updateMapLocationService, 10000); 
         function updateMapLocationService() {
@@ -1280,3 +1257,4 @@
     }
 
 })();
+
