@@ -27,7 +27,7 @@ nbdist/
 src/main/resources/static/node_modules/
 src/main/resources/static/bower_components/
 src/main/resources/static/.tmp/
-classes/
 src/main/webapp/
-data/
 src/main/resources/sensitiveinfo.properties
+data/
+classes/
