@@ -1179,6 +1179,7 @@
 
             daum.maps.event.addListener(polygon, 'click', function(mouseEvent) {
                 vm.clickName = area["name"];
+                vm.tags = area["tag"];
                 vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/"+area.name;;
                 vm.openMapDialog();
             });
