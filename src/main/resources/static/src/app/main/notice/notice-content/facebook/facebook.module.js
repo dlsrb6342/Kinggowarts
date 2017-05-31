@@ -27,7 +27,7 @@
                 resolve: {
                     FacebookList: function ($http)
                     {
-                        return $http.get('/api/notice');
+                        return $http.get('/api/notice?all=true&category=fb&size=30');
                     }
                 }
             });
