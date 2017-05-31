@@ -19,13 +19,12 @@ public class MapController {
     }
 
     @RequestMapping(value="", method=RequestMethod.POST)
-    public void saveLocation(@RequestParam("name") String name,
+    public String saveLocation(@RequestParam("name") String name,
                              @RequestParam("center") HashMap<String, Double> center,
                              @RequestParam("shape") String shape,
                              @RequestParam("path") List<HashMap<String, Double>> path,
-                             @RequestParam("type") String type,
                              @RequestParam("detail") String detail) {
-        mapService.saveLocation(name, center, shape, path, type, detail);
+        return mapService.saveLocation(name, center, shape, path, detail);
     }
 
     @RequestMapping(value="/search", method=RequestMethod.GET)

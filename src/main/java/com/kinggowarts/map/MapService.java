@@ -48,18 +48,23 @@ public class MapService {
         return result;
     }
 
-    void saveLocation(String name, HashMap<String, Double> center, String shape,
-                      List<HashMap<String, Double>> path, String type, String detail){
-        Location location = new Location(name, center, type, detail, shape);
-        int sequence_id = 0;
-        for(HashMap<String, Double> p : path){
-            Coordinate coordinate = new Coordinate(sequence_id, location,
-                    p.get("lng"), p.get("lat"));
-            coordinateDao.save(coordinate);
-            sequence_id++;
+    String saveLocation(String name, HashMap<String, Double> center, String shape,
+                      List<HashMap<String, Double>> path, String detail){
+        if(locationDao.findFirstByName(name) != null){
+            return "duplicatedName";
+        } else {
+            Location location = new Location(name, center, "user", detail, shape);
+            int sequence_id = 0;
+            for (HashMap<String, Double> p : path) {
+                Coordinate coordinate = new Coordinate(sequence_id, location,
+                        p.get("lng"), p.get("lat"));
+                coordinateDao.save(coordinate);
+                sequence_id++;
+            }
+            locationDao.save(location);
+            locationSearchDao.save(location);
+            return "success";
         }
-        locationDao.save(location);
-        locationSearchDao.save(location);
     }
 
     List<Location> searchLocation(String q){
