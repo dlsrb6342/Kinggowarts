@@ -251,10 +251,19 @@
             }
             
         }
-                  //-----------------구역 다이얼로그 - 칩, 컨트롤러, 다이얼로그 ---------------------------
+        //-----------------구역 다이얼로그 - 칩, 컨트롤러, 다이얼로그 ---------------------------
 
         vm.tags = [];
 
+        /*
+        var subAreaData = SubAreaData.data;
+            for(var i=0; i<subAreaData.length; i++){
+                if(subAreaData[i].name == vm.clickName)
+                {
+                        vm.tags = subAreaData[i].tag;
+                }
+            }
+        */
         vm.openMapDialog = function(ev)
         {
             $mdDialog.show({
@@ -277,23 +286,60 @@
                   }
               }
             });
+          /*  .then(function(answer){
+                vm.getTags(answer);
+            });*/
         }
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
-        function MapDialogController($scope, $mdDialog, $state, clickName) {
-            $scope.answer = function(answer) {
+        function MapDialogController($scope, $mdDialog, $state, clickName, $rootScope) {
+            $scope.answer = function() {
+              //  var answer = {"tags": $scope.tags};
                 $mdDialog.hide(answer);
-            };
-            $scope.movewiki = function(){  //wiki page로 이동 
+            };           
+
+            $scope.movewiki = function () 
+            {
+            //wiki state일 때는 reload, 아닐때는 wikistate로
                 $mdDialog.cancel();
-                $state.go('app.wiki');
-                //$state.go(vm.clickUrl);
+                $rootScope.wikipath = vm.clickUrl;
+
+                if($state.includes('app.wiki') == true)
+                {
+                    $state.reload();
+                }
+                else
+                {
+                    $state.go('app.wiki');
+                }
+            
+            };
+
+            $scope.hide = function() {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function() {
+                $mdDialog.cancel();
             };
             $scope.clickName = vm.clickName;
             $scope.clickUrl = vm.clickUrl;
             $scope.tags = vm.tags; 
         }
-
+/*
+        vm.getTags = function(answer){
+                //var tags = answer["tags"];
+                var tags = [];
+                var subAreaData = SubAreaData.data;
+                for(var i=0; i<subAreaData.length; i++){
+                    if(subAreaData[i].name == vm.clickName)
+                    {
+                        for( var j=0; j<subAreaData[i].tag.length; j++)
+                            tags[j] = subAreaData[i].tag[j];
+                    }
+                }
+            
+            }
+*/
         //---------------------------------mapLocation service에 주기적으로 map 상태 갱신하기-------------------
         $interval(updateMapLocationService, 10000); 
         function updateMapLocationService() {
@@ -508,22 +554,6 @@
             }
         }, true);
 
-        //구역 클릭시 다이얼로그 
-        vm.showDetailed = function(ev) {
-            $mdDialog.show({
-                controller: DetailedDialogController,
-                templateUrl: 'app/main/map/dialog2.tmpl.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose:true,
-                fullscreen: false, // Only for -xs, -sm breakpoints.
-                resolve: {
-                  clickName: function(){
-                    return vm.clickName;
-                  }
-                }
-            })
-        };
 
 //-------------------------------------카테고리 마커 출력-----------------------------------------------
         /*
