@@ -29,6 +29,8 @@ public class AuthenticationService implements UserDetailsService{
         if (username != null && !"".equals(username))
             member = memberRepository.findFirstByUserId(username);
         if (member == null) throw new UsernameNotFoundException("접속자 정보를 찾을 수 없습니다.");
+        if (member.getConfirm()==Member.NOT_CONFIRM)
+            throw new UsernameNotFoundException("인증이 완료되지 않았습니다.");
         List<GrantedAuthority> roleList=new ArrayList<GrantedAuthority>();
         roleList.add(new SimpleGrantedAuthority("ROLE_GUEST"));
         if(member.getType()=='S')

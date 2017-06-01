@@ -32,7 +32,6 @@ public class AuthProvider implements AuthenticationProvider {
         UserAuth user;
         try {
             user = authenticationService.loadUserByUsername(username);
-            System.out.println("username : " + user.getUsername() + " / password : " + user.getPassword()+" / typed password: "+password);
 
             if (!passwordEncoder.matches(password, user.getPassword()) ) throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
 
