@@ -41,7 +41,9 @@ https://drive.google.com/drive/folders/0B7qbRQX6_VNxd0NabjNpSXAzRHc?usp=sharing
 #### 2. Api 설치 방법
 ```
 npm install --save로 설치되는 api들은 모두 nodejs 모듈이기 때문에 우리는 gulp를 실행할때만 사용한다.
-따라서 bower install --save를 이용하여 bower 모듈로써 설치해야 한다. 이 때, --save를 입력하면 설치한 모듈이 자동으로 최신버젼 기준으로 bower.json에 기록되어 다른 사람들은 bower install만 입력하면 된다. 물론 이 때 bower.json이 있는 경로에서 bower install --save를 입력해야 한다.
+따라서 bower install --save를 이용하여 bower 모듈로써 설치해야 한다. 
+이 때, --save를 입력하면 설치한 모듈이 자동으로 최신버젼 기준으로 bower.json에 기록되어 다른 사람들은 bower install만 입력하면 된다. 
+물론 이 때 bower.json이 있는 경로에서 bower install --save를 입력해야 한다.
 ```
 
 ## RESTful API 명세
