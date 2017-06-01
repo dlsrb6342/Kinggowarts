@@ -84,7 +84,7 @@ var xhr = new XMLHttpRequest();
 //이런식으로 주소가 현재 호스트를 반영하도록 함
 xhr.open("GET", location.protocol+"//"+location.host+"/xwiki/bin/view/Main/", true);
 xhr.withCredentials = true;
-xhr.setRequestHeader("Authorization", 'Basic ' + btoa('(아이디):(패스워드)'));
+xhr.setRequestHeader("Authorization", 'Basic ' + btoa('아이디:패스워드'));
 xhr.send();
 ```
 
