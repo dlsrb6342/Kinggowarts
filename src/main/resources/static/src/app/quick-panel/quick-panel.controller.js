@@ -7,15 +7,16 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state)
+    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state, Notice)
     {
         var vm = this;
 
         vm.timeline = TimelineData.data.data;
         vm.peer = PeerData.data.data;
         vm.request = RequestData.data.data;
+        vm.notice = Notice.data;
         
-        //vm.recentwiki = RecentwikiData.data;
+        vm.recentwiki = RecentwikiData.data;
 
         vm.currenttimeline = "SE";
         vm.currentlocation = "ST";
@@ -58,7 +59,7 @@
                 }
             }
 
-            //vm.getWikiLink();
+            vm.getWikiLink();
         };
         
         vm.getWikiLink = function () 
@@ -70,7 +71,7 @@
                     vm.wikihistory.Name.push(vm.recentwiki.historySummaries[i].pageId);
                     var obj = {};
                     obj.Title = vm.recentwiki.historySummaries[i].space.substring(6);
-                    obj.Link = 'http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/' + vm.recentwiki.historySummaries[i].space.substring(6);
+                    obj.Link = '../xwiki/bin/view/XWiki/' + vm.recentwiki.historySummaries[i].space.substring(6);
                     vm.wikihistory.Link.push(obj);
                 }
             }

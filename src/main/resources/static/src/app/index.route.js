@@ -50,23 +50,23 @@
                         return obj;
                     },
                     
-                    // Notice: function ($http, $sessionStorage)
-                    // {
-                    //     //임시
+                    Notice: function ($http, $sessionStorage)
+                    {
+                    
                         
-                    //     var obj = $http.get('./api/notice', {
-                    //         headers : {
-                    //             'Authorization' : $sessionStorage.get('AuthToken')
-                    //         }
-                    //     });
-                    //     return obj;
-                    // },
+                         var obj = $http.get('./api/notice?all=true', {
+                             headers : {
+                                 'x-auth-token' : $sessionStorage.get('AuthToken')
+                             }
+                         });
+                         return obj;
+                    },
 
                     
                     RecentwikiData: function ($http)
                     {
                         var obj;
-                        //obj = $http.get('http://fanatic1.iptime.org:8080/xwiki/rest/wikis/xwiki/modifications?start=0&number=30');
+                        obj = $http.get('../xwiki/rest/wikis/xwiki/modifications?start=0&number=100');
                         return obj;
                     }
                     
