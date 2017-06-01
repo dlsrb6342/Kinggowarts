@@ -30,6 +30,19 @@ https://drive.google.com/drive/folders/0B7qbRQX6_VNxd0NabjNpSXAzRHc?usp=sharing
 ```xml
 <Context cacheMaxSize="0" cacheTTL="0" cachingAllowed="false"/>
 ```
+## 프론트엔드
+
+#### 1. 실행방법
+1. 위의 배포파일의 경우 톰캣을 실행한 후 생성되는 tomcat/webapps/kinggowarts/WEB-INF/classes/static으로, github 경로는 Kinggowarts/src/main/resources/static로 간다.
+2. npm install을 입력하여 gulp api들을 받는다.
+3. static/src경로로 이동, gulp install을 입력하여 bower_components로 필요한 프론트엔드 api를 받는다.
+4. gulpfile.js가 있는 static 경로로 다시 이동하여 gulp watch를 입력한다. (js나 css가 변화될 경우 자동으로 inject한다.)
+
+#### 2. Api 설치 방법
+```
+npm install --save로 설치되는 api들은 모두 nodejs 모듈이기 때문에 우리는 gulp를 실행할때만 사용한다.
+따라서 bower install --save를 이용하여 bower 모듈로써 설치해야 한다. 이 때, --save를 입력하면 설치한 모듈이 자동으로 최신버젼 기준으로 bower.json에 기록되어 다른 사람들은 bower install만 입력하면 된다. 물론 이 때 bower.json이 있는 경로에서 bower install --save를 입력해야 한다.
+```
 
 ## RESTful API 명세
 
