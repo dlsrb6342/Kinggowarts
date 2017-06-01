@@ -31,12 +31,6 @@
                     }
                 },
                 resolve: {
-                    TimelineData: function ($http)
-                    {
-                        //임시
-                        var obj = $http.get('./app/data/quick-panel/timeline.json');
-                        return obj;
-                    },
                     PeerData: function ($http)
                     {
                         //임시
@@ -48,21 +42,7 @@
                         //임시
                         var obj = $http.get('./app/data/quick-panel/request.json');
                         return obj;
-                    },
-                    
-                    Notice: function ($http, $sessionStorage)
-                    {
-                    
-                        
-                         var obj = $http.get('./api/notice?all=true', {
-                             headers : {
-                                 'x-auth-token' : $sessionStorage.get('AuthToken')
-                             }
-                         });
-                         return obj;
-                    },
-
-                    
+                    },                 
                     RecentwikiData: function ($http)
                     {
                         var obj;

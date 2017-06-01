@@ -30,9 +30,7 @@
 
                 $sessionStorage.put('useremail', response.data.userId, 5);
                 $sessionStorage.put('AuthToken', response.data.token, 5);
-                console.log(response);
                 var nickname = response.data.nickname;
-                console.log(nickname);
 
                 $http({
                     method : 'GET',
