@@ -8,7 +8,23 @@ https://drive.google.com/drive/folders/0B7qbRQX6_VNxd0NabjNpSXAzRHc?usp=sharing
 1. cmd 창에서 tomcat/bin/startup.bat 실행
 2. locathost:8082/kinggowarts 접속
 
-#### 3. 기타
+#### 3. 새로운 배포파일로 바꾸기
+1. 위 링크에서 최신의 배포파일을 받는다. (kinggowartsXXXX_X.zip)
+2. 압축을 풀면 kinggowarts.war가 나온다.
+3. tomcat/webapps 에서 kinggowarts 폴더와 kinggowarts.war를 지운다.
+4. 새로운 kinggowarts.war를 tomcat/webapps 에 넣어준다.
+5. 톰캣 실행
+
+#### 4. 로컬 Xwiki
+```
+로컬 톰캣에는 로컬 XWiki 또한 포함되어있다. 이는 운영(fanatic1.~)의 XWiki와 동일한 DB이지만 로컬서버에서 돌아간다.
+
+로컬주소/xwiki 로 들어가면 로컬의 XWiki가 초기화된다. 서버 재시작을 할때 한번 들어가서 XWiki를 초기화 해줘야 한다.
+
+이를 통해 로컬서버에서도 XWiki 로그인을 및 접속이 가능하다.(로컬 XWiki를 이용하지 않으면 CORS문제가 생긴다.)
+```
+
+#### 5. 기타
 * 포트번호 변경은 tomcat/conf/server.xml 의 8082 라 되어있는 부분을 바꾸면 됨
 * 캐싱 옵션을 끄기 위해서는 tomcat/conf/context.xml 파일의 context 태그를 다음과 같이 수정해준다.(static 파일만 해당)
 ```xml
@@ -58,7 +74,22 @@ https://drive.google.com/drive/folders/0B7qbRQX6_VNxd0NabjNpSXAzRHc?usp=sharing
 x-auth-token 값으로 token 값을 넣어주면 인증이 된다. 
 ex) req.setRequestHeader('x-auth-token', token/*토큰값*/);
 ```
-#### 2. 회원가입
+#### 2. XWiki 로그인
+* REST 요청은 아님
+* XWiki로 basic authentication와 함게 요청을 보내면 쿠키를 가져와서 XWiki 로그인 상태를 유지할 수 있음.
+* XWiki의 아이디로는 닉네임을 쓰고 패스워드는 동일.
+* 예시
+```javascript
+var xhr = new XMLHttpRequest();
+//이런식으로 주소가 현재 호스트를 반영하도록 함
+xhr.open("GET", location.protocol+"//"+location.host+"/xwiki/bin/view/Main/", true);
+xhr.withCredentials = true;
+xhr.setRequestHeader("Authorization", 'Basic ' + btoa('(아이디):(패스워드)'));
+xhr.send();
+```
+
+
+#### 3. 회원가입
 * 주소: /api/member/signup
 * HTTP Method: POST
 * Description: 회원가입 요청
@@ -85,10 +116,12 @@ duplicateNickName: 닉네임 겹침
 * Comment
 ```
 회원가입 완료후에 사용자 이메일로 회원가입 요청 이메일이 간다. 거기에 있는 링크를 누르면 회원가입요청이 완료된다.
+회원가입 요청링크로 이동한 뒤 로그인을 시도하면(첫 로그인) 이때 Xwiki 회원가입이 자동으로 완료된다.
+따라서 Xwiki로그인은 Kinggowarts 로그인을 마친 뒤에 callback으로 해야함.
 ```
 * TODO: 프로필 사진은 아직 미구현
 
-#### 3. 지도 구역
+#### 4. 지도 구역
 * 주소: /api/map
 * HTTP Method: POST
 * Description: 지도 구역 추가 요청
