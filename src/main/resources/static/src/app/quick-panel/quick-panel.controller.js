@@ -7,17 +7,28 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(peerLocation, TimelineData, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state)
+    function QuickPanelController(peerLocation, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state, $sessionStorage)
     {
         var vm = this;
 
-        vm.timeline = TimelineData.data.data;
         vm.peer = PeerData.data.data;
         vm.request = RequestData.data.data;
-        
-        //vm.recentwiki = RecentwikiData.data;
+        vm.recentwiki = RecentwikiData.data;
 
-        vm.currenttimeline = "SE";
+        vm.timeline = {
+            currenttimeline : "skku",
+            range : {
+                skku : "학교",
+                cs : "소프트웨어대학",
+                fb : "페이스북"
+            },
+            notitime : {
+                skku : [],
+                cs : [],
+                fb : []
+            }
+        };
+
         vm.currentlocation = "ST";
 
         vm.peerrange = {
@@ -37,10 +48,12 @@
             Link : []
         };
 
+        var today = new Date();
+
         
-        vm.findtimelinelocation = function (event) {
+        vm.findtimelinelocation = function (locid) {
             //구역 ID로 이동
-            peerLocation.eventlocation = event.location;
+            peerLocation.eventlocation = locid;
         };
 
         function init()
@@ -58,7 +71,9 @@
                 }
             }
 
-            //vm.getWikiLink();
+            vm.getWikiLink();
+            getnotice();
+
         };
         
         vm.getWikiLink = function () 
@@ -70,9 +85,43 @@
                     vm.wikihistory.Name.push(vm.recentwiki.historySummaries[i].pageId);
                     var obj = {};
                     obj.Title = vm.recentwiki.historySummaries[i].space.substring(6);
-                    obj.Link = 'http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/' + vm.recentwiki.historySummaries[i].space.substring(6);
+                    obj.Link = '../xwiki/bin/view/XWiki/' + vm.recentwiki.historySummaries[i].space.substring(6);
                     vm.wikihistory.Link.push(obj);
                 }
+            }
+        };
+
+        function getnotice()
+        {
+            $http.get('./api/notice?all=true&category=skku', {
+                headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            }).then(function (response){
+                groupnotice(response.data[0].category.name,response.data);
+            });
+
+            $http.get('./api/notice?all=true&category=cs', {
+                headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            }).then(function (response){
+                groupnotice(response.data[0].category.name,response.data);
+            });
+
+            $http.get('./api/notice?all=true&category=fb', {
+                headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            }).then(function (response){
+                groupnotice(response.data[0].category.name,response.data);
+            });
+        };
+        function groupnotice(type, data){
+
+            for (var value = data.length-1; value>=0; value--){
+                if (vm.timeline.notitime[type].length >= 10) break;
+
+                data[value].time = (today.getTime() - data[value].time) / 86400000;
+
+                if(data[value].time < 1) data[value].time = "오늘";
+                else data[value].time = parseInt(data[value].time) + "일전";
+
+                vm.timeline.notitime[type].push(data[value]);
             }
         };
 
