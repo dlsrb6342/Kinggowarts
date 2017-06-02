@@ -6,5 +6,5 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import java.util.List;
 
 public interface LocationSearchRepository extends ElasticsearchRepository<Location, Long> {
-    List<Location> findAllByNameContainsOrDetailContains(String q);
+    List<Location> findAllByNameContains(String q);
 }

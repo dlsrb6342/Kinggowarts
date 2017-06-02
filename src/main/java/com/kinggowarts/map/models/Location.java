@@ -7,10 +7,10 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.util.HashMap;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Document(indexName="eunjeon", type="locations")
 @Data @Entity @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -19,22 +19,29 @@ public class Location {
     private long id;
     @Field(type=FieldType.String, analyzer="korean")
     private String name;
-    private double center_lng;
-    private double center_lat;
+    @OneToOne()
+    private Coordinate center;
+    @OneToMany() @OrderBy("id")
+    private List<Coordinate> path;
     private String type;
     private String shape;
     private String detail;
+    @Field(type=FieldType.Nested) @OneToMany()
+    private Set<Tag> tags = new HashSet<>();
 
     public Location() {
     }
 
-    public Location(String name, HashMap<String, Double> center,
+    public Location(String name, Coordinate center,
                     String type, String detail, String shape){
         this.name = name;
-        this.center_lng = center.get("lng");
-        this.center_lat = center.get("lat");
+        this.center = center;
         this.type = type;
         this.detail = detail;
         this.shape = shape;
+    }
+
+    public void addTag(Tag tag){
+        this.tags.add(tag);
     }
 }
