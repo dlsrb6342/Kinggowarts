@@ -27,6 +27,9 @@
             'app.notice',
 
             //login module
-            'app.login'
+            'app.login',
+
+            //register module
+            'app.register'
         ]);
 })();
