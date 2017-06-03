@@ -3,8 +3,8 @@
     <md-toolbar>
       <div class="md-toolbar-tools">
       <!-- <h2> {{vm.clickName}} </h2> // 위키 제목 -->
-        <h2 ng-if="isModify == false"> 새로운 커스텀 이벤트 생성하기 </h2>
-        <h2 ng-if="isModify == true"> {{retData['name']}} 정보 수정하기 </h2>
+        <h2 ng-if="isModify == false"> 새로운 Region 생성하기 </h2>
+        <h2 ng-if="isModify == true"> {{retData['name']}} Region 정보 수정하기 </h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
           <md-icon md-font-icon="icon-close-circle-outline" class="icon"></md-icon>
@@ -19,23 +19,6 @@
         <label>제목</label>
         <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="retData['name']">
       </md-input-container>
-      <md-input-container class="md-block">
-        <label>주최자</label>
-        <input md-maxlength="20" required="" md-no-asterisk="" name="description" ng-model="retData['creater']">
-      </md-input-container>
-    </div>
-    <div layout-gt-sm="row">
-      <md-input-container class="md-block">
-        <label>시작일자</label>
-        <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="retData['fromDate']">
-      </md-input-container>
-    </div>
-
-    <div layout-gt-sm="row">
-    <md-input-container class="md-block">
-      <label>종료일자</label>
-      <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="retData['toDate']">
-    </md-input-container>
     </div>
     
     <md-input-container class="md-block">
