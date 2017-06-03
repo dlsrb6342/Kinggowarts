@@ -5,24 +5,7 @@
         <div id="register-form">
             <div class="title"><h1>  Create Account</h1></div>
                 
-            <div flow-init
-                 flow-files-submitted="$flow.upload()"
-                 flow-files-added="processFiles($files)">
-                <div class="drop" flow-drop="" ng-class="dropClass">
-                    <md-button type="normal" class="btn btn-primary" flow-btn>계정 이미지 선택</md-button>
-                </div>
-                <div ng-repeat="file in $flow.files track by $index" class="motelRoom">
-                    <span>{{file.name}}</span>
-                    <div class="thumbnail" ng-show="$flow.files.length">
-                        <img flow-img="file" />
-                    </div>
-              
-
-                    <div class="btn-group">
-                        <md-button type="normal" class="btn btn-xs btn-danger" ng-click="file.cancel()">취소</md-button>
-                    </div>
-                </div>
-            </div>
+          
 
             <md-button type="normal" ng-click="imageUpload(file)" class="btn btn-info">이미지 업로드</md-button>
 
