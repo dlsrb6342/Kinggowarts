@@ -238,7 +238,7 @@
                     },
                     "type" : "user",
                     "shape" : "",
-                    "detail" : "",
+                    "about" : "",
                     "tags" : "",
                     "path" : []
                 };
@@ -295,7 +295,7 @@
                 $scope.canModify = true;
             }
             else{
-                $scope.canModify = false;
+                $scope.canModify = true;
             }
             //selectedMarkerIdx;
             $scope.hide = function() {
@@ -354,7 +354,7 @@
             {
                 //UNDO
                 vm.markerData["regions"][selectedMarkerIdx]["name"] = answer["name"];
-                vm.markerData["regions"][selectedMarkerIdx]["detail"] = answer["detail"];
+                vm.markerData["regions"][selectedMarkerIdx]["about"] = answer["about"];
                 //vm.markerData["regions"][selectedMarkerIdx]["location"] = answer["location"];
 
                 //TODO : get new data from server
@@ -444,22 +444,18 @@
             if(isModifyCustomEventInfo == true){
                 $scope.isModify = true; //dialog에서 create/detail 상태에 따른 제목 수정
                 $scope.retData = modifiedData;
-                console.log("---");
-                console.log(modifiedData);
+                
             }
             else{
-                if(inLid != -1){
-                    lid = inLid;
-                }
                 $scope.isModify = false;
                 $scope.retData = 
                 {
                     "name": "",
-                    "l_id" : lid,
+                    "l_id" : inLid,
                     "creater" : "",
                     "fromDate" : "",
                     "toDate" : "",
-                    "detail" : "",
+                    "about" : "",
                     "tags" : []
                 };
             }
@@ -601,7 +597,7 @@
                     //"dateTo" : "",
 
                     "center" : {"lat": 37.29410858054493,"lng":126.9738347803545, "radius" : 0},
-                    "detail" : "this is customEvent",
+                    "about" : "this is customEvent",
                     "type" : "user",
                     "shape" : "POLYGON",
                     "path" : [
@@ -666,7 +662,7 @@
             //UNDO
             vm.markerData["customevent"][selectedMarkerIdx]["name"] = answer["name"];
             //vm.markerData["customevent"][selectedMarkerIdx]["type"] : "none"
-            vm.markerData["customevent"][selectedMarkerIdx]["detail"] = answer["detail"];
+            vm.markerData["customevent"][selectedMarkerIdx]["about"] = answer["about"];
             vm.markerData["customevent"][selectedMarkerIdx]["creater"] = answer["creater"];
             vm.markerData["customevent"][selectedMarkerIdx]["fromDate"] = answer["fromDate"];
             vm.markerData["customevent"][selectedMarkerIdx]["toDate"] = answer["toDate"];
@@ -1158,11 +1154,12 @@
                 if( regionsSetWithEvent[strLid] ){
                     //only add to vm.customEventDataOrderbyRegions
                     var leng = vm.customEventDataOrderbyRegions[strLid].length;
-                    vm.customEventDataOrderbyRegions[strLid][leng] = i;  //index of vm.customEventData
+                    vm.customEventDataOrderbyRegions[strLid][leng] = vm.customEventData[i];  //index of vm.customEventData
                     regionsSetWithEvent[strLid] = true;
                     //markerData에 해당 region의 정보 등록
                     //subAreaData에서 l_id를 가진 정보 찾기
                     var targetIdx = -1;
+                    //console.log("intLid" + intLid);
                     for(var k=0; k<subAreaData.length; k++){
                         if(subAreaData[k]["id"] == intLid){
                             targetIdx = k;
