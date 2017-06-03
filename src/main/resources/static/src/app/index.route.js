@@ -31,17 +31,20 @@
                     }
                 },
                 resolve: {
-                    PeerData: function ($http)
+                    PeerData: function ($http, $sessionStorage)
                     {
-                        //임시
-                        var obj = $http.get('./app/data/quick-panel/peer.json');
-                        return obj;
+
+                        var obj = $http.get('./api/member/peer', {
+                            headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
+                        });
+                        return obj
                     },
-                    RequestData: function ($http)
+                    RequestData: function ($http, $sessionStorage)
                     {
-                        //임시
-                        var obj = $http.get('./app/data/quick-panel/request.json');
-                        return obj;
+                        var obj = $http.get('./api/member/reqPeerToMe', {
+                            headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
+                        });
+                        return obj
                     },                 
                     RecentwikiData: function ($http)
                     {

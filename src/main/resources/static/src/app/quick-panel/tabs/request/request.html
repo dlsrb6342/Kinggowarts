@@ -1,12 +1,21 @@
 <div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
-    <div class="h3" style="margin-top: 18px; margin-bottom: 18px;">Request</div>
+    <div class="h3">피어 요청</div>
+
+    <div class="pv-16">
+        <md-select class="simplified" ng-model="vm.prequest.currentrequest" aria-label="Change range">
+            <md-option ng-repeat="(key, range) in vm.prequest.range" value="{{key}}">
+                {{range}}
+            </md-option>
+        </md-select>
+    </div>
+
 </div>
 
 
-<md-list class="checklist" ng-if="vm.request.request.length > 0">
+<md-list class="checklist" ng-if="vm.request.length > 0 && vm.prequest.currentrequest == 'recv'">
 
-    <md-list-item ng-repeat="item in vm.request.request">
-        <p>{{item.text}}</p>
+    <md-list-item ng-repeat="item in vm.request">
+        <p>{{item.nickname}}</p>
         <md-icon ng-click="vm.requestaccept(item)"
             class="md-secondary"
             md-font-icon="icon-checkbox-marked-circle green-500-fg" aria-label="remove">
@@ -17,3 +26,24 @@
         </md-icon>
     </md-list-item>
 </md-list>
+
+<div ng-if="vm.prequest.currentrequest == 'send'">
+    <center>
+        <md-input-container  md-no-float>
+            <input type="email" name="nickname" id = "nickname" placeholder="seq 입력">
+        </md-input-container>
+
+        <md-button type="submit" class="md-raised md-accent submit-button" aria-label="LOG IN" ng-click="vm.finduser()">
+            Find
+        </md-button>
+    </center>
+    
+    <!-- <md-list class="checklist" ng-if="vm.request.request.length > 0 ">
+
+        <md-list-item class="contact" ng-repeat="item in " ng-click="vm.sendrequest()">
+            
+        </md-list-item>    
+
+    </md-list>-->
+    
+</div>

@@ -27,9 +27,11 @@
                 }),
                 headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
             }).then(function successCallback(response){
-
-                $sessionStorage.put('useremail', response.data.userId, 5);
-                $sessionStorage.put('AuthToken', response.data.token, 5);
+                
+                $sessionStorage.put('nickname', response.data.nickname, 50);
+                $sessionStorage.put('memberSeq', response.data.memberSeq, 50);
+                $sessionStorage.put('useremail', response.data.userId, 50);
+                $sessionStorage.put('AuthToken', response.data.token, 50);
                 var nickname = response.data.nickname;
 
                 $http({
