@@ -1,0 +1,23 @@
+#notice-item {
+
+    md-content {
+        .notice-item-image {
+            
+        }
+        .notice-item-content {
+            .notice-item-text {        
+                white-space: pre-wrap; /* CSS3*/
+                white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+                white-space: -pre-wrap; /* Opera 4-6 */
+                white-space: -o-pre-wrap; /* Opera 7 */
+                word-wrap: break-all; /* Internet Explorer 5.5+ */ 
+            }
+        }
+        
+        .notice-item-footer {
+            .notice-bold {
+                font-weight: 900;
+            }
+        }
+    }   
+}

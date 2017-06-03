@@ -136,27 +136,246 @@ duplicateNickName: 닉네임 겹침
 ```
 * TODO: 프로필 사진은 아직 미구현
 
-#### 4. 지도 구역
+#### 4. 지도 구역 추가
 * 주소: /api/map
 * HTTP Method: POST
 * Description: 지도 구역 추가 요청
-* Request Type: form data
+* Request Type: application/json
 * Request Value
+
 ```
-name : 구역이름
-center : 구역 중심 좌표
-shape : 구역 형태
-path : 구역을 이루는 좌표
-detail : 구역 상세 설명
+name: 구역이름
+center: { lat : , lng : }
+shape: 구역 형태
+path: [ { lat : , lng : }, { lat : , lng : } ... ]
+detail: 구역 상세 설명
+tag: [ { name : }, { name : } ... ]
 ```
 
 * Response Types: text
 * Response Value
 ```
 success: 성공적인 요청
-duplicatedName : 구역 이름 겹침
+duplicatedName: 구역 이름 겹침
 ```
-* Status codes
+
+#### 5. 지도 구역 수정
+* 주소: /api/map/{id}
+* HTTP Method: PUT
+* Description: 지도 구역 수정 요청
+* Request Type: application/json
+* Request Value
+
 ```
-400: 잘못된 요청 (요청 타입이 잘못되었다거나 요청한 파라미터가 없다거나)
+name: 구역이름
+center: { lat : , lng : }
+shape: 구역 형태
+path: [ { lat : , lng : }, { lat : , lng : } ... ]
+detail: 구역 상세 설명
+tag: [ { name : }, { name : } ... ]
 ```
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noLocation: 구역 정보 없음
+```
+
+#### 6. 지도 구역 삭제
+* 주소: /api/map/{id}
+* HTTP Method: DELETE
+* Description: 지도 구역 삭제 요청
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noLocation: 구역 정보 없음
+```
+
+#### 7. 이벤트 추가
+* 주소: /api/event
+* HTTP Method: POST
+* Description: 이벤트 추가 요청
+* Request Type: application/json
+* Request Value
+```
+l_id: 구역 고유 번호
+title: 이벤트 타이틀
+about: 이벤트 상세 설명
+creator: { memberSeq: 사용자 고유 번호 }
+tag: [ { name : }, { name : } ... ]
+fromDate: 이벤트 시작 날짜(Timestamp)
+toDate: 이벤트 종료 날짜(Timestamp)
+```
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noMember: 사용자 정보 없음
+```
+
+#### 8. 이벤트 수정
+* 주소: /api/event/{id}
+* HTTP Method: PUT
+* Description: 이벤트 수정 요청
+* Request Type: application/json
+* Request Value
+```
+l_id: 구역 고유 번호
+title: 이벤트 타이틀
+about: 이벤트 상세 설명
+creator: { memberSeq: 사용자 고유 번호 }
+tag: [ { name : }, { name : } ... ]
+fromDate: 이벤트 시작 날짜(Timestamp)
+toDate: 이벤트 종료 날짜(Timestamp)
+```
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noEvent: 이벤트 정보 없음
+noMember: 사용자 정보 없음
+```
+
+#### 9. 이벤트 삭제
+* 주소: /api/map/{id}
+* HTTP Method: DELETE
+* Description: 이벤트 삭제 요청
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noEvent: 이벤트 정보 없음
+```
+
+#### 10. Peer 관리
+* 주소: /api/member/reqPeerFromMe
+  * HTTP Method: GET
+    * Description: 내가 Peer 요청 보낸 목록을 가져옴
+    * Request Value: 없음 
+    * Response Types: JSON
+    * Request Value
+    ```javascript
+    [
+      {
+        "memberSeq": 1,
+        "nickname": "haha"
+      },
+      {
+        "memberSeq": 13,
+        "nickname": "fafa"
+      }
+    ]
+    ```
+    
+  * HTTP Method: POST
+    * Description: Peer 요청을 보냄
+    * Request Type: form data
+    * Request Value
+    ```
+    toSeq: 받는 사람의 member seq
+    ```
+    * Response Types: 없음
+
+* 주소: /api/member/reqPeerToMe
+  * HTTP Method: GET
+    * Description: 내가 Peer 요청 받은 목록을 가져옴
+    * Request Value: 없음 
+    * Response Types: JSON
+    * Request Value
+    ```javascript
+    [
+      {
+        "memberSeq": 23,
+        "nickname": "user1"
+      },
+      {
+        "memberSeq": 24,
+        "nickname": "user2"
+      },
+      {
+        "memberSeq": 25,
+        "nickname": "user3"
+      }
+    ]
+    ```
+    
+  * HTTP Method: POST
+    * Description: Peer 요청을 수락 or 거절
+    * Request Type: form data
+    * Request Value
+    ```
+    toSeq: 받는 사람의 member seq
+    type: ("true", "false") 수락: "true", 거절: "false"
+    ```
+    * Response Types: 없음
+
+
+
+* 주소: /api/member/peer
+  * HTTP Method: GET
+    * Description: Peer 목록을 가져옴(-1 좌표는 위치가 없다는 의미)
+    * Request Value: 없음 
+    * Response Types: JSON
+    * Request Value
+    ```javascript
+    [
+      {
+        "memberSeq": 26,
+        "nickname": "user4", //닉네임
+        "lng": -1, //좌표
+        "lat": -1
+      },
+      {
+        "memberSeq": 27,
+        "nickname": "user5",
+        "lng": -1,
+        "lat": -1
+      }
+    ]
+    ```
+    
+  * HTTP Method: DELETE
+    * Description: Peer를 삭제
+    * Request Type: form data
+    * Request Value
+    ```
+    toSeq: 받는 사람의 member seq
+    ```
+    * Response Types: 없음
+    
+    
+* 주소: /api/member/coordinate
+	* Description: 내 좌표를 갱신하고 peer들의 위치를 불러옴
+	* HTTP Method: PATCH
+	* Request Type: form data
+    * Request Value
+    ```
+    {
+	"lng" : 123.23, /*좌표값 ... 없는 좌표를 넣을때는 -1*/
+	"lat" : 123.53
+	}
+    ```
+    * Response Types: JSON
+    * Request Value
+    ```
+    [
+      {
+        "memberSeq": 26,
+        "nickname": "user4",
+        "lng": -1, // -1일땐 없는 좌표
+        "lat": -1
+      },
+      {
+        "memberSeq": 27,
+        "nickname": "user5",
+        "lng": -1,
+        "lat": -1
+      }
+    ]
+    ```

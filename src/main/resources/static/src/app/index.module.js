@@ -27,6 +27,13 @@
             'app.notice',
 
             //login module
-            'app.login'
+            'app.login',
+
+            //register module
+            'app.register',
+
+
+            // Common 3rd-party engine
+            'swxSessionStorage'
         ]);
 })();

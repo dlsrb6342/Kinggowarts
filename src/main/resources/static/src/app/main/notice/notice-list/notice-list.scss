@@ -1,0 +1,63 @@
+.doc-page {
+
+    > .header {
+        height: 140px !important;
+        min-height: 140px !important;
+        max-height: 140px !important;
+        padding: 24px !important;
+
+        .reference-button {
+            padding: 0 8px;
+            min-width: 45px;
+
+            span {
+                margin-left: 4px;
+            }
+        }
+    }
+
+    > .content {
+        max-width: 1200px;
+    }
+}
+
+// RESPONSIVE
+@media screen and (max-width: $layout-breakpoint-xs) {
+
+    .doc-page {
+
+        .source-code {
+            min-height: 120px;
+        }
+
+        > .header {
+
+            .reference-button {
+                margin: 0;
+
+                span {
+                    display: none;
+                }
+            }
+        }
+
+        .content {
+
+            .ms-responsive-table-wrapper {
+
+                table {
+
+                    tbody {
+
+                        td {
+
+                            &.description {
+                                min-width: 200px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

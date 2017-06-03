@@ -1,0 +1,51 @@
+<div id="notice-item" layout="column" ng-cloak>
+    <md-toolbar class="md-primary">
+        <div class="md-toolbar-tools">
+            <h3>{{vm.noticeItem.title}}</h3>
+            <span flex></span>
+            <md-button
+                    class="md-raised"
+                    aria-label="OPEN LINK"
+                    ng-href="{{vm.noticeItem.link}}" target="_blank">
+                원본 글 보기
+                <md-tooltip md-autohide>해당 글의 원본 링크를 엽니다.</md-tooltip>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-content md-content flex layout-padding>
+        <div ng-if="vm.noticeItem.img_src" class="notice-item-image">
+            <img ng-src="{{vm.noticeItem.img_src}}"/>
+        </div>
+        <div class="notice-item-content" flex>
+            <p class="notice-item-text">
+                {{vm.noticeItem.contents}}
+            </p>
+        </div>
+        <div class="notice-item-footer" layout="row">
+            <div layout="row" flex="50" layout-align="start center">
+              <span class="p-8 md-subhead notice-bold">업로드 시간</span>
+              <span class="md-subhead">
+                {{vm.noticeItem.time | date:'yyyy-MM-dd'}}
+              </span>
+            </div>
+            <div layout="row" flex="50" layout-align="start center">
+              <span class="p-8 md-subhead notice-bold">장소</span>
+              <div layout="row" layout-align="start center" ng-if="vm.noticeItem.location.name != 'none'" flex>
+                <span class="md-subhead mr-8">
+                    {{vm.noticeItem.location.name}}
+                </span>
+                <md-button
+                        class="md-fab md-mini"
+                        aria-label="MOVE MAP">
+                    <md-icon md-font-icon="icon-map-marker"></md-icon>
+                    <md-tooltip md-autohide>지도의 해당 장소로 이동합니다.</md-tooltip>
+                </md-button>
+              </div>
+              <span class="md-subhead" ng-if="vm.noticeItem.location.name == 'none'">
+                없음
+              </span>
+            </div>
+        </div>
+    </md-content>
+</div>

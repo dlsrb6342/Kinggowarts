@@ -8,8 +8,8 @@
             // Navigation
             'app.notice.navigation',
 
-            // Facebook
-            'app.notice.facebook'
+            // Content
+            'app.notice.list'
 
             ])
         .config(config);
@@ -29,7 +29,7 @@
                     },
                     'notice-navigation@app.notice': {
                         templateUrl: 'app/main/notice/notice-navigation/notice-navigation.html',
-                        controller : 'NavigationController as vm'
+                        controller : 'NoticeNavigationController as vm'
                     }
                 }
             });

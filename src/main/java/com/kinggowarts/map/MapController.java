@@ -4,31 +4,37 @@ import com.kinggowarts.map.models.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
-@RestController @RequestMapping(value="/api/map")
+@RestController @RequestMapping("/api/map")
 public class MapController {
 
     @Autowired
     private MapService mapService;
 
-    @RequestMapping(value="", method=RequestMethod.GET)
-    public List<HashMap<String, Object>> findAllCoordinate(@RequestParam("type") String type){
+    @GetMapping("")
+    public List<Location> findAllCoordinate(@RequestParam("type") String type) {
         return mapService.findAllCoordinate(type);
     }
 
-    @RequestMapping(value="", method=RequestMethod.POST)
-    public String saveLocation(@RequestParam("name") String name,
-                             @RequestParam("center") HashMap<String, Double> center,
-                             @RequestParam("shape") String shape,
-                             @RequestParam("path") List<HashMap<String, Double>> path,
-                             @RequestParam("detail") String detail) {
-        return mapService.saveLocation(name, center, shape, path, detail);
+    @PostMapping("")
+    public String saveLocation(@RequestBody Location location) {
+        return mapService.saveLocation(location);
     }
 
-    @RequestMapping(value="/search", method=RequestMethod.GET)
-    public List<Location> searchLocation(@RequestParam("q") String q){
+    @GetMapping("/search")
+    public List<Location> searchLocation(@RequestParam(value="q") String q) {
         return mapService.searchLocation(q);
+    }
+
+    @DeleteMapping(value="/{id}")
+    public String deleteLocation(@PathVariable("id")long id){
+        return mapService.deleteLocation(id);
+    }
+
+    @PutMapping(value="/{id}")
+    public String editLocation(@PathVariable("id") long id,
+                               @RequestBody Location location){
+        return mapService.editLocation(location, id);
     }
 }
