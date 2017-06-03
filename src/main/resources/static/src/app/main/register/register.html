@@ -41,15 +41,7 @@
                     </div>
                 </md-input-container>
                 
-                <md-input-container class="md-block" md-no-float>
-                    <input name="location_share" ng-model="vm.form.usertype" placeholder="회원 타입(S: 학생 T: 교수)"
-                           required>
-                    <div ng-messages="registerForm.usertype.$error" role="alert">
-                        <div ng-message="required">
-                            <span>회원 타입을 입력해주세요</span>
-                        </div>
-                    </div>
-                </md-input-container>
+               
                 <md-button type="submit" class="md-raised md-accent submit-button" aria-label="CREATE MY ACCOUNT"
                            ng-disabled="registerForm.$invalid || registerForm.$pristine" ng-click="vm.register_loginfun(registerForm.username.$viewValue,registerForm.email.$viewValue,registerForm.password.$viewValue,registerForm.location_share.$viewValue)">
                     계정 만들기
