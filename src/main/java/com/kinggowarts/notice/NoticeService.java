@@ -35,6 +35,6 @@ public class NoticeService {
     }
 
     List<Notice> searchNotice(String q){
-        return noticeSearchDao.findAllByContentsContainsOrTitleContains(q);
+        return noticeSearchDao.findAllByContentsContainsOrTitleContainsOrderByTimeDesc(q, q);
     }
 }

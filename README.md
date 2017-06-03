@@ -136,27 +136,119 @@ duplicateNickName: 닉네임 겹침
 ```
 * TODO: 프로필 사진은 아직 미구현
 
-#### 4. 지도 구역
+#### 4. 지도 구역 추가
 * 주소: /api/map
 * HTTP Method: POST
 * Description: 지도 구역 추가 요청
-* Request Type: form data
+* Request Type: application/json
 * Request Value
+
 ```
-name : 구역이름
-center : 구역 중심 좌표
-shape : 구역 형태
-path : 구역을 이루는 좌표
-detail : 구역 상세 설명
+name: 구역이름
+center: { lat : , lng : }
+shape: 구역 형태
+path: [ { lat : , lng : }, { lat : , lng : } ... ]
+detail: 구역 상세 설명
+tag: [ { name : }, { name : } ... ]
 ```
 
 * Response Types: text
 * Response Value
 ```
 success: 성공적인 요청
-duplicatedName : 구역 이름 겹침
+duplicatedName: 구역 이름 겹침
 ```
-* Status codes
+
+#### 5. 지도 구역 수정
+* 주소: /api/map/{id}
+* HTTP Method: PUT
+* Description: 지도 구역 수정 요청
+* Request Type: application/json
+* Request Value
+
 ```
-400: 잘못된 요청 (요청 타입이 잘못되었다거나 요청한 파라미터가 없다거나)
+name: 구역이름
+center: { lat : , lng : }
+shape: 구역 형태
+path: [ { lat : , lng : }, { lat : , lng : } ... ]
+detail: 구역 상세 설명
+tag: [ { name : }, { name : } ... ]
+```
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noLocation: 구역 정보 없음
+```
+
+#### 6. 지도 구역 삭제
+* 주소: /api/map/{id}
+* HTTP Method: DELETE
+* Description: 지도 구역 삭제 요청
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noLocation: 구역 정보 없음
+```
+
+#### 7. 이벤트 추가
+* 주소: /api/event
+* HTTP Method: POST
+* Description: 이벤트 추가 요청
+* Request Type: application/json
+* Request Value
+```
+l_id: 구역 고유 번호
+title: 이벤트 타이틀
+about: 이벤트 상세 설명
+creator: { memberSeq: 사용자 고유 번호 }
+tag: [ { name : }, { name : } ... ]
+fromDate: 이벤트 시작 날짜(Timestamp)
+toDate: 이벤트 종료 날짜(Timestamp)
+```
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noMember: 사용자 정보 없음
+```
+
+#### 8. 이벤트 수정
+* 주소: /api/event/{id}
+* HTTP Method: PUT
+* Description: 이벤트 수정 요청
+* Request Type: application/json
+* Request Value
+```
+l_id: 구역 고유 번호
+title: 이벤트 타이틀
+about: 이벤트 상세 설명
+creator: { memberSeq: 사용자 고유 번호 }
+tag: [ { name : }, { name : } ... ]
+fromDate: 이벤트 시작 날짜(Timestamp)
+toDate: 이벤트 종료 날짜(Timestamp)
+```
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noEvent: 이벤트 정보 없음
+noMember: 사용자 정보 없음
+```
+
+#### 9. 이벤트 삭제
+* 주소: /api/map/{id}
+* HTTP Method: DELETE
+* Description: 이벤트 삭제 요청
+
+* Response Types: text
+* Response Value
+```
+success: 성공적인 요청
+noEvent: 이벤트 정보 없음
 ```

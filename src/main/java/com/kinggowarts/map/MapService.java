@@ -1,7 +1,6 @@
 package com.kinggowarts.map;
 
 import com.kinggowarts.map.models.Location;
-import com.kinggowarts.map.models.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +27,6 @@ public class MapService {
 
     @Transactional
     String saveLocation(Location location) {
-        System.out.println(location);
         if (locationDao.findFirstByName(location.getName()) != null) {
             return "duplicatedName";
         } else {
@@ -41,7 +39,57 @@ public class MapService {
         }
     }
 
-    List<Location> searchLocation(String q) {
-        return locationSearchDao.findAllByNameContains(q);
+    String editLocation(Location newLocation, long id){
+        Location location = locationDao.findOne(id);
+        if (location == null) {
+            return "noLocation";
+        } else {
+            coordinateDao.delete(location.getCenter());
+            coordinateDao.delete(location.getPath());
+            tagDao.delete(location.getTags());
+            newLocation.setId(id);
+            coordinateDao.save(newLocation.getCenter());
+            coordinateDao.save(newLocation.getPath());
+            tagDao.save(newLocation.getTags());
+            locationDao.save(newLocation);
+            locationSearchDao.save(newLocation);
+            return "success";
+        }
+    }
+
+    String deleteLocation(long id){
+        Location location = locationDao.findOne(id);
+        if (location == null) {
+            return "noLocation";
+        } else {
+            locationDao.delete(location);
+            locationSearchDao.delete(location);
+            return "success";
+        }
+    }
+
+    List<Location> searchLocation(String q){
+        List<Location> searchListByName = searchName(q);
+        List<Location> searchListByTag = locationSearchDao.findAllByTagsName(q);
+        int nameSize = searchListByName.size();
+        int tagSize = searchListByTag.size();
+        List<Location> locationList = new ArrayList<>();
+
+        for(int i = 0; i < Math.max(nameSize, tagSize); i++){
+            if(i < nameSize)
+                locationList.add(searchListByName.get(i));
+            if(i < tagSize)
+                locationList.add(searchListByTag.get(i));
+        }
+
+        return locationList;
+    }
+
+    private List<Location> searchName(String q) {
+        if(q.equals("공대")) {
+            return locationSearchDao.findAllByNameLike(q);
+        } else {
+            return locationSearchDao.findAllByNameContains(q);
+        }
     }
 }

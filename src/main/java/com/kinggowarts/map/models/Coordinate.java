@@ -10,12 +10,4 @@ public class Coordinate {
     private long id;
     private double lng;
     private double lat;
-
-    public Coordinate(){
-    }
-
-    public Coordinate(double lng, double lat){
-        this.lng = lng;
-        this.lat = lat;
-    }
 }
