@@ -84,7 +84,7 @@
                     vm.peerlist.peer.active[vm.peerlist.peer.active.length-1].weight = [vm.peerlist.peer.active.length-1];
                 }
             }
-
+            peerLocation.peer = vm.peerlist.peer;
             vm.getWikiLink();
             getnotice();
         };
