@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 		includeFilters = @ComponentScan.Filter(
 						type = FilterType.ASSIGNABLE_TYPE, classes = ElasticsearchRepository.class))
 @EnableAsync
-@PropertySource("sensitiveinfo.properties")
+@PropertySource("classpath:sensitiveinfo.properties")
 public class ServerApplication {
 
 	public static void main(String[] args) {

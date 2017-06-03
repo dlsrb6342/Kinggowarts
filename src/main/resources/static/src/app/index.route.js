@@ -31,42 +31,22 @@
                     }
                 },
                 resolve: {
-                    TimelineData: function ($http)
-                    {
-                        //임시
-                        var obj = $http.get('/app/data/quick-panel/timeline.json');
-                        return obj;
-                    },
                     PeerData: function ($http)
                     {
                         //임시
-                        var obj = $http.get('/app/data/quick-panel/peer.json');
+                        var obj = $http.get('./app/data/quick-panel/peer.json');
                         return obj;
                     },
                     RequestData: function ($http)
                     {
                         //임시
-                        var obj = $http.get('/app/data/quick-panel/request.json');
+                        var obj = $http.get('./app/data/quick-panel/request.json');
                         return obj;
-                    },
-                    
-                    Notice: function ($http, $sessionStorage)
-                    {
-                        //임시
-                        
-                        var obj = $http.get('/api/notice?all=true', {
-                            headers : {
-                                'Authorization' : $sessionStorage.get('AuthToken')
-                            }
-                        });
-                        return obj;
-                    },
-
-                    
+                    },                 
                     RecentwikiData: function ($http)
                     {
                         var obj;
-                        //obj = $http.get('http://fanatic1.iptime.org:8080/xwiki/rest/wikis/xwiki/modifications?start=0&number=30');
+                        obj = $http.get('../xwiki/rest/wikis/xwiki/modifications?start=0&number=100');
                         return obj;
                     }
                     

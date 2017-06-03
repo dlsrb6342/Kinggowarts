@@ -4,7 +4,6 @@ import com.kinggowarts.member.MemberService;
 import com.kinggowarts.member.models.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +20,6 @@ public class AuthenticationController {
     @Autowired
     MemberService memberService;
 
-
     @ResponseBody
     @PostMapping(value="/login")
     public Object login(
@@ -29,18 +27,18 @@ public class AuthenticationController {
             @RequestParam(value="password") String pw,
             HttpSession session
     ) {
-      //  System.out.println(name);
-      // System.out.println(pw);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(name, pw);
         Authentication authentication = authenticationManager.authenticate(token);
-
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext());
 
         UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(user.getConfirm()!= Member.COMPLETE_CONFIRM)
+
+        if(user.getConfirm()==Member.EMAIL_CONFIRM){
+            memberService.confirmUser(name, pw);
+        }else if(user.getConfirm()!= Member.COMPLETE_CONFIRM)
             return "Not confirmed";
 
         return new UserAuthToken(user.getUsername(), user.getAuthorities(), session.getId(), user.getNickname(), user.getType(), user.getMemSeq());
