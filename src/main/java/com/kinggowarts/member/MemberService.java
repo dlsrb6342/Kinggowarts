@@ -53,8 +53,6 @@ public class MemberService {
             return "duplicateNickname";
         }else {
             member.setConfirm(Member.NOT_CONFIRM);
-            //TO-DO Email인증 구현
-            //member.setConfirm(Member.COMPLETE_CONFIRM);
             mailService.sendMailAuth(member.getUserId(), url);
 
             memberRepository.save(member);
@@ -130,5 +128,61 @@ public class MemberService {
             e.printStackTrace();
         }
     }
+
+    public Member getMemberBySeq(Long memberSeq){
+        return memberRepository.findByMemberSeq(memberSeq);
+    }
+
+    @Transactional
+    public void sendReqFollowing(Long fromUserSeq, Long toUserSeq){
+        Member fromMember = memberRepository.findByMemberSeq(fromUserSeq);
+        Member toMember = memberRepository.findByMemberSeq(toUserSeq);
+        fromMember.getReqFollowing().add(toMember);
+        memberRepository.save(fromMember);
+        memberRepository.save(toMember);
+    }
+
+
+    @Transactional
+    public void decideReqFollower(Long fromUserSeq, Long toUserSeq, String type){
+        memberRepository.deleteReqPeer(fromUserSeq, toUserSeq);
+        if(type.equals("true")) {
+           memberRepository.insertPeer(fromUserSeq, toUserSeq);
+            memberRepository.insertPeer(toUserSeq, fromUserSeq);
+        }
+
+    }
+
+    @Transactional
+    public void deleteFollow(Long fromUserSeq, Long toUserSeq){
+        memberRepository.deletePeer(fromUserSeq, toUserSeq);
+    }
+
+    public ArrayList<Member> getReqFollowingList(Long memSeq){
+        return memberRepository.findAllRequestFromMe(memSeq);
+    }
+
+    public ArrayList<Member> getReqFollowerList(Long memSeq){
+        return memberRepository.findAllRequestToMe(memSeq);
+    }
+
+    public ArrayList<Member> getFollow(Long memSeq){
+        return memberRepository.findAllFollow(memSeq);
+    }
+
+    @Transactional
+    public void updateCoordinate(Long memSeq, Double lng, Double lat){
+        Member member = memberRepository.findByMemberSeq(memSeq);
+        member.setLng(lng);
+        member.setLat(lat);
+        memberRepository.save(member);
+    }
+
+    public ArrayList<Member> getPeerList(Long memSeq){
+        return memberRepository.findAllFollow(memSeq);
+    }
+
+
+
 
 }
