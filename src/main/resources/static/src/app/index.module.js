@@ -30,6 +30,10 @@
             'app.login',
 
             //register module
-            'app.register'
+            'app.register',
+
+
+            // Common 3rd-party engine
+            'swxSessionStorage'
         ]);
 })();

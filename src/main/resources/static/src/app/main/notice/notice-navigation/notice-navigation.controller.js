@@ -4,10 +4,10 @@
 
     angular
         .module('app.notice.navigation')
-        .controller('NavigationController', NavigationController);
+        .controller('NoticeNavigationController', NoticeNavigationController);
 
     /** @ngInject */
-    function NavigationController($scope)
+    function NoticeNavigationController($scope)
     {
         var vm = this;
 

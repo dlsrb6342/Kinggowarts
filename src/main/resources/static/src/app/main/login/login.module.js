@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.login', ['swxSessionStorage'])
+        .module('app.login', [])
         .config(config);
 
     /** @ngInject */
