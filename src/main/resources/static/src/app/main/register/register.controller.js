@@ -17,7 +17,7 @@
         // Methods
         //File upload
         $scope.images = [];
-        //ÆÄÀÏ Ã³¸®
+        //íŒŒì¼ ì²˜ë¦¬
         $scope.processFiles = function (uploadImages) {
             angular.forEach(uploadImages, function (flowFile, i) {
                 var fileReader = new FileReader();
@@ -47,7 +47,7 @@
         
         
 	vm.register_loginfun = function (username,email,password,location_share) {
-        //user È¸¿øÁ¤º¸ ¼­¹ö¿¡ Àü¼Û
+        //user íšŒì›ì •ë³´ ì„œë²„ì— ì „ì†¡
 	    $http({
 	        method: 'POST',
 	        url: './api/member/signup',
@@ -55,7 +55,7 @@
 	            nickname : username,
 	            userId : email,
 	            passWd : password,
-	            type : location_share,
+	            type : location_share
 	        }),
 	        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 	        })
