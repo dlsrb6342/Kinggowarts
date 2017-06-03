@@ -7,7 +7,7 @@
         .controller('NoticeListController', NoticeListController);
 
     /** @ngInject */
-    function NoticeListController(NoticeListData, $state, $stateParams)
+    function NoticeListController(NoticeListData, $mdSidenav, $state, $stateParams, $window)
     {
         var vm = this;
 
@@ -46,32 +46,60 @@
                 break;
         }
 
-        vm.dtOptions = {
-            dom       : '<"top"<"left"<"length"l>><"right"f>>rt<"bottom"<"left"<"info"i>><"right"<"pagination"p>>>',
-            pagingType: 'full_numbers',
-            autoWidth : false,
-            responsive: true,
-            language: oLanguage,
-            order     : [0, 'desc'],
-            columnDefs: [
-                {
-                  width    : '10%',
-                  targets  : [0]
-                },
-                {
-                  width  : '60%',
-                  orderable : false,
-                  targets: [1]
-                },
-                {
-                  width  : '20%',
-                  targets: [2]
-                },
-                {
-                  width  : '10%',
-                  targets: [3]
-                }
-            ]
-        };
+        if($window.innerWidth > 450){
+            vm.dtOptions = {
+                dom       : '<"top"<"left"<"length"l>><"right"f>>rt<"bottom"<"left"<"info hide-xs"i>><"right"<"pagination"p>>>',
+                pagingType: 'full_numbers',
+                autoWidth : false,
+                responsive: false,
+                language: oLanguage,
+                order     : [0, 'desc'],
+                columnDefs: [
+                    {
+                      width    : '10%',
+                      targets  : [0]
+                    },
+                    {
+                      width  : '60%',
+                      orderable : false,
+                      targets: [1]
+                    },
+                    {
+                      width  : '20%',
+                      targets: [2]
+                    },
+                    {
+                      width  : '10%',
+                      targets: [3]
+                    }
+                ]
+            };
+        }
+        else {
+            vm.dtOptions = {
+                dom       : '<"top"<"left"<"length"l>><"right"f>>rt<"bottom"<"left"<"info">><"right"<"pagination"p>>>',
+                pagingType: 'full',
+                autoWidth : false,
+                responsive: false,
+                language: oLanguage,
+                order     : [0, 'desc'],
+                columnDefs: [
+                    {
+                      width    : '20%',
+                      targets  : [0]
+                    },
+                    {
+                      width  : '80%',
+                      orderable : false,
+                      targets: [1]
+                    }
+                ]
+            };
+        }
+
+        vm.toggleSidenav = function(sidenavId)
+        {
+            $mdSidenav(sidenavId).toggle();
+        }
     }
 })();
