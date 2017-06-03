@@ -1,31 +1,211 @@
 {
-	"data":{
-			"bank" :
-				[
+	"data":
+			[
+				{	
+					"category" : "bank",
+					"name": "우리은행 성균관대자연과학캠영업점",
+					"center" : { "lat":"37.29385315316287","lng":"126.97251262020707"}
+					
+				},
+				{
+					"category" : "bank",
+					"name": "KB국민은행365ATM",
+					"center" : {"lat":"37.29342587410012", "lng":"126.97578056645948"}
+				},
+				{
+					"category" : "bank",
+					"name": "수원새마을금고 율전지점",
+					"center" : {"lat":"37.294297702918904",
+					"lng":"126.97614964463467" }
+				},
 
-				],
-			
-			"toilet":
-						[
-					
-				],
-			"busstop":
-						[
-					
+				{
+					"category" : "bank",
+					"name": "농협중앙회ATM 율전지점",
+					"center" : {"lat":"37.29785109519158",
+					"lng":"126.97079681415282"}
+				},
+						
+					{
+						"category" : "toilet",
+						"name": "toilet1",
+						"center" : {"lat":"37.2955228",
+						"lng":"126.976696"}
+						
+					},
+					{
+						"category" : "toilet",
+						"name": "toilet2",
+						"center" : {"lat":"37.294268",
+						"lng":"126.979686"}
+						
+					},
 
-				],
-				"print":
-				[
-					
-				],
-			"vendingmachine":
-				[
-					
-				],
-			"insideRestaurant":
-				[
-					
+					{
+						"category" : "busstop",
+						"name": "사당/분당 버스정류장",
+						"center" : {"lat":"37.2942159842631",
+						"lng":"126.97322582703505"}
+						
+					},
+					{
+						"category" : "busstop",
+						"name": "명륜캠 버스정류장",
+						"center" : {"lat":"37.29328166113072",
+						"lng":"126.97555223430369"}
+						
+					},
+					{
+						"category" : "busstop",
+						"name": "성균관대역",
+						"center" : {"lat":"37.300259376002724",
+						"lng":"126.97187020653395"}
+						
+					},
+					{
+						"category" : "busstop",
+						"name": "정류장1",
+						"center" : {"lat":"37.299881159443196",
+						"lng":"126.97280649860015"}
+						
+					},
+					{	
+						"category" : "busstop",
+						"name":"정류장2",
+						"center" : {"lat":"37.2971008923338",
+						"lng":"126.970436191695"}
+						
+					},
+					{	
+						"category" : "busstop",
+						"name":"정류장3",
+						"center" : {"lat":"37.2961435531087",
+						"lng":"126.97048731903"}
+						
+					},
+					{
+						"category" : "busstop",
+						"name":"정류장4",
+						"center" : {"lat":"37.2942286803591",
+						"lng":"126.969819840477"}
+						
+					},
+					{
+						"category" : "busstop",
+						"name":"정류장5",
+						"center" : {"lat":"37.2923681150123","lng":"126.970125084537"}
+						
+					},
+					{"category" : "busstop",
+						"name":"정류장16",
+					"center" : {"lat":"37.2923927910994","lng":"126.969721892994"}},
+					{"category" : "busstop",
+						"name":"정류장17",
+					"center" : {"lat":"37.2904925569712","lng":"126.973723357753"}},
+					{"category" : "busstop",
+						"name":"정류장1정류장18","center" : {"lat":"37.290736108515","lng":"126.97497508277"}},
+					{"category" : "busstop",
+						"name":"정류장19","center" : {"lat":"37.2905723606833","lng":"126.978493729679"}},
+					{"category" : "busstop",
+						"name":"정류장110","center" : {"lat":"37.2907029963157","lng":"126.978411930185"}},
+					{"category" : "busstop",
+						"name":"정류장1정류장111","center" : {"lat":"37.2925817902611","lng":"126.979135994617"}},
+					{"category" : "busstop",
+						"name":"정류장112","center" : {"lat":"37.2925975807182","lng":"126.97926286599"}},
+					{"category" : "busstop",
+						"name":"정류장113","center" : {"lat":"37.293991874699","lng":"126.978912863696"}},
+					{"category" : "busstop",
+						"name":"정류장114","center" : {"lat":"37.294131549554","lng":"126.978991771214"}},
+					{"category" : "busstop",
+						"name":"정류장115","center" : {"lat":"37.295102321608","lng":"126.978458605511"}},
+					{"category" : "busstop",
+						"name":"정류장116","center" : {"lat":"37.295201454658","lng":"126.978562900886"}},
+					{"category" : "busstop",
+						"name":"정류장117","center" : {"lat":"37.2964759838419","lng":"126.976264560741"}},
+					{"category" : "busstop",
+						"name":"정류장118","center" : {"lat":"37.2965548381423","lng":"126.976332206567"}},
+					{"category" : "busstop",
+						"name":"정류장119",
+						"center" : {"lat":"37.2976535773973","lng":"126.973833652924"}},
+					{"category" : "busstop",
+						"name":"정류장120","center" : {"lat":"37.297772946685","lng":"126.973751841613"}
+					},
+					{	
+						"category" : "busstop",
+						"name":"21",
+						"center" : {"lat":"37.2980001315126",
+						"lng":"126.972316554535"}
+						
+					},
+					{
+						"category" : "busstop",
+						"name":"22",
+						"center" : {"lat":"37.2981712060284",
+						"lng":"126.971797672792"}
+						
+					},
+					{
+						"category" : "print",
+						"name": "도서관지하프린터",
+						"center" : {"lat":"37.29401583743848",
+						"lng":"126.97474561582014"}
+						
+					},
+					{
+						"category" : "print",
+						"name": "도서관지하복사실",
+						"center" : {"lat":"37.293918917235814",
+						"lng":"126.97447215574567"}
+						
+					},
+					{
+						"category" : "print",
+						"name": "프린터2기",
+						"center" : {"lat":"37.294401060955025",
+						"lng":"126.9748864634477"}
+						
+					},
+					{
+						"category" : "print",
+						"name": "공과대학1층프린터",
+						"center" : {"lat":"37.29431348129042",
+						"lng":"126.97620039109923"}
+						
+					},
+					{
+						"category" : "print",
+						"name": "제2공학관프린터",
+						"center" : {"lat":"37.295081850034556",
+						"lng":"126.97739563969793"}
+						
+					},
+					{
+						"category" : "vendingmachine",
+						"name": "toilet1",
+						"center" : {"lat":"37.294228",
+						"lng":"126.976696"}
+						
+					},
+					{
+						"category" : "vendingmachine",
+						"name": "toilet2",
+						"center" : {"lat":"37.294268",
+						"lng":"126.976686"}
+						
+					},
+					{
+						"category" : "insideRestaurant",
+						"name": "공대식당",
+						"center" : {"lat":"37.29493545294717",
+						"lng":"126.97750846542124"}
+						
+					},
+					{
+						"category" : "insideRestaurant",
+						"name": "학생회관식당",
+						"center" : {"lat":"37.29439858054493",
+						"lng":"126.9738347803545"}
+					}
 				]
 
-			}
 		}

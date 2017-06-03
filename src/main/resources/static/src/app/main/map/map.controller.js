@@ -23,9 +23,16 @@
         vm.eventDataId = -1;
         //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region
         vm.categoryStatus = "none";
-        vm.markerData = MarkerData.data;
-        vm.markerData["customevent"] = [];
-        vm.markerData["regions"] = [];
+        var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant", "customevent", "regions"];
+        var markerDataSkeleton = {};
+
+        for(var i=0; i<categoryTypes.length; i++){
+            markerDataSkeleton[categoryTypes[i]] = [];
+        }
+        vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
+
+        //vm.markerData["customevent"] = [];
+        //vm.markerData["regions"] = [];
         //console.log(SubAreaData);
         var subAreaData = SubAreaData.data;
         //var subAreaData = [];
@@ -59,7 +66,7 @@
                 $state.go('login');
             }
         };
-        //usercheck();
+        usercheck();
 
         var customOverlay = new daum.maps.CustomOverlay({});
         var infowindow = new daum.maps.InfoWindow({removable: true});
@@ -321,7 +328,7 @@
 
             //TODO : register newCustomEventObj on server
             if(false/*same name or failed*/){
-                alert('fail. name or internet');
+                //alert('fail. name or internet');
                 return false;
             }
             else{
@@ -347,7 +354,7 @@
             //TODO : request post "answer data" to server
 
             if(1/*same name or failed*/){
-                alert('fail. name or internet');
+                //alert('fail. name or internet');
                 return false;
             }
             else
@@ -965,7 +972,7 @@
 
     //-------------------------마커 이미지 로드------------------------------------
        
-        var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant", "customevent", "regions"];
+        
         var categoryMarkers = {};   
         var selectedMarker = null; // 클릭한 마커를 담을 변수
         var selectedMarkerIdx = 0;
@@ -1139,6 +1146,10 @@
             regionShapes = [];
             //marker.json 정보에서 categoryMarkers obj 생성.
 
+            for(var i=0; i<categoryTypes.length; i++){
+                markerDataSkeleton[categoryTypes[i]] = [];
+            }
+            vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
             //vm.markerData <- regions, customEvent
             vm.markerData["customevent"] = [];
             vm.markerData["regions"] = [];
@@ -1341,7 +1352,7 @@
                     strokeColor: '#004c80',
                     strokeOpacity: 0.8,
                     fillColor: newColor,
-                    fillOpacity: 0.4
+                    fillOpacity: 0.2
                 });
             }
             else if(shapeData["shape"] == "RECTANGLE"){
@@ -1354,7 +1365,7 @@
                     strokeColor: '#004c80',
                     strokeOpacity: 0.8,
                     fillColor: newColor,
-                    fillOpacity: 0.4
+                    fillOpacity: 0.2
                 });
             }
             else if(shapeData["shape"] == "POLYGON"){
@@ -1368,7 +1379,7 @@
                     strokeColor: '#004c80',
                     strokeOpacity: 0.8,
                     fillColor: newColor,
-                    fillOpacity: 0.4 
+                    fillOpacity: 0.2
                 });
             }
 
@@ -1431,9 +1442,9 @@
                 fullscreen: false // Only for -xs, -sm breakpoints.
             })
             .then(function(answer) {
-                alert('answer');
+                //alert('answer');
             }, function() {
-                alert('none..');
+                //alert('none..');
             });
         };
 
@@ -1512,7 +1523,7 @@
                 var dragendListenerLng = angular.copy(vm.userLng);
                 var dragendMoveLatLon = isLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
                 if(false == dragendMoveLatLon){
-                    alert('out of region');
+                    //alert('out of region');
                 }
                 else{
                     if(arriveMarker != null){
@@ -1528,6 +1539,7 @@
                             draggable: false, // 도착 마커가 드래그 가능하도록 설정합니다
                             image: arriveImage // 도착 마커이미지를 설정합니다
                         });
+                        arriveMarker.setMap(map);
                         map.panTo(dragendMoveLatLon);
                     }
                    
@@ -1551,9 +1563,9 @@
                 }
             }, true);
 
-        //Get User Location every 3 min. 1sec == 1000
+        //Get User Location every 1 min. 1sec == 1000
         getLocation();
-        $interval(getLocation, 180000); 
+        $interval(getLocation, 60000); 
         function getLocation() {
             if (navigator.geolocation) { // GPS를 지원하는 경우
                 navigator.geolocation.getCurrentPosition(function(position) {
@@ -1867,6 +1879,13 @@
         // 재설정된 좌표로 부드러운 이동
         //map.panTo(dragendMoveLatLon);
         return dragendMoveLatLon;
+    }
+    function createMarkerData(data, skeleton){
+        for(var i=0; i<data.length; i++){
+            var inLen = skeleton[data[i]["category"]].length
+            skeleton[data[i]["category"]][inLen] = {"name" : data[i]["name"], "center" : data[i]["center"]}; 
+        }
+        return skeleton;
     }
 
 })();
