@@ -26,7 +26,7 @@
 	            nickname : username,
 	            userId : email,
 	            passWd : password,
-	            type : location_share
+	            type : 'S'
 	        }),
 	        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 	        })
