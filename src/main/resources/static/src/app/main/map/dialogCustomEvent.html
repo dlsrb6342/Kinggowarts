@@ -1,0 +1,48 @@
+<md-dialog>
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+      <!-- <h2> {{vm.clickName}} </h2> // 위키 제목 -->
+        <h2> {{data.name}} </h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-font-icon="icon-close-circle-outline" class="icon"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+
+    <div layout-gt-sm="row">
+        <p>주최자 : {{data.creater.memberSeq}}</p>
+    </div>
+    <div layout-gt-sm="row">
+        <p>시작일자 : {{data.fromDate}}</p>
+    </div>
+    <div layout-gt-sm="row">
+        <p>종료일자 : {{data.toDate}}</p>
+    </div>
+
+    <div layout-gt-sm="row">
+      <p>상세내역 : {{data.about}}</p>
+    </div>
+    
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-if="canModify == true" ng-click="answer('delete')">
+        삭제
+      </md-button>
+      <md-button ng-click="answer('modifyShape')">
+        도형수정하기
+      </md-button>
+      <md-button ng-click="answer('modifyInfo')">
+        정보수정하기
+      </md-button>
+      <md-button ng-click="cancel()">
+        Cancel
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
