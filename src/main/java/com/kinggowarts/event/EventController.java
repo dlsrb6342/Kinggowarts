@@ -20,7 +20,6 @@ public class EventController {
 
     @PostMapping("")
     public String saveEvent(@RequestBody Event event){
-        System.out.println(event);
         return eventService.saveEvent(event);
     }
 

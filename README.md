@@ -136,124 +136,197 @@ duplicateNickName: 닉네임 겹침
 ```
 * TODO: 프로필 사진은 아직 미구현
 
-#### 4. 지도 구역 추가
+#### 4. 지도 구역 관리
 * 주소: /api/map
-* HTTP Method: POST
-* Description: 지도 구역 추가 요청
-* Request Type: application/json
-* Request Value
+  * HTTP Method: GET
+    * Description: 지도 구역 목록 요청
+    * Response Types: JSON
+    * Response Value
+        ```
+        [
+          {
+            "id": 45,
+            "name": "testregion",
+            "center": {
+              "id": 267,
+              "lng": 126.9738347803545,
+              "lat": 37.29410858054493
+            },
+            "path": [
+              {
+                "id": 268,
+                "lng": 126.9738347803545,
+                "lat": 37.29419858054493
+              },
+              {
+                "id": 269,
+                "lng": 126.9737347803545,
+                "lat": 37.29429858054493
+              },
+              ...
+            ],
+            "type": "user",
+            "shape": "POLYGON",
+            "detail": "this is customEvent",
+            "tags": [
+              {
+                "id": 45,
+                "name": "test"
+              },
+              ...
+            ]
+          },
+          ...
+        ]
+        ```
+    
+  * HTTP Method: POST
+    * Description: 지도 구역 추가 요청
+    * Request Type: application/json
+    * Request Value
+      ```
+      name: 구역이름
+      center: { lat : , lng : }
+      shape: 구역 형태
+      path: [ { lat : , lng : }, { lat : , lng : } ... ]
+      detail: 구역 상세 설명
+      tags: [ { name : }, { name : } ... ]
+      ```
 
-```
-name: 구역이름
-center: { lat : , lng : }
-shape: 구역 형태
-path: [ { lat : , lng : }, { lat : , lng : } ... ]
-detail: 구역 상세 설명
-tag: [ { name : }, { name : } ... ]
-```
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      duplicatedName: 중복된 구역 이름
+      notAllowed: 허용되지 않은 요청
+      ```
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-duplicatedName: 구역 이름 겹침
-```
-
-#### 5. 지도 구역 수정
 * 주소: /api/map/{id}
-* HTTP Method: PUT
-* Description: 지도 구역 수정 요청
-* Request Type: application/json
-* Request Value
+  * HTTP Method: PUT
+    * Description: 지도 구역 수정 요청
+    * Request Type: application/json
+    * Request Value
+    ```
+    name: 구역이름
+    center: { lat : , lng : }
+    shape: 구역 형태
+    path: [ { lat : , lng : }, { lat : , lng : } ... ]
+    detail: 구역 상세 설명
+    tags: [ { name : }, { name : } ... ]
+    ```
 
-```
-name: 구역이름
-center: { lat : , lng : }
-shape: 구역 형태
-path: [ { lat : , lng : }, { lat : , lng : } ... ]
-detail: 구역 상세 설명
-tag: [ { name : }, { name : } ... ]
-```
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    notAllowed: 허용되지 않은 요청
+    duplicatedName: 중복된 구역 이름
+    noLocation: 구역 정보 없음
+    ```
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-noLocation: 구역 정보 없음
-```
+  * HTTP Method: DELETE
+    * Description: 지도 구역 삭제 요청
+    
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    notAllowed: 허용되지 않은 요청
+    noLocation: 구역 정보 없음
+    ```
 
-#### 6. 지도 구역 삭제
-* 주소: /api/map/{id}
-* HTTP Method: DELETE
-* Description: 지도 구역 삭제 요청
-
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-noLocation: 구역 정보 없음
-```
-
-#### 7. 이벤트 추가
+#### 5. 이벤트 관리
 * 주소: /api/event
-* HTTP Method: POST
-* Description: 이벤트 추가 요청
-* Request Type: application/json
-* Request Value
-```
-l_id: 구역 고유 번호
-title: 이벤트 타이틀
-about: 이벤트 상세 설명
-creator: { memberSeq: 사용자 고유 번호 }
-tag: [ { name : }, { name : } ... ]
-fromDate: 이벤트 시작 날짜(Timestamp)
-toDate: 이벤트 종료 날짜(Timestamp)
-```
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-noMember: 사용자 정보 없음
-```
+  * HTTP Method: GET
+    * Description: 모든 이벤트 목록
+  
+      * Response Types: JSON
+      * Response Value
+      ```
+      [
+        {
+          "id": 1,
+          "l_id": 1,
+          "title": "testregion",
+          "about": "this is customEvent",
+          "creator": {
+            "memberSeq": 1,
+            "userId": "protos1000@naver.com",
+            "nickname": "haha",
+            "type": "S",
+            "confirm": 3,
+            "lng": -1,
+            "lat": -1
+          },
+          "tags": [
+            {
+              "id": 40,
+              "name": "testTag"
+            }
+          ],
+          "fromDate": 1496709514000,
+          "toDate": 1496191135000
+        },
+        ...
+      ]
+      ```
+  * HTTP Method: POST
+    * Description: 이벤트 추가 요청
+    * Request Type: application/json
+    * Request Value
+  
+      ```
+      l_id: 구역 고유 번호
+      title: 이벤트 타이틀
+      about: 이벤트 상세 설명
+      creator: { memberSeq: 사용자 고유 번호 }
+      tags: [ { name : }, { name : } ... ]
+      fromDate: 이벤트 시작 날짜(Timestamp)
+      toDate: 이벤트 종료 날짜(Timestamp)
+      ```
 
-#### 8. 이벤트 수정
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      noMember: 사용자 정보 없음
+      ```
+
 * 주소: /api/event/{id}
-* HTTP Method: PUT
-* Description: 이벤트 수정 요청
-* Request Type: application/json
-* Request Value
-```
-l_id: 구역 고유 번호
-title: 이벤트 타이틀
-about: 이벤트 상세 설명
-creator: { memberSeq: 사용자 고유 번호 }
-tag: [ { name : }, { name : } ... ]
-fromDate: 이벤트 시작 날짜(Timestamp)
-toDate: 이벤트 종료 날짜(Timestamp)
-```
+  * HTTP Method: PUT
+    * Description: 이벤트 수정 요청
+    * Request Type: application/json
+    * Request Value
+      ```
+      l_id: 구역 고유 번호
+      title: 이벤트 타이틀
+      about: 이벤트 상세 설명
+      creator: { memberSeq: 사용자 고유 번호 }
+      tags: [ { name : }, { name : } ... ]
+      fromDate: 이벤트 시작 날짜(Timestamp)
+      toDate: 이벤트 종료 날짜(Timestamp)
+      ```
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-noEvent: 이벤트 정보 없음
-noMember: 사용자 정보 없음
-```
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      noEvent: 이벤트 정보 없음
+      noMember: 사용자 정보 없음
+      ```
 
-#### 9. 이벤트 삭제
-* 주소: /api/map/{id}
-* HTTP Method: DELETE
-* Description: 이벤트 삭제 요청
+  * HTTP Method: DELETE
+    * Description: 이벤트 삭제 요청
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-noEvent: 이벤트 정보 없음
-```
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    noEvent: 이벤트 정보 없음
+    ```
 
-#### 10. Peer 관리
+#### 6. Peer 관리
 * 주소: /api/member/reqPeerFromMe
   * HTTP Method: GET
     * Description: 내가 Peer 요청 보낸 목록을 가져옴
@@ -378,4 +451,98 @@ noEvent: 이벤트 정보 없음
         "lat": -1
       }
     ]
+    ```
+
+#### 7. 마커 관리
+* 주소: /api/marker
+
+  * HTTP Method: GET
+    * Description: 모든 마커 목록
+      * Request Type: text
+      * Request Value
+      ```
+      q: 검색할 마커의 카테고리
+      ```
+      * Response Types: JSON
+      * Response Value
+      ```
+      [
+        {
+          "id": 2,
+          "center": {
+            "id": 313,
+            "lng": 999.123,
+            "lat": 8888.13312
+          },
+          "name": "marker test",
+          "markerCategory": {
+            "id": 3,
+            "name": "카페"
+          }
+        },
+        ...
+      ]
+      ```
+  * HTTP Method: POST
+    * Description: 마커 추가 요청
+    * Request Type: application/json
+    * Request Value
+    ```
+    {
+      "center": {
+        "lng": 999.123,
+        "lat": 8888.13312
+      },
+      "name": "marker test",
+      "markerCategory": {
+        "name": "카페"
+      }
+    }
+    ```
+
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      duplicatedName: 중복된 마커 이름
+      noCategory: 카테고리 정보 없음
+      notAllowed: 허용되지 않은 요청
+      ```
+
+* 주소: /api/marker/{id}
+  * HTTP Method: PUT
+    * Description: 마커 수정 요청
+    * Request Type: application/json
+    * Request Value
+    ```
+    {
+      "center": {
+        "lng": 999.123,
+        "lat": 8888.13312
+      },
+      "name": "marker test",
+      "markerCategory": {
+        "name": "카페"
+      }
+    }
+    ```
+
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    noMarker: 마커 정보 없음
+    duplicatedName: 중복된 마커 이름
+    noCategory: 카테고리 정보 없음
+    notAllowed: 허용되지 않은 요청
+    ```
+
+  * HTTP Method: DELETE
+    * Description: 마커 삭제 요청
+
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    noMarker: 마커 정보 없음
     ```

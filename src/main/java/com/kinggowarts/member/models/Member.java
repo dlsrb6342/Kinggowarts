@@ -5,12 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.*;
 
 @Data
@@ -18,6 +17,7 @@ import java.util.*;
 @NoArgsConstructor
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Document(indexName="eunjeon", type="members")
 public class Member{
     public static final int NOT_CONFIRM = 0;
     public static final int EMAIL_CONFIRM = 1;
@@ -25,6 +25,7 @@ public class Member{
     public static final int COMPLETE_CONFIRM = 3;
     public static final double NULL_COORDINATE_VALUE = -1.0;
     @Id
+    @org.springframework.data.annotation.Id
     @GeneratedValue
     private Long memberSeq;
 
@@ -37,6 +38,7 @@ public class Member{
     private String passWd;
 
     //@Length(min=1, max=16, message="닉네임은 1~16자까지 허용합니다.")
+    @Field(type= FieldType.String, analyzer="korean")
     private String nickname;
 
 
@@ -58,12 +60,12 @@ public class Member{
     @JoinTable(name="PEER",
             joinColumns=@JoinColumn(name="FROM_SEQ"),
             inverseJoinColumns=@JoinColumn(name="TO_SEQ"))
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnore
     private Set<Member> following = new HashSet<Member>();
 
     //나에게 친해지자고 요청을 온 목록
     @ManyToMany(mappedBy = "reqFollowing")
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnore
     private Set<Member> reqFollower = new HashSet<Member>();
 
     //내가 친해지자고 요청을 보낸 목록
@@ -71,7 +73,7 @@ public class Member{
     @JoinTable(name="REQ_PEER",
             joinColumns= {@JoinColumn(name="REQ_FROM_SEQ")},
             inverseJoinColumns= {@JoinColumn(name="REQ_TO_SEQ")})
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonIgnore
     private Set<Member> reqFollowing = new HashSet<Member>();
 
     public Member(Long memberSeq, String nickname, Double lng, Double lat){

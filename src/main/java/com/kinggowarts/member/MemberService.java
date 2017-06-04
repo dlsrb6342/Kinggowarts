@@ -32,6 +32,9 @@ public class MemberService {
     MemberRepository memberRepository;
 
     @Autowired
+    MemberSearchRepository memberSearchRepository;
+
+    @Autowired
     MailService mailService;
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -91,6 +94,7 @@ public class MemberService {
         Member member = memberRepository.findFirstByUserId(userId);
         member.setConfirm(Member.COMPLETE_CONFIRM);
         memberRepository.save(member);
+        memberSearchRepository.save(member);
         signUpXwiki(member.getNickname(), userPw);
 
     }
@@ -182,7 +186,9 @@ public class MemberService {
         return memberRepository.findAllFollow(memSeq);
     }
 
-
+    public ArrayList<Member> searchMember(String q){
+        return memberSearchRepository.findAllByNicknameLike(q);
+    }
 
 
 }

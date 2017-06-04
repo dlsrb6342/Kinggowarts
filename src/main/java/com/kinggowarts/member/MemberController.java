@@ -13,10 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.executable.ValidateOnExecution;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/member")
@@ -88,4 +85,13 @@ public class MemberController {
         return memberService.getPeerList(user.getMemSeq());
     }
 
+    @GetMapping(value = "/search")
+    public ArrayList<Member> searchMember(@RequestParam String q) {
+        return memberService.searchMember(q);
+    }
+
+    @GetMapping(value = "/{memberSeq}")
+    public Member test(@PathVariable Long memberSeq){
+        return memberService.getMemberBySeq(memberSeq);
+    }
 }
