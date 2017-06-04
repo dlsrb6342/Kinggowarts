@@ -92,6 +92,7 @@
 
             vm.getWikiLink();
             getnotice();
+            peerLocation.peer = vm.peerlist.peer;
         };
         
         //최근 wiki 수정항목의 주소를 가져오는 함수
