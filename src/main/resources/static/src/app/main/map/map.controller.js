@@ -9,13 +9,47 @@
 
 
     /** @ngInject */
-    function MapController($http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, SubAreaData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
+    function MapController(AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
     {
         var vm = this;
         
         vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
         vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
 
+        /*$http({
+            method: 'GET',
+            url: './api/map?type=admin',
+            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+            }).then(function successFunc(response){
+                console.log(response)
+            }).
+            then(function failFunc(response){console.log(response)
+            });*/
+
+        //console.log(objss);
+        //console.log(objss.)
+        /*var d = new Date();
+        d.setDate(6);
+        var r = new Date();
+        r.setDate(0);
+        $http({
+            method: 'POST',
+            url: './api/evnet',
+            data : $httpParamSerializerJQLike({
+                //"id" : 3,
+                "l_id" : 1,
+                "title": "testregion",
+                "creater" : {"memberSeq" : "1"},
+                "fromDate" : r,
+                "toDate" : d,
+                "about" : "this is customEvent",
+                "tags" : [{"name" : "testTag"}]
+           }),
+            headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                    'Content-Type' : 'application/json'}
+        })
+        .then(function successFunc(response){console.log(response)}).then(function failFunc(response){console.log(response)});
+        */
         vm.userLat = 0;
         vm.userLng = 0;
         vm.curMapLevel = 3;     //현재 지도의 zoom level
@@ -31,15 +65,13 @@
         }
         vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
 
-        //vm.markerData["customevent"] = [];
-        //vm.markerData["regions"] = [];
-        //console.log(SubAreaData);
-        var subAreaData = SubAreaData.data;
-        //var subAreaData = [];
+        var areaAdmin, areaUser;
+        var subAreaData = makeSubAreaData(AreaAdmin, AreaUser);//GetSubAreaData();
+
         vm.customEventData = CustomEventData.data;
         vm.drawingMenuData = DrawingMenuData.data;
         vm.categoryMenu = CategoryMarkerData.data;
-        vm.selectedCustomEventId = -1;
+        vm.selectedCustomEventIdx = -1;
         vm.customEventDataOrderbyRegions = {};
         
         var container = document.getElementById('map');
@@ -68,6 +100,8 @@
         };
         usercheck();
 
+        PostCustomEventData(10);
+
         var customOverlay = new daum.maps.CustomOverlay({});
         var infowindow = new daum.maps.InfoWindow({removable: true});
 
@@ -80,7 +114,7 @@
                 div.innerHTML = x + ', ' + y + ', ' + z;//'<div><img src="assets/images/backgrounds/full_image.png"></img></div>';//x + ', ' + y + ', ' + z;    //<div><img src="assets/images/backgrounds/full_image.png"></img></div>
                 div.style.fontSize = '36px';
                 div.style.fontWeight = 'bold';
-                div.style.lineHeight = '256px'
+                div.style.lineHeight = '256px';
                 div.style.textAlign = 'center';
                 div.style.color = '#4D4D4D';
                 div.style.border = '1px dashed #ff5050';
@@ -240,13 +274,13 @@
                     "name": "",
                     "center": {
                           "lng": "0.0",
-                          "lat": "0.0",
-                          "center" : "0.0"
+                          "lat": "0.0"//,
+                          //"center" : "0.0"
                     },
                     "type" : "user",
                     "shape" : "",
-                    "about" : "",
-                    "tags" : "",
+                    "detail" : "",
+                    "tags" : [],
                     "path" : []
                 };
             }
@@ -290,6 +324,7 @@
                 else if(answer == "delete"){
                     deleteRegion();
                 }
+
             }, function() {
                 //alert('none..');
             });
@@ -298,12 +333,13 @@
         // Region의 내용을 보여주는 다이얼로그 컨트롤러
         function RegionDialogController($scope, $mdDialog, regionData) {
             $scope.data = regionData;
-            if($scope.data["type"] == "user"){
+            if($scope.data["type"] == "user" && vm.categoryStatus == "regions"){
                 $scope.canModify = true;
             }
             else{
-                $scope.canModify = true;
+                $scope.canModify = false;
             }
+
             //selectedMarkerIdx;
             $scope.hide = function() {
                 $mdDialog.hide();
@@ -316,36 +352,22 @@
             };
         }
 
-        
+        var postData;
     //-----------------region Process-----------------------------
         // 새로운 커스텀 이벤트 세부 내용 만들기 Process
         function makeRegionDetail(answer){
             //custom event data(detail) -> event data(detail + shape&marker)
-            var newRegionObj = removeOverlayAndGetData(answer);
-
+            postData = removeOverlayAndGetData(answer);
+            PostAreaUser(answer);
             //반드시 status를 바꾸기 전에 overlaydata를 저장해 놓을것. 
-            categoryStatusChangeProcess("none", true);
-
+            
+            //console.log(answer);
             //TODO : register newCustomEventObj on server
-            if(false/*same name or failed*/){
-                //alert('fail. name or internet');
-                return false;
-            }
-            else{
-                var areaLen = subAreaData.length;
-                //vm.markerData에 현재 data 추가.
-                newRegionObj["id"] = -1;   //this is on client.    //UNDO
-                subAreaData[areaLen] = newRegionObj;    //UNDO
-
-                //TODO : need to get MarkerData update.
-                //markerData에 있는 데이터를 기반으로 마커 재작성.
-
-                createCategoryMarkersInJson();
-                categoryStatusChangeProcess("regions", true);
-                return true;
-            }
+            //PostAreaUser(newRegionObj);
+            
         }
         
+
         //커스텀 지역 내용 수정 Process.
         function modifyRegionDetail(answer){
             //데이터 변경을 위한 statue 전환.
@@ -380,27 +402,6 @@
             createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
             categoryStatusChangeProcess("regions", true);
 
-            
-            /*
-            var showConfirm = function(ev) {
-            // Appending dialog to document.body to cover sidenav in docs app
-            var confirm = $mdDialog.confirm()
-            .title('Would you like to delete your debt?')
-            .textContent('All of the banks have agreed to forgive you your debts.')
-            .ariaLabel('Lucky day')
-            .targetEvent(ev)
-            .clickOutsideToClose(true)
-            .parent(angular.element(document.body))
-            .ok('Please do it!')
-            .cancel('Sounds like a scam');
-            $mdDialog.show(confirm).then(function() {
-                  //$scope.status = 'You decided to get rid of your debt.';
-                }, function() {
-                  //$scope.status = 'You decided to keep your debt.';
-                });
-            };
-            showConfirm();
-            */
         }
 
     
@@ -420,7 +421,7 @@
                 resolve:{
                     modifiedData : function(){
                         if(isModifyCustomEventInfo == true)
-                            return vm.customEventData[vm.selectedCustomEventId];
+                            return vm.customEventData[vm.selectedCustomEventIdx];
                         else
                             return null;
                     },
@@ -459,11 +460,11 @@
                 {
                     "name": "",
                     "l_id" : inLid,
-                    "creater" : "",
+                    "creater" : {"memberSeq" : ""},
                     "fromDate" : "",
                     "toDate" : "",
-                    "about" : "",
-                    "tags" : []
+                    "detail" : "",
+                    "tag" : []
                 };
             }
             
@@ -538,15 +539,10 @@
                 fullscreen: false, // Only for -xs, -sm breakpoints.
                 resolve: {
                     eventData : function(){
-                        //console.log(vm.markerData["customevent"][selectedMarkerIdx]);
-                        //TODO
-                        //return vm.markerData["customevent"][selectedMarkerIdx];
-                        console.log(vm.customEventData);
-                        console.log(vm.eventDataId);
                         for(var i=0 ;i<vm.customEventData.length; i++){
                             if(vm.customEventData[i]["id"] == vm.eventDataId){
-                                vm.selectedCustomEventId = i;
-                                return vm.customEventData[vm.selectedCustomEventId];
+                                vm.selectedCustomEventIdx = i;
+                                return vm.customEventData[vm.selectedCustomEventIdx];
                             }
                         }
                         return null;
@@ -613,7 +609,7 @@
                         {"lat" : 37.29439858054493, "lng" : 126.9739347803545},
                         {"lat" : 37.29429858054493, "lng" : 126.9736247803545}
                     ],
-                    "tags" : [{"name" : "aaa"}],
+                    "tag" : [{"name" : "aaa"}],
                }),
                 headers: {'x-auth-token': '148ac33b-4055-46c8-a90d-5a1f5e8b358f'}
             })
@@ -1593,67 +1589,21 @@
         
         ];
 
-        //구역 클릭시 다이얼로그 Deprecated
-        /*vm.showDetailed = function(ev) {
-            $mdDialog.show({
-                controller: DetailedDialogController,
-                templateUrl: 'app/main/map/dialog2.tmpl.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose:true,
-                fullscreen: false, // Only for -xs, -sm breakpoints.
-                resolve: {
-                  clickName: function(){
-                    return vm.clickName;
-                  },
-                  areaData : function(){
-                    return selectedArea;
-                  }
-                }
-            })
-            .then(function(answer){
-                if(answer == 'markerInfo'){
-                    showRegionDialog();
-                }
-                else if(answer == "delete"){
-                    deleteRegion();
-                }
-            }, function(){});
-        };
-        
-        //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 Deprecated
-        function DetailedDialogController($scope, $mdDialog, $state, clickName, areaData) {
-            $scope.hide = function() {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function() {
-                $mdDialog.cancel();
-            };
-            $scope.answer = function(answer) {
-                $mdDialog.hide(answer);
-            };
-            $scope.movewiki = function(){  //wiki page로 이동 
-                $mdDialog.cancel();
-                $state.go('app.wiki');
-            };
-            $scope.clickName = clickName;
-        }*/
-
-
-
         vm.tags = [];
 
         vm.openMapDialog = function(ev)
         {
             $mdDialog.show({
                 controller         : MapDialogController,
-                controllerAs       : 'vm',
                 templateUrl        : 'app/main/map/map-dialog.html',
                 parent             : angular.element(document.body),
                 targetEvent        : ev,
                 clickOutsideToClose: true,
                 fullscreen: false, // Only for -xs, -sm breakpoints.
                 resolve: {
+                    inData : function(){
+                        return vm.markerData["regions"][selectedMarkerIdx];
+                    },
                     clickName: function(){
                         return vm.clickName;
                     },
@@ -1669,11 +1619,20 @@
                 if(answer == 'markerInfo'){
                     showRegionDialog();
                 }
+                else if(answer == "makeEvent"){
+                    vm.lidForEvent = vm.markerData["regions"][selectedMarkerIdx]["id"];
+                    showCreateCustomEventDialog();
+                }
             }, function(){});
         }
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
         function MapDialogController($scope, $mdDialog, $state, clickName) {
+            $scope.canMakeEvent = false;
+            if(vm.categoryStatus == "regions"){
+                $scope.canMakeEvent = true;
+            }
+
             $scope.answer = function(answer) {
                 $mdDialog.hide(answer);
             };
@@ -1784,6 +1743,213 @@
         createCategoryMarkersInJson();  //처음 페이지 진입 시 카테고리 별 마커 및 도형을 미리 만듭니다.
         categoryStatusChangeProcess(mapLocation.lastCategoryStatus); 
 
+    //----------------------------DATA COMMUNICATION--------------------------
+        function makeSubAreaData(adminData, userData){
+            var adminObj = adminData.data;
+            var userObj = userData.data;
+            var adminObjLen = adminObj.length;
+            for(var i=0; i<adminObjLen; i++){
+                adminObj[i]["type"] = "admin";
+                adminObj[i]["shape"] = "POLYGON";
+            }
+
+            for (var i=0; i<userObj.length; i++){
+                userObj[i]["type"] = "user";
+                userObj[i]["shape"] = "POLYGON";
+                adminObj[adminObjLen] = userObj[i];
+                adminObjLen++;
+            }
+
+            return adminObj;
+
+        }
+
+        function GetAreaAdmin(){
+            return $http({
+                method: 'GET',
+                url: './api/map?type=admin',
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+            });
+        }
+
+        function GetAreaUser(){
+            return $http({
+                method: 'GET',
+                url: './api/map?type=user',
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+            });
+        }          
+
+        
+        function PostAreaUser(inData){
+            $http({
+                method: 'POST',
+                url: './api/map',
+                data : inData,
+                headers: {'Content-Type' : 'application/json',
+                'x-auth-token': $sessionStorage.get('AuthToken'),
+                        }
+                }).then(
+                function successFunc(response){
+                    console.log(response)
+                },
+                 function failFunc(response){
+                    console.log(response)
+                });
+
+
+            //console.log(inData);
+            //console.log(inData);
+            /*return $http({
+                method: 'POST',
+                url: './api/map',
+                data : $httpParamSerializerJQLike({
+                    name: inData["name"],
+                    center: inData["center"],
+                    shape: inData["shape"],
+                    path: inData["path"],
+                    detail: inData["detail"],
+                    type: 'user',
+                    tags: inData["tags"]
+                }),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        'Content-Type' : 'application/json'}
+            });*/
+            /*var ojj = JSON.stringify({
+                    "center" : {"lat" :37.29074339694662, "lng" : 126.97762530840102 },
+                    "detail": "tet5",
+                    "name" : "tat55ss",
+                    "path" : [{"lat":37.29028355627522, "lng":126.9760353174199},
+                                {"lat":37.29081565731118, "lng" : 126.97858388104525}],
+                    "shape" : "RECTANGLE",
+                    "type" : "user",
+                    "tags" : [{"name" : "testTag"}]
+                });
+            console.log(ojj);*/
+
+
+            
+            /*var jjj = {
+                    "center" : {"lat" :'37.29074339694662', "lng" : '126.97762530840102' },
+                    "detail": "tet5wa",
+                    "name" : "t2777at55121ss",
+                    "path" : [
+                        {"lat":'37.29081565731118', "lng" : '126.97858388104525'},
+                        {"lat":'37.29028355627522', "lng":'126.9760353174199'}
+                        ],
+                    "shape" : "RECTANGLE",
+                    "type" : "user",
+                    "tags" : [{"name" : "testTag"}]
+                };*/
+                //var objj = [inData];
+                
+                /*var objj = JSON.stringify(inData);
+                console.log(objj);
+
+                console.log(JSON.parse(objj));
+
+                $http({
+                method: 'POST',
+                url: './api/map',
+                data : inData,
+                headers: {'Content-Type' : 'application/json',
+                'x-auth-token': $sessionStorage.get('AuthToken'),
+                        }
+                });
+                */
+                /*.then(function successFunc(response){
+                    console.log(response);
+                    categoryStatusChangeProcess("none", true);
+                    createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
+                    var areaAdmin, areaUser;
+                    GetAreaAdmin().then(function successFunc(response){
+                        areaAdmin = response.data;
+                        GetAreaUser().then(function successFunc(response){
+                            areaUser = response.data;
+                            subAreaData = makeSubAreaData(areaAdmin, areaUser);
+                            categoryStatusChangeProcess("regions", true);
+                        });
+                    });
+                });*/
+
+
+                
+        }
+        function PutAreaUser(inData){
+            var putid = inData["id"];
+            delete inData["id"];
+            return $http({
+                method: 'PUT',
+                url: './api/map' + '/' + putid,
+                data : $httpParamSerializerJQLike(inData),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        'Content-Type' : 'application/json'}
+            });
+        }
+        function DeleteAreaUser(inData){
+            var delid = inData["id"];
+            return $http({
+                method: 'DELETE',
+                url: './api/map' + '/' + delid,
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') }
+            });
+        }
+
+
+        function GetCustomEventData(){
+            return $http({
+                method: 'GET',
+                url: './api/event',
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+            });
+        }
+
+        function PostCustomEventData(inData){
+            var d = new Date();
+            d.setDate(6);
+            var fd = d.getTime();
+            var r = new Date();
+            r.setDate(0);
+            var td = r.getTime();
+            $http({
+                method: 'POST',
+                url: './api/event',
+                data : $httpParamSerializerJQLike({
+                    "l_id" : 1,
+                    "title": "testregion",
+                    "creator" : {"memberSeq" : 1},
+                    "fromDate" : 1496709513624,
+                    "toDate" : 1496191135170,
+                    "about" : "this is customEvent",
+                    "tags" : [{"name" : "testTag"}]
+               }),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        'Content-Type' : 'application/json'}
+            }).then(function successFunc(response){console.log(response)}).then(function failFunc(response){console.log(response)});
+
+        }
+
+        function PutCustomEventData(inData){
+            var putid = inData["id"];
+            delete inData["id"];
+            return $http({
+                method: 'PUT',
+                url: './api/event' + '/' + putid,
+                data : $httpParamSerializerJQLike(inData),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        'Content-Type' : 'application/json'}
+            });
+
+        }
+
+        function DeleteCustomEventData(inData){
+            var delid = inData["id"];
+            return $http({
+                method: 'DELETE',
+                url: './api/map' + '/' + delid,
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') }
+            });
+        }
     }
     
 //------controller scope 밖 function
@@ -1887,5 +2053,7 @@
         }
         return skeleton;
     }
+
+    
 
 })();
