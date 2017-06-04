@@ -1,0 +1,9 @@
+{
+	"data":[
+            {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"},
+            {"name":"원", "type":"CIRCLE", "icon" : "icon-checkbox-blank-circle-outline"},   
+            {"name":"사각형", "type":"RECTANGLE", "icon" : "icon-crop-square"},   
+            {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
+            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"}   
+        ]
+}
