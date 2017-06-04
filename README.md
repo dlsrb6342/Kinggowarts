@@ -141,6 +141,7 @@ xhr.send();
   * Request Value
   ```
   <!--대략 이런식으로 보냅니다. 실제로 할때는 인증토큰도 같이 보내세요-->
+  <!--요청 파라미터는 Multipart형의 file 입니다. -->
   <form id="uploadForm" enctype="multipart/form-data"> 
   <input type="file" id="file" name="file">
   </form>
