@@ -101,9 +101,4 @@ public class MemberController {
         return memberService.changePassword(user.getMemSeq(), newPassword, lastPassword);
     }
 
-    @PostMapping(value = "/test")
-    public String test(@RequestParam("file") MultipartFile file){
-        return memberService.setProfileImg(19L, file);
-    }
-
 }

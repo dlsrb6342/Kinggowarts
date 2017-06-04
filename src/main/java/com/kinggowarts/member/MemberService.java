@@ -23,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -219,14 +221,4 @@ public class MemberService {
         member.setProfileImgPath(message);
         return "success";
     }
-
-    @Transactional
-    public void test(ArrayList<String> arr){
-        for(int i =51, j=0; i<=90; i++, j++){
-            Member member = getMemberBySeq((long)i);
-            member.setProfileImgPath(arr.get(j));
-            memberRepository.save(member);
-        }
-    }
-
 }
