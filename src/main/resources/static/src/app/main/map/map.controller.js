@@ -14,7 +14,7 @@
         var vm = this;
         
         vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
-        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
+        vm.clickUrl = '../xwiki/bin/view/XWiki/';
 
         vm.userLat = 0;
         vm.userLng = 0;
@@ -1326,7 +1326,7 @@
                 else if(vm.categoryStatus == "regions"){
                     selectedArea = vm.markerData["regions"][typeIdx];
                     vm.clickName = vm.markerData["regions"][typeIdx]["name"];
-                    vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" + vm.clickName;
+                    vm.clickUrl = '../xwiki/bin/view/XWiki/' + vm.clickName;
                     //selectedArea = subArea[typeIdx];          //subArea 정의 이전
                     //vm.clickName = subArea[typeIdx]["name"];
                     vm.openMapDialog();
@@ -1431,7 +1431,7 @@
                         selectedArea = shapeData;
                         selectedMarker = printedCategoryMarkers[idx];
                         selectedMarkerIdx = idx;
-                        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" + vm.clickName;
+                        vm.clickUrl = '../xwiki/bin/view/XWiki/' + vm.clickName;
                         vm.openMapDialog();
                     }    
                 });
