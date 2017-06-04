@@ -1602,53 +1602,6 @@
         
         ];
 
-        //구역 클릭시 다이얼로그 Deprecated
-        /*vm.showDetailed = function(ev) {
-            $mdDialog.show({
-                controller: DetailedDialogController,
-                templateUrl: 'app/main/map/dialog2.tmpl.html',
-                parent: angular.element(document.body),
-                targetEvent: ev,
-                clickOutsideToClose:true,
-                fullscreen: false, // Only for -xs, -sm breakpoints.
-                resolve: {
-                  clickName: function(){
-                    return vm.clickName;
-                  },
-                  areaData : function(){
-                    return selectedArea;
-                  }
-                }
-            })
-            .then(function(answer){
-                if(answer == 'markerInfo'){
-                    showRegionDialog();
-                }
-                else if(answer == "delete"){
-                    deleteRegion();
-                }
-            }, function(){});
-        };
-        
-        //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 Deprecated
-        function DetailedDialogController($scope, $mdDialog, $state, clickName, areaData) {
-            $scope.hide = function() {
-                $mdDialog.hide();
-            };
-            $scope.cancel = function() {
-                $mdDialog.cancel();
-            };
-            $scope.answer = function(answer) {
-                $mdDialog.hide(answer);
-            };
-            $scope.movewiki = function(){  //wiki page로 이동 
-                $mdDialog.cancel();
-                $state.go('app.wiki');
-            };
-            $scope.clickName = clickName;
-        }*/
-
-
 
         vm.tags = [];
 
@@ -1682,14 +1635,23 @@
         }
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
-        function MapDialogController($scope, $mdDialog, $state, clickName) {
+        function MapDialogController($scope, $mdDialog, $state, clickName, $rootScope) {
             $scope.answer = function(answer) {
                 $mdDialog.hide(answer);
             };
+
             $scope.movewiki = function(){  //wiki page로 이동 
                 $mdDialog.cancel();
-                $state.go('app.wiki');
-                //$state.go(vm.clickUrl);
+                $rootScope.wikipath = vm.clickUrl;
+ 
+                if($state.includes('app.wiki') == true)
+                {
+                    $state.reload();
+                }
+                else
+                {
+                    $state.go('app.wiki');
+                }
             };
             $scope.cancel = function() {
                 $mdDialog.cancel();
