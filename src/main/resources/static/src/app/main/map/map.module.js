@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.map', ['ngMaterial'])
+        .module('app.map', ['ngMaterial', 'ngMessages'])
         .config(config);
 
     /** @ngInject */
@@ -52,12 +52,12 @@
                     },
                     CustomEventData: function(msApi, $http, $sessionStorage)
                     {
-                        return msApi.resolve('customEventData@get');
-                        /*return $http({
+                        //return msApi.resolve('customEventData@get');
+                        return $http({
                             method: 'GET',
                             url: './api/event',
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });*/
+                        });
                     }
                     
                 }
@@ -66,7 +66,7 @@
         // Api
         msApiProvider.register('marker', ['app/data/map/marker.json']);
         msApiProvider.register('categoryMarker', ['app/data/map/categoryMarker.json']);
-        msApiProvider.register('customEventData', ['app/data/map/customEvent.json']);
+        //msApiProvider.register('customEventData', ['app/data/map/customEvent.json']);
         msApiProvider.register('drawingMenu', ['app/data/map/drawingMenu.json']);
         
     }

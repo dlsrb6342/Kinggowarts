@@ -9,7 +9,7 @@
 
 
     /** @ngInject */
-    function MapController(AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
+    function MapController($q, AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
     {
         var vm = this;
         
@@ -100,8 +100,6 @@
         };
         usercheck();
 
-        PostCustomEventData(10);
-
         var customOverlay = new daum.maps.CustomOverlay({});
         var infowindow = new daum.maps.InfoWindow({removable: true});
 
@@ -180,17 +178,20 @@
 
 
         //선택된 이벤트 도형을 수정 가능상태로 만들기.
-        function modifyShape(){
-            
+        function modifyShape(inData){
+            //inData = vm.markerData["regions"][selectedMarkerIdx]
             disableAllMarkerListener();
             var curIdx = selectedMarkerIdx;
             
             //layout set null
-            if(vm.categoryStatus == "customevent")
-                customEventShapes[curIdx].setMap(null);
+            if(vm.categoryStatus == "customevent"){
 
-            else if(vm.categoryStatus == "regions")
+                //customEventShapes[curIdx].setMap(null);
+            }
+
+            else if(vm.categoryStatus == "regions"){
                 regionShapes[curIdx].setMap(null);
+            }
             //printedCategoryMarkers[curIdx].setMap(null);
 
             //마커 삭제 불가능하게 하려 했는데 setStyle 함수 호출 에러..
@@ -208,18 +209,12 @@
             //custom event data(detail) -> event data(detail + shape&marker)
             var newCustomEventObj = removeOverlayAndGetData(modifyingData);
             var tempStatus = vm.categoryStatus;
-            categoryStatusChangeProcess("none", true);
-            
-            //TODO : register modified newCustomEventObj on server
-            
-            //vm.markerData에 현재 data 갱신 //UNDO
-            
-            //TODO : need to get MarkerData update.
-            
-            //markerData에 있는 데이터를 기반으로 마커 재작성.
+
+            PutAreaUser(modifyingData);
+            /*categoryStatusChangeProcess("none", true);
             createCategoryMarkersInJson();
-            categoryStatusChangeProcess(tempStatus, true);
-            //vm.categoryStatus = "customevent";
+            categoryStatusChangeProcess(tempStatus, true);*/
+            
             isModifyCustomEventShape = false;   //수정 종료
             isModifyRegionShape = false;
             enableAllMarkerListener();
@@ -315,14 +310,14 @@
             .then(function(answer) {
                 if(answer == "modifyShape"){
                     isModifyRegionShape = true;
-                    modifyShape();
+                    modifyShape(vm.markerData["regions"][selectedMarkerIdx]);
                 }
                 else if(answer == "modifyInfo"){
                     isModifyRegionInfo = true;
                     showCreateRegionDialog();
                 }
                 else if(answer == "delete"){
-                    deleteRegion();
+                    deleteRegion(vm.markerData["regions"][selectedMarkerIdx]);
                 }
 
             }, function() {
@@ -360,52 +355,27 @@
             postData = removeOverlayAndGetData(answer);
             PostAreaUser(answer);
             //반드시 status를 바꾸기 전에 overlaydata를 저장해 놓을것. 
-            
-            //console.log(answer);
-            //TODO : register newCustomEventObj on server
             //PostAreaUser(newRegionObj);
             
         }
         
 
         //커스텀 지역 내용 수정 Process.
-        function modifyRegionDetail(answer){
+        function modifyRegionDetail(inData){
             //데이터 변경을 위한 statue 전환.
-            categoryStatusChangeProcess("none", true);
-            
-            //TODO : request post "answer data" to server
-
-            if(1/*same name or failed*/){
-                //alert('fail. name or internet');
-                return false;
-            }
-            else
-            {
-                //UNDO
-                vm.markerData["regions"][selectedMarkerIdx]["name"] = answer["name"];
-                vm.markerData["regions"][selectedMarkerIdx]["about"] = answer["about"];
-                //vm.markerData["regions"][selectedMarkerIdx]["location"] = answer["location"];
-
-                //TODO : get new data from server
-
-                createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-                categoryStatusChangeProcess("regions", true);
-                isModifyRegionInfo = false;    // modify mode 해제
-                return true;
-            }            
+            PutAreaUser(inData);
+            selectedMarker = null;
+            selectedMarkerIdx = 0;
         };
 
-        function deleteRegion($mdDialog){
-            //TODO request delete
-            //markerData["customevent"][selectedMarkerIdx]["id"]
-            categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-            categoryStatusChangeProcess("regions", true);
-
+        function deleteRegion(inData){
+            //categoryStatusChangeProcess("none", true);
+            //createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
+            //categoryStatusChangeProcess("regions", true);
+            selectedMarker = null;
+            selectedMarkerIdx = 0;
+            DeleteAreaUser(inData);
         }
-
-    
-
 
     //----------------------------커스텀 내용 생성 / 수정----------------
 
@@ -447,15 +417,22 @@
         };
 
         //커스텀이벤트 내용 생성/ 수정 컨트롤러
-        function CreateCustomEventDialogController($scope, $mdDialog, modifiedData, inLid) {
+        function CreateCustomEventDialogController($scope, $mdDialog, $sessionStorage, modifiedData, inLid) {
             //modify를 위한 dialog 생성.
             if(isModifyCustomEventInfo == true){
                 $scope.isModify = true; //dialog에서 create/detail 상태에 따른 제목 수정
+                $scope.currentUserNickname = $sessionStorage.get('nickname');
                 $scope.retData = modifiedData;
-                
+                $scope.fromDateD = new Date();
+                $scope.fromDateD.setTime(modifiedData["fromDate"]);
+                $scope.toDateD = new Date();
+                $scope.toDateD.setTime(modifiedData["toDate"]);
             }
             else{
                 $scope.isModify = false;
+                $scope.fromDateD = new Date();
+                $scope.toDateD = new Date();
+                $scope.currentUserNickname = $sessionStorage.get('nickname');
                 $scope.retData = 
                 {
                     "name": "",
@@ -475,6 +452,10 @@
                 $mdDialog.cancel();
             };
             $scope.answer = function() {
+                $scope.retDate["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
+                $scope.retData["fromDate"] = Date.parse(fromDateD);
+                $scope.retData["toDate"] = Date.parse(toDateD);
+                $scope.retData["l_id"] = inLid;
                 $mdDialog.hide($scope.retData);
             };
         }
@@ -491,9 +472,6 @@
                 fullscreen: false, // Only for -xs, -sm breakpoints.
                 resolve: {
                     eventDataList : function(){
-                        //console.log(vm.customEventDataOrderbyRegions);
-                        //console.log(vm.markerData["customevent"][selectedMarkerIdx]["id"]);
-                        //console.log(vm.customEventDataOrderbyRegions[String(vm.markerData["customevent"][selectedMarkerIdx]["id"])]);
                         return vm.customEventDataOrderbyRegions[String(vm.markerData["customevent"][selectedMarkerIdx]["id"])];      
                     }
                 }
@@ -539,6 +517,7 @@
                 fullscreen: false, // Only for -xs, -sm breakpoints.
                 resolve: {
                     eventData : function(){
+                        //내용 선택시 vm.customEventData에서 해당 데이터의 idx를 찾아 selectedCustomEventidx에 저장. 후에 데이터 수정/삭제에 쓰임.
                         for(var i=0 ;i<vm.customEventData.length; i++){
                             if(vm.customEventData[i]["id"] == vm.eventDataId){
                                 vm.selectedCustomEventIdx = i;
@@ -568,6 +547,10 @@
         // 커스텀이벤트의 내용을 보여주는 다이얼로그 컨트롤러
         function CustomEventDialogController($scope, $mdDialog, eventData) {
             $scope.data = eventData;
+            $scope.toDateD = new Date();
+            $scope.toDateD.setTime(eventData["toDate"]);
+            $scope.fromDateD = new Date();
+            $scope.fromDateD.setTime(eventData["fromDate"]);
             $scope.canModify = true;
             //selectedMarkerIdx;
             $scope.hide = function() {
@@ -585,94 +568,20 @@
     //-----------------Process-----------------------------
         // 새로운 커스텀 이벤트 세부 내용 만들기 Process
         function makeCustomEventDetail(answer){
-            //answer route : CreateCustomEventDialogController->vm.showCreateCustomEventDialog->this
+                  
+            PostCustomEventData(answer);
 
-            //custom event data(detail) -> event data(detail + shape&marker)
-            var newCustomEventObj = answer;//removeOverlayAndGetData(answer);
-            $http({
-                method: 'POST',
-                url: './api/map',
-                data : $httpParamSerializerJQLike({
-                    //"id" : 3,
-                    "name": "testregion",
-                    //"creater" : "",
-                    //"dateFrom" : "",
-                    //"dateTo" : "",
-
-                    "center" : {"lat": 37.29410858054493,"lng":126.9738347803545, "radius" : 0},
-                    "about" : "this is customEvent",
-                    "type" : "user",
-                    "shape" : "POLYGON",
-                    "path" : [
-                        {"lat" : 37.29419858054493, "lng" : 126.9738347803545},
-                        {"lat" : 37.29429858054493, "lng" : 126.9737347803545},
-                        {"lat" : 37.29439858054493, "lng" : 126.9739347803545},
-                        {"lat" : 37.29429858054493, "lng" : 126.9736247803545}
-                    ],
-                    "tag" : [{"name" : "aaa"}],
-               }),
-                headers: {'x-auth-token': '148ac33b-4055-46c8-a90d-5a1f5e8b358f'}
-            })
-            .then(function successFunc(response){console.log(response)}).then(function failFunc(response){console.log(response)});
-            /*
-             $http({
-                method: 'POST',
-                url: './api/map?type=user',
-                data : $httpParamSerializerJQLike({
-                    //"id" : 3,
-                    "name": "testregion",
-                    //"creater" : "",
-                    //"dateFrom" : "",
-                    //"dateTo" : "",
-                    "center" : {"lat": 37.29410858054493,"lng":126.9738347803545},
-                    "detail" : "this is customEvent",
-                    //"type" : "user",
-                    "shape" : "POLYGON",
-                    "path" : [
-                        {"lat" : 37.29419858054493, "lng" : 126.9738347803545},
-                        {"lat" : 37.29429858054493, "lng" : 126.9737347803545},
-                        {"lat" : 37.29439858054493, "lng" : 126.9739347803545},
-                        {"lat" : 37.29429858054493, "lng" : 126.9736247803545}
-                    ]       
-               }),
-                headers: {'x-auth-token': 'b33a3726-f361-4fe6-846b-7e3f67cfe700'}
-            })
-            .then(function successFunc(response){}).then(function failFunc(response){});*/
-
-            //반드시 status를 바꾸기 전에 overlaydata를 저장해 놓을것.
             categoryStatusChangeProcess("none", true);
-
-            //TODO : register newCustomEventObj on server
-            var customLen = vm.customEventData.length;
-            //vm.markerData에 현재 data 추가.
-            newCustomEventObj["id"] = -1;   //this is on client.    //UNDO
-            vm.customEventData[customLen] = newCustomEventObj;    //UNDO
-
-            //TODO : need to get MarkerData update.
-            //markerData에 있는 데이터를 기반으로 마커 재작성.
             createCategoryMarkersInJson();
             categoryStatusChangeProcess("customevent", true);
-            //vm.categoryStatus = "customevent";
         }
         
         //커스텀 이벤트 내용 수정 Process.
         function modifyCustomEventDetail(answer){
+
+            PutCustomEventData(answer);
             //데이터 변경을 위한 statue 전환.
             categoryStatusChangeProcess("none", true);
-            
-            //TODO : request post "answer data" to server
-
-            //UNDO
-            vm.markerData["customevent"][selectedMarkerIdx]["name"] = answer["name"];
-            //vm.markerData["customevent"][selectedMarkerIdx]["type"] : "none"
-            vm.markerData["customevent"][selectedMarkerIdx]["about"] = answer["about"];
-            vm.markerData["customevent"][selectedMarkerIdx]["creater"] = answer["creater"];
-            vm.markerData["customevent"][selectedMarkerIdx]["fromDate"] = answer["fromDate"];
-            vm.markerData["customevent"][selectedMarkerIdx]["toDate"] = answer["toDate"];
-            //vm.markerData["customevent"][selectedMarkerIdx]["location"] = answer["location"];
-
-            //TODO : get new data from server
-
             createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
             categoryStatusChangeProcess("customevent", true);
             isModifyCustomEventInfo = false;    // modify mode 해제
@@ -680,33 +589,12 @@
 
 
         function deleteCustomEvent(){
-            //TODO request delete
+
             //markerData["customevent"][selectedMarkerIdx]["id"]
             categoryStatusChangeProcess("none", true);
             createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
             categoryStatusChangeProcess("customevent", true);
         }
-/*      
-        var showConfirm = function(ev) {
-        // Appending dialog to document.body to cover sidenav in docs app
-        var confirm = $mdDialog.confirm()
-            .title('Would you like to delete your debt?')
-            .textContent('All of the banks have agreed to forgive you your debts.')
-            .ariaLabel('Lucky day')
-            .targetEvent(ev)
-            .clickOutsideToClose(true)
-            .parent(angular.element(document.body))
-            .ok('Please do it!')
-            .cancel('Sounds like a scam');
-            $mdDialog.show(confirm).then(function() {
-                  //$scope.status = 'You decided to get rid of your debt.';
-                }, function() {
-                  //$scope.status = 'You decided to keep your debt.';
-                });
-            };
-            showConfirm();
-        }
-        */
 
     //---------------좌하단 fab 버튼------------------------------------
         // 클릭 시 호출되는 핸들러 입니다
@@ -734,11 +622,11 @@
                         if(vm.categoryStatus == "customevent"){
                             //커스텀 이벤트 도형을 수정중인 경우
                             if(isModifyCustomEventShape == true){
-                                updateShape();
+                                //updateShape();
                             }
                             else{
                                 //생성 및 등록
-                                showCreateCustomEventDialog();
+                                //showCreateCustomEventDialog();
                             }
                         }
                         else if(vm.categoryStatus == "regions"){
@@ -1744,18 +1632,50 @@
         categoryStatusChangeProcess(mapLocation.lastCategoryStatus); 
 
     //----------------------------DATA COMMUNICATION--------------------------
+        vm.refreshData = function(){
+
+            var deferred = $q.defer();
+            var httpProm1 = GetAreaAdmin();
+            var httpProm2 = GetAreaUser();
+
+            //두 약속을 $q.all 메서드를 이용해 새로운 약속을 만든다.
+            $q.all([httpProm1, httpProm2])
+            .then(
+                function(results) {
+                //두 약속이 모두 지켜지면 asyncService서비스가 반한하는 약속을 지키고 두 약속이 전달하는 결과를 묶은 배열로 전달한다.
+                    deferred.resolve(results);
+                    console.log(results);
+                    areaAdmin = results[0];
+                    areaUser = results[1];
+                    console.log(areaUser);
+                    subAreaData = makeSubAreaData(areaAdmin, areaUser);
+                    categoryStatusChangeProcess("none", true);
+                    createCategoryMarkersInJson();
+                    categoryStatusChangeProcess("none", false);
+                    console.log(subAreaData);
+                },
+                function(errors) {
+                    deferred.reject(errors);
+                },
+                function(updates) {
+                    deferred.update(updates);
+            });
+
+        }
+
+
+
+
         function makeSubAreaData(adminData, userData){
             var adminObj = adminData.data;
             var userObj = userData.data;
             var adminObjLen = adminObj.length;
             for(var i=0; i<adminObjLen; i++){
                 adminObj[i]["type"] = "admin";
-                adminObj[i]["shape"] = "POLYGON";
             }
 
             for (var i=0; i<userObj.length; i++){
                 userObj[i]["type"] = "user";
-                userObj[i]["shape"] = "POLYGON";
                 adminObj[adminObjLen] = userObj[i];
                 adminObjLen++;
             }
@@ -1782,10 +1702,11 @@
 
         
         function PostAreaUser(inData){
+            var strObj = JSON.stringify(inData);
             $http({
                 method: 'POST',
                 url: './api/map',
-                data : inData,
+                data : JSON.stringify(inData),
                 headers: {'Content-Type' : 'application/json',
                 'x-auth-token': $sessionStorage.get('AuthToken'),
                         }
@@ -1797,82 +1718,6 @@
                     console.log(response)
                 });
 
-
-            //console.log(inData);
-            //console.log(inData);
-            /*return $http({
-                method: 'POST',
-                url: './api/map',
-                data : $httpParamSerializerJQLike({
-                    name: inData["name"],
-                    center: inData["center"],
-                    shape: inData["shape"],
-                    path: inData["path"],
-                    detail: inData["detail"],
-                    type: 'user',
-                    tags: inData["tags"]
-                }),
-                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
-                        'Content-Type' : 'application/json'}
-            });*/
-            /*var ojj = JSON.stringify({
-                    "center" : {"lat" :37.29074339694662, "lng" : 126.97762530840102 },
-                    "detail": "tet5",
-                    "name" : "tat55ss",
-                    "path" : [{"lat":37.29028355627522, "lng":126.9760353174199},
-                                {"lat":37.29081565731118, "lng" : 126.97858388104525}],
-                    "shape" : "RECTANGLE",
-                    "type" : "user",
-                    "tags" : [{"name" : "testTag"}]
-                });
-            console.log(ojj);*/
-
-
-            
-            /*var jjj = {
-                    "center" : {"lat" :'37.29074339694662', "lng" : '126.97762530840102' },
-                    "detail": "tet5wa",
-                    "name" : "t2777at55121ss",
-                    "path" : [
-                        {"lat":'37.29081565731118', "lng" : '126.97858388104525'},
-                        {"lat":'37.29028355627522', "lng":'126.9760353174199'}
-                        ],
-                    "shape" : "RECTANGLE",
-                    "type" : "user",
-                    "tags" : [{"name" : "testTag"}]
-                };*/
-                //var objj = [inData];
-                
-                /*var objj = JSON.stringify(inData);
-                console.log(objj);
-
-                console.log(JSON.parse(objj));
-
-                $http({
-                method: 'POST',
-                url: './api/map',
-                data : inData,
-                headers: {'Content-Type' : 'application/json',
-                'x-auth-token': $sessionStorage.get('AuthToken'),
-                        }
-                });
-                */
-                /*.then(function successFunc(response){
-                    console.log(response);
-                    categoryStatusChangeProcess("none", true);
-                    createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-                    var areaAdmin, areaUser;
-                    GetAreaAdmin().then(function successFunc(response){
-                        areaAdmin = response.data;
-                        GetAreaUser().then(function successFunc(response){
-                            areaUser = response.data;
-                            subAreaData = makeSubAreaData(areaAdmin, areaUser);
-                            categoryStatusChangeProcess("regions", true);
-                        });
-                    });
-                });*/
-
-
                 
         }
         function PutAreaUser(inData){
@@ -1881,7 +1726,7 @@
             return $http({
                 method: 'PUT',
                 url: './api/map' + '/' + putid,
-                data : $httpParamSerializerJQLike(inData),
+                data : inData,
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
                         'Content-Type' : 'application/json'}
             });
@@ -1914,7 +1759,7 @@
             $http({
                 method: 'POST',
                 url: './api/event',
-                data : $httpParamSerializerJQLike({
+                data : {
                     "l_id" : 1,
                     "title": "testregion",
                     "creator" : {"memberSeq" : 1},
@@ -1922,10 +1767,10 @@
                     "toDate" : 1496191135170,
                     "about" : "this is customEvent",
                     "tags" : [{"name" : "testTag"}]
-               }),
+               },
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
                         'Content-Type' : 'application/json'}
-            }).then(function successFunc(response){console.log(response)}).then(function failFunc(response){console.log(response)});
+            }).then(function successFunc(response){console.log(response)}, function failFunc(response){console.log(response)});
 
         }
 
