@@ -391,6 +391,7 @@
                 resolve:{
                     modifiedData : function(){
                         if(isModifyCustomEventInfo == true)
+                            //use vm.customEventData[vm.selectedCustomEventIdx]
                             return vm.customEventData[vm.selectedCustomEventIdx];
                         else
                             return null;
@@ -482,6 +483,7 @@
                     showCreateCustomEventDialog();
                 }
                 else{
+                    //이벤트리스트 중 한 이벤트를 선택한 경우 answer값은 event의 id
                     vm.eventDataId = answer;
                     showCustomEventDialog();
                     //answer == event id (customEvent.json의 id)
@@ -532,12 +534,13 @@
                 if(answer == "modifyShape"){
                     
                 }
+                //use vm.customEventData[vm.selectedCustomEventIdx]
                 else if(answer == "modifyInfo"){
                     isModifyCustomEventInfo = true;
                     showCreateCustomEventDialog();
                 }
                 else if(answer == "delete"){
-                    deleteCustomEvent();
+                    deleteCustomEvent(vm.customEventData[vm.selectedCustomEventIdx]);
                 }
             }, function() {
                 //alert('none..');
@@ -588,8 +591,9 @@
         };
 
 
-        function deleteCustomEvent(){
-
+        function deleteCustomEvent(inData){
+            //inData의 id로 delete 진행.
+            DeleteCustomEventData(inData);
             //markerData["customevent"][selectedMarkerIdx]["id"]
             categoryStatusChangeProcess("none", true);
             createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
