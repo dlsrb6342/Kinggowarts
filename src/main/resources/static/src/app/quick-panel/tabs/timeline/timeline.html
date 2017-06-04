@@ -1,25 +1,25 @@
 <div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
-    <div class="h3">Timeline</div>
+    <div class="h3">타임라인</div>
 
-        <div class="pv-16">
-                <md-select class="simplified" ng-model="vm.timeline.currenttimeline" aria-label="Change range">
-                    <md-option ng-repeat="(key, range) in vm.timeline.range" value="{{key}}">
-                        {{range}}
-                    </md-option>
-                </md-select>
-        </div>
+    <div class="pv-16">
+        <md-select class="simplified" ng-model="vm.timeline.currenttimeline" aria-label="Change range">
+            <md-option ng-repeat="(key, range) in vm.timeline.range" value="{{key}}">
+                {{range}}
+            </md-option>
+        </md-select>
     </div>
+</div>
 
-    <div class="p-16" layout="row" layout-align="space-between center" ng-repeat="event in vm.timeline.notitime[vm.timeline.currenttimeline]">
+<div class="p-16" layout="row" layout-align="space-between center" ng-repeat="event in vm.timeline.notitime[vm.timeline.currenttimeline]" ng-click = "vm.findtimelinelocation(event.location.id)">
+    <div>
+        <div class="h3">{{event.title}}</div>
         <div>
-            <div class="h3">{{event.title}}</div>
-            <div>
-                <span class="secondary-text">{{event.time}}</span>
-                <span ng-if="event.location.id != 0" ng-click = "vm.findtimelinelocation(event.location.id)">, {{event.location.name}}</span>
+            <span class="secondary-text">{{event.time}}</span>
+            <span ng-if="event.location.id != 0">, {{event.location.name}}</span>
         </div>
     </div>
 
-        <md-button class="md-icon-button" aria-label="More information">
-            <md-icon md-font-icon="icon-dots-vertical"></md-icon>
-        </md-button>
+    <md-button class="md-icon-button" aria-label="More information">
+        <md-icon md-font-icon="icon-dots-vertical"></md-icon>
+    </md-button>
 </div>
