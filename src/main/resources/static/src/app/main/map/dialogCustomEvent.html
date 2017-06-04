@@ -23,10 +23,12 @@
         <p>종료일자 : {{data.toDate}}</p>
     </div>
 
-    <div layout-gt-sm="row">
-      <p>상세내역 : {{data.about}}</p>
+    <div class="tags" layout="row" layout-align="start center" layout-wrap>
+      <div class="tag" layout="row" style="height:30px;" layout-align="start center" data-ng-repeat="tag in data.tags">
+        <div class="tag-label"> <p># {{tag.name}}</p></div>
+      </div>
     </div>
-    
+
     </md-dialog-content>
 
     <md-dialog-actions layout="row">

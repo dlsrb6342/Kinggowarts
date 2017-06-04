@@ -26,6 +26,15 @@
       <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="retData['about']">
     </md-input-container>
 
+    <div layout-gt-sm="row" class="tags">
+      <md-chips ng-model= "retData['tags']" md-transform-chip="newTag($chip)" placeholder="Enter a tag" md-max-chips="5">
+        <md-chip-template>
+          <!--<span ng-if="$chip.color" class="color" ng-style="{'background-color':$chip.color}"></span>-->
+          <span>{{$chip.name}}</span>
+        </md-chip-template>
+      </md-chips>
+    </div>
+
     </md-dialog-content>
 
     <md-dialog-actions layout="row">

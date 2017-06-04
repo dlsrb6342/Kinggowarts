@@ -260,6 +260,10 @@
             $scope.answer = function() {
                 $mdDialog.hide($scope.retData);
             };
+             $scope.newTag = function(chip)
+            {
+                return { name : chip };
+            };
         }
 
     //-------------region 내용 다이얼로그-------------------------
@@ -476,6 +480,11 @@
             $scope.answer = function() {
                 $mdDialog.hide($scope.retData);
             };
+            
+            $scope.newTag = function(chip)
+            {
+                return { name : chip };
+            }
         }
 
     //-------------커스텀 내용 다이얼로그-------------------------
