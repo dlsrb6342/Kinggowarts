@@ -5,18 +5,12 @@ import com.kinggowarts.member.models.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.executable.ValidateOnExecution;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/member")
@@ -25,15 +19,12 @@ public class MemberController {
     MemberService memberService;
 
     @PostMapping(value = "/signup")
-    public String signUp(/*@Valid*/ Member member, /*BindingResult bindingResult,*/ HttpServletRequest req) {
-       /* System.out.println(bindingResult.hasErrors());
-        System.out.println(bindingResult.getAllErrors().isEmpty());
-        System.out.println(member.toString());
+    public String signUp(@Valid Member member, BindingResult bindingResult, HttpServletRequest req) {
         if(bindingResult.hasErrors())
             if(!bindingResult.getAllErrors().isEmpty())
                 return bindingResult.getAllErrors().get(0).getDefaultMessage();
             else
-                return "validation error";*/
+                return "validation error";
         String url = req.getRequestURL().toString();
         int end  = url.indexOf("/api");
         return memberService.insertMember(member, url.substring(0, end));
@@ -86,6 +77,33 @@ public class MemberController {
         UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         memberService.updateCoordinate(user.getMemSeq(), member.getLng(), member.getLat());
         return memberService.getPeerList(user.getMemSeq());
+    }
+
+    @GetMapping(value = "/search")
+    public ArrayList<Member> searchMember(@RequestParam String q) {
+        return memberService.searchMember(q);
+    }
+
+    @GetMapping(value = "/{memberSeq}")
+    public Member test(@PathVariable Long memberSeq){
+        return memberService.getMemberBySeq(memberSeq);
+    }
+
+    @PostMapping(value ="/profileImg")
+    public String updateProfileImg(@RequestParam("file") MultipartFile file){
+        UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return memberService.setProfileImg(user.getMemSeq(), file);
+    }
+
+    @PostMapping(value = "/changePassword")
+    public String changePassword(String newPassword,  String lastPassword) {
+        UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return memberService.changePassword(user.getMemSeq(), newPassword, lastPassword);
+    }
+
+    @PostMapping(value = "/test")
+    public String test(@RequestParam("file") MultipartFile file){
+        return memberService.setProfileImg(19L, file);
     }
 
 }

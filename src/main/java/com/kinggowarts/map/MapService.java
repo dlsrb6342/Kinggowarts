@@ -27,9 +27,12 @@ public class MapService {
 
     @Transactional
     String saveLocation(Location location) {
-        if (locationDao.findFirstByName(location.getName()) != null) {
+        if (locationDao.findByName(location.getName()) != null) {
             return "duplicatedName";
         } else {
+            if (!location.getType().equals("user")){
+                return "notAllowed";
+            }
             coordinateDao.save(location.getCenter());
             coordinateDao.save(location.getPath());
             tagDao.save(location.getTags());
@@ -43,7 +46,12 @@ public class MapService {
         Location location = locationDao.findOne(id);
         if (location == null) {
             return "noLocation";
+        } else if(!location.getType().equals("user")) {
+            return "notAllowed";
         } else {
+            if(locationDao.findByName(newLocation.getName()).getId() != id){
+                return "duplicatedName";
+            }
             coordinateDao.delete(location.getCenter());
             coordinateDao.delete(location.getPath());
             tagDao.delete(location.getTags());
@@ -61,6 +69,8 @@ public class MapService {
         Location location = locationDao.findOne(id);
         if (location == null) {
             return "noLocation";
+        } else if(!location.getType().equals("user")) {
+            return "notAllowed";
         } else {
             locationDao.delete(location);
             locationSearchDao.delete(location);

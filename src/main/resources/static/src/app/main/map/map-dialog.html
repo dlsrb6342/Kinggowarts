@@ -2,6 +2,7 @@
   <form ng-cloak>
     <md-toolbar>
       <div class="md-toolbar-tools">
+
       <h2> {{clickName}} </h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
@@ -12,11 +13,22 @@
 
 
     <!-- iframe 이용 wiki page dialog -->
+<<<<<<< HEAD
     
 
       <iframe frameborder=" 0" id="domainframe" src= "{{clickUrl | trustAsResourceUrl}}" width="100%" height = "300px" scrolling="auto";></iframe> 
 
  
+=======
+    <!-- <md-dialog-content> 
+    <script>
+        document.getElementById("clickWiki").src = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
+    </script>-->
+    
+      <iframe frameborder=" 0" id="domainframe" src= "{{clickUrl | trustAsResourceUrl}}" width="500px" height = "400px" scrolling="auto";></iframe> 
+     <!-- <iframe frameborder="0" id="clickWiki" src=" " width="500px" height = "400px" scrolling="auto";></iframe>-->
+    <!-- </md-dialog-content> -->
+>>>>>>> 90aa347db6738693e4d1590415b01ae14754a300
 
 <!--
     <md-dialog-actions layout="row">
@@ -39,6 +51,12 @@
         More on Wikipedia
       </md-button>
       <span flex></span>
+<<<<<<< HEAD
+=======
+      <md-button ng-click="answer('markerInfo')">
+        마커정보
+      </md-button>
+>>>>>>> 90aa347db6738693e4d1590415b01ae14754a300
       <md-button ng-click="cancel()">
         Cancel
       </md-button>

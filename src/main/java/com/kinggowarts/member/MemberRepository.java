@@ -16,13 +16,17 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Member findByMemberSeq(Long memberSeq);
 
-    @Query("SELECT new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname) FROM Member mem JOIN mem.reqFollower peer WHERE peer.memberSeq = ?1")
+    @Query("SELECT new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname, mem.name, mem.profileImgPath) FROM Member mem JOIN mem.reqFollower peer WHERE peer.memberSeq = ?1")
         //This is using a named query method
     ArrayList<Member> findAllRequestFromMe(Long memberSeq);
 
-    @Query("SELECT new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname) FROM Member mem JOIN mem.reqFollowing  peer  WHERE peer.memberSeq = ?1")
+    @Query("SELECT new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname, mem.name, mem.profileImgPath) FROM Member mem JOIN mem.reqFollowing  peer  WHERE peer.memberSeq = ?1")
         //This is using a named query method
     ArrayList<Member> findAllRequestToMe(Long memberSeq);
+
+    @Modifying
+    @Query(value = "insert into req_peer values(:fromSeq, :toSeq)", nativeQuery = true)
+    void insertPeerReq(@Param("fromSeq") Long fromSeq, @Param("toSeq") Long toSeq);
 
 
     /*
@@ -47,7 +51,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     //@NamedNativeQuery(name="findAllFollow", query="SELECT mem.memberSeq, mem.nickname, mem.userId, mem.lng, mem.lat FROM Member mem JOIN mem.follower peer WHERE peer.memberSeq = ?1", resultClass = "Member")
         //This is using a named query method
 
-    @Query("SELECT new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname, mem.lng, mem.lat) FROM Member mem JOIN mem.follower peer WHERE peer.memberSeq = ?1")
+    @Query("SELECT new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname, mem.name, mem.profileImgPath, mem.lng, mem.lat) FROM Member mem JOIN mem.follower peer WHERE peer.memberSeq = ?1")
   // @Query("SELECT mem.memberSeq, mem.nickname, mem.userId, mem.lng, mem.lat FROM Member mem JOIN mem.follower peer WHERE peer.memberSeq = ?1")
     ArrayList<Member> findAllFollow(Long memberSeq);
     //@NamedNativeQuery(name="findStudentPercentile", query="SELECT * FROM STUDENT", resultSetMapping="studentPercentile")
@@ -62,6 +66,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     void insertPeer(@Param("fromSeq") Long fromSeq, @Param("toSeq") Long toSeq);
 
     @Modifying
-    @Query(value = "delete from peer where (req_from_seq =:fromSeq and req_to_seq =:toSeq) or (req_from_seq =:toSeq and req_to_seq =:fromSeq)", nativeQuery = true)
+    @Query(value = "delete from peer where (from_seq =:fromSeq and to_seq =:toSeq) or (from_seq =:toSeq and to_seq =:fromSeq)", nativeQuery = true)
     void deletePeer(@Param("fromSeq") Long fromSeq, @Param("toSeq") Long toSeq);
 }

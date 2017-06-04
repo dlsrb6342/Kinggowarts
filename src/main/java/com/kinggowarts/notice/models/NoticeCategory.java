@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Data @Entity @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Category {
+public class NoticeCategory {
     @Id @GeneratedValue
     private long id;
     private String name;

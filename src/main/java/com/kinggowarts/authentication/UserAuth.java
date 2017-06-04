@@ -9,7 +9,7 @@ public class UserAuth extends User{
     private Long memSeq;
     private Integer confirm;
     private String nickname;
-    private Character type;
+    //private Character type;
     public UserAuth(String username, String password, Collection<? extends GrantedAuthority> authorities) {
         super(username, password, authorities);
     }
@@ -37,11 +37,11 @@ public class UserAuth extends User{
         this.nickname = nickname;
     }
 
-    public Character getType() {
+   /* public Character getType() {
         return type;
     }
 
     public void setType(Character type) {
         this.type = type;
-    }
+    }*/
 }

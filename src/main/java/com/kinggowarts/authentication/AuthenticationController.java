@@ -33,25 +33,14 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
                 SecurityContextHolder.getContext());
-        //session.setMaxInactiveInterval(30);
         UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if(user.getConfirm()==Member.EMAIL_CONFIRM){
             memberService.confirmUser(name, pw);
         }else if(user.getConfirm()!= Member.COMPLETE_CONFIRM)
             return "Not confirmed";
-
-        return new UserAuthToken(user.getUsername(), user.getAuthorities(), session.getId(), user.getNickname(), user.getType(), user.getMemSeq());
+        Member mem = memberService.getMemberBySeq(user.getMemSeq());
+        return new UserAuthToken(user.getUsername(), user.getAuthorities(), session.getId(), user.getNickname(), user.getMemSeq(), mem.getName(), mem.getProfileImgPath());
     }
-
-    /*@GetMapping(value="/test")
-    public void test(
-            HttpSession session
-    ) {
-        session.invalidate();
-        publish
-
-    }*/
-
 
 }

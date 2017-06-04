@@ -1,0 +1,33 @@
+<md-dialog>
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+      <!-- <h2> {{vm.clickName}} </h2> // 위키 제목 -->
+        <h2> Name of Area </h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-font-icon="icon-close-circle-outline" class="icon"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+
+    <!-- iframe 이용 wiki page dialog -->
+      <iframe frameborder=" 0" id="domainframe" src="http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" width="500px" height = "400px" scrolling="no";></iframe> 
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <md-button ng-click= "movewiki()">
+        More on Wikipedia
+      </md-button>
+      <span flex></span>
+      <md-button ng-click="answer('markerInfo')">
+        마커정보
+      </md-button>
+      <md-button ng-click="cancel()">
+        Cancel
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

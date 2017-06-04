@@ -33,15 +33,15 @@ public class AuthenticationService implements UserDetailsService{
             throw new UsernameNotFoundException("인증이 완료되지 않았습니다.");
         List<GrantedAuthority> roleList=new ArrayList<GrantedAuthority>();
         roleList.add(new SimpleGrantedAuthority("ROLE_GUEST"));
-        if(member.getType()=='S')
+        /*if(member.getType()=='S')
             roleList.add(new SimpleGrantedAuthority("ROLE_STUDENT"));
         else if(member.getType()=='T')
-            roleList.add(new SimpleGrantedAuthority("ROLE_TEACHER"));
+            roleList.add(new SimpleGrantedAuthority("ROLE_TEACHER"));*/
         UserAuth user = new UserAuth(username, member.getPassWd(), roleList);
         user.setMemSeq(member.getMemberSeq());
         user.setConfirm(member.getConfirm());
         user.setNickname(member.getNickname());
-        user.setType(member.getType());
+        //user.setType(member.getType());
         return user;
     }
 

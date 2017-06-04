@@ -16,7 +16,7 @@ public class Notice {
     private long id;
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="c_id")
-    private Category category;
+    private NoticeCategory category;
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="l_id")
     private Location location;
