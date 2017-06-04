@@ -62,21 +62,19 @@ npm install --save로 설치되는 api들은 모두 nodejs 모듈이기 때문�
 * Response Types: JSON
 
 * Response Value:
-```JSmin
+```
 {
-  "userId": "protos1000@naver.com", /*유저 아이디*/
-  "memberSeq": 1, /*유저 개인키*/
+  "userId": "user1@skku.edu",/*유저 아이디*/
+  "memberSeq": 51,/*유저 개인키*/
   "authorities": [
     {
       "authority": "ROLE_GUEST"
-    },
-    {
-      "authority": "ROLE_STUDENT"
     }
-  ], /*권한정보(교수가 없으면 의미없음)*/
-  "token": "82b86409-50bb-4b82-b4eb-abf28b2dd04a", /*인증토큰*/
-  "nickname": "haha", /*유저 닉네임*/
-  "type": "S" /*회원 종류 (역시나 교수가 없으면 의미없음)*/
+  ],/*권한정보(교수가 없으면 의미없음)*/
+  "token": "8c1a9901-4a07-4f1d-910c-d3244f3b9702",/*인증토큰*/
+  "nickname": "user1",/*유저 닉네임*/
+  "name": "유저1", /*유저 실명*/
+  "profileImgPath": "e2080ded-09ef-4a46-925b-f2e7665522b3_1.jpg"/*프로필사진 파일명*/
 }
 ```
 
@@ -88,13 +86,15 @@ npm install --save로 설치되는 api들은 모두 nodejs 모듈이기 때문�
 ```위에서 받아온 토큰은 로그인 이후에 rest 통신때 보내는 request의 header에
 x-auth-token 값으로 token 값을 넣어주면 인증이 된다. 
 ex) req.setRequestHeader('x-auth-token', token/*토큰값*/);
+프로필 사진은 /profileimg/파일명 으로 요청하면 보내준다.
+없으면 크기가 0인 스트링이 옴 ( "" )
 ```
 #### 2. XWiki 로그인
 * REST 요청은 아님
 * XWiki로 basic authentication와 함게 요청을 보내면 쿠키를 가져와서 XWiki 로그인 상태를 유지할 수 있음.
 * XWiki의 아이디로는 닉네임을 쓰고 패스워드는 동일.
 * 예시
-```javascript
+```
 var xhr = new XMLHttpRequest();
 //이런식으로 주소가 현재 호스트를 반영하도록 함
 xhr.open("GET", location.protocol+"//"+location.host+"/xwiki/bin/view/Main/", true);
@@ -104,37 +104,83 @@ xhr.send();
 ```
 
 
-#### 3. 회원가입
+#### 3. 회원가입 및 수정
 * 주소: /api/member/signup
-* HTTP Method: POST
-* Description: 회원가입 요청
-* Request Type: form data
-* Request Value
-```
-userId: 이메일 주소
-passWd: 패스워드
-nickname: 닉네임
-type: 회원 타입(S: 학생 T: 교수)
-```
+  * HTTP Method: POST
+  * Description: 회원가입 요청
+  * Request Type: form data
+  * Request Value
+  ```
+  userId: 이메일 주소
+  passWd: 패스워드 (6~16자)
+  nickname: 닉네임 (1~16자)
+  name: 이름 (1~16자)
+  ```
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-duplicateId: 아이디 겹침
-duplicateNickName: 닉네임 겹침
-```
-* Status codes
-```
-400: 잘못된 요청 (요청 타입이 잘못되었다거나 요청한 파라미터가 없다거나)
-```
-* Comment
-```
-회원가입 완료후에 사용자 이메일로 회원가입 요청 이메일이 간다. 거기에 있는 링크를 누르면 회원가입요청이 완료된다.
-회원가입 요청링크로 이동한 뒤 로그인을 시도하면(첫 로그인) 이때 Xwiki 회원가입이 자동으로 완료된다.
-따라서 Xwiki로그인은 Kinggowarts 로그인을 마친 뒤에 callback으로 해야함.
-```
-* TODO: 프로필 사진은 아직 미구현
+  * Response Types: text
+  * Response Value
+  ```
+  success: 성공적인 요청
+  duplicateId: 아이디 겹침
+  duplicateNickName: 닉네임 겹침
+  ```
+  * Status codes
+  ```
+  400: 잘못된 요청 (요청 타입이 잘못되었다거나 요청한 파라미터가 없다거나)
+  ```
+  * Comment
+  ```
+  회원가입 완료후에 사용자 이메일로 회원가입 요청 이메일이 간다. 거기에 있는 링크를 누르면 회원가입요청이 완료된다.
+  회원가입 요청링크로 이동한 뒤 로그인을 시도하면(첫 로그인) 이때 Xwiki 회원가입이 자동으로 완료된다.
+  따라서 Xwiki로그인은 Kinggowarts 로그인을 마친 뒤에 callback으로 해야함.
+  ```
+* 주소: /api/member/profileImg
+  * HTTP Method: POST
+  * Description: 프로필 사진 수정
+  * Request Type: form data
+  * Request Value
+  ```
+  <!--대략 이런식으로 보냅니다. 실제로 할때는 인증토큰도 같이 보내세요-->
+  <form id="uploadForm" enctype="multipart/form-data"> 
+  <input type="file" id="file" name="file">
+  </form>
+  <script>
+  var form = new FormData(document.getElementById('uploadForm'));
+  $.ajax({      
+          type:"POST",  
+          url:"./api/member/profileImg",    
+          data: form,
+          dataType:'text',
+          processData: false,
+          contentType: false,
+          success:function(args){   
+              console.log(args  )  
+          }
+      });
+  </script>
+  ```
+  * Response Types: text
+  * Response Value
+  ```
+  success: 성공적인 요청
+  그 이외: 에러메세지(wrongType: 이미지파일이아님, nullFile: 빈파일 ...)
+  ```
+* 주소: /api/member/changePassword
+  * HTTP Method: POST
+  * Description: 비밀번호 수정
+  * Request Type: form data
+  * Request Value
+  ```
+  newPassword: 새 비밀번호
+  lastPassword: 과거 비밀번호
+  ```
+  * Response Types: text
+  * Response Value
+  ```
+  success: 성공적인 요청
+  그 이외: 에러 메세지  
+  ```
+
 
 #### 4. 지도 구역 관리
 * 주소: /api/map
@@ -333,15 +379,25 @@ duplicateNickName: 닉네임 겹침
     * Request Value: 없음 
     * Response Types: JSON
     * Request Value
-    ```javascript
+    ```
     [
       {
-        "memberSeq": 1,
-        "nickname": "haha"
+        "memberSeq": 23,
+        "nickname": "tuser1",
+        "name": "jj",
+        "profileImgPath": ""
       },
       {
-        "memberSeq": 13,
-        "nickname": "fafa"
+        "memberSeq": 24,
+        "nickname": "tuser2",
+        "name": "afd",
+        "profileImgPath": ""
+      },
+      {
+        "memberSeq": 25,
+        "nickname": "tuser3",
+        "name": "asd",
+        "profileImgPath": ""
       }
     ]
     ```
@@ -361,19 +417,25 @@ duplicateNickName: 닉네임 겹침
     * Request Value: 없음 
     * Response Types: JSON
     * Request Value
-    ```javascript
+    ```
     [
       {
         "memberSeq": 23,
-        "nickname": "user1"
+        "nickname": "tuser1",
+        "name": "jj",
+        "profileImgPath": ""
       },
       {
         "memberSeq": 24,
-        "nickname": "user2"
+        "nickname": "tuser2",
+        "name": "afd",
+        "profileImgPath": ""
       },
       {
         "memberSeq": 25,
-        "nickname": "user3"
+        "nickname": "tuser3",
+        "name": "asd",
+        "profileImgPath": ""
       }
     ]
     ```
@@ -396,26 +458,22 @@ duplicateNickName: 닉네임 겹침
     * Request Value: 없음 
     * Response Types: JSON
     * Request Value
-    ```javascript
+    ```
     [
       {
         "memberSeq": 26,
-        "nickname": "user4", //닉네임
-        "lng": -1, //좌표
-        "lat": -1
-      },
-      {
-        "memberSeq": 27,
-        "nickname": "user5",
+        "nickname": "tuser4",
+        "name": "gge",
         "lng": -1,
-        "lat": -1
+        "lat": -1,
+        "profileImgPath": ""
       }
     ]
     ```
     
   * HTTP Method: DELETE
     * Description: Peer를 삭제
-    * Request Type: form data
+    * Request Type: url 파라미터
     * Request Value
     ```
     toSeq: 받는 사람의 member seq

@@ -1,6 +1,6 @@
 package com.kinggowarts.member;
 
-import com.kinggowarts.authentication.UserAuth;
+import com.kinggowarts.common.FileService;
 import com.kinggowarts.common.MailService;
 import com.kinggowarts.common.utils.EncryptString;
 import com.kinggowarts.member.models.Member;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -42,12 +43,18 @@ public class MemberService {
     @Autowired
     EncryptString encryptString;
 
+    @Autowired
+    FileService fileService;
+
     @Value("${spring.wikiUri}")
     String wikiUri;
 
     @Transactional
     public String insertMember(Member member, String url){
         member.setPassWd(passwordEncoder.encode(member.getPassWd()) );
+        member.setProfileImgPath("");
+        member.setLat(-1.0);
+        member.setLng(-1.0);
         if(memberRepository.findFirstByUserId(member.getUserId()) != null) {
 
             return "duplicateId";
@@ -63,6 +70,19 @@ public class MemberService {
         }
     }
 
+    @Transactional
+    public String changePassword(Long memSeq, String newPassWd, String lastPassWd){
+        Member lastMember = getMemberBySeq(memSeq);
+        if(!passwordEncoder.matches(lastPassWd, lastMember.getPassWd())){
+            return "wrongPassword";
+        }else if(newPassWd.length()<6 && newPassWd.length()>16){
+            return "비밀번호는 6~16자까지 허용합니다.";
+        }else {
+            lastMember.setPassWd(passwordEncoder.encode(newPassWd));
+            memberRepository.save(lastMember);
+            return "success";
+        }
+    }
     private static boolean isValidEmail(String email) {
         boolean err = false;
         String regex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -82,7 +102,6 @@ public class MemberService {
             Member member = memberRepository.findFirstByUserId(userId);
             member.setConfirm(Member.EMAIL_CONFIRM);
             memberRepository.save(member);
-            //signUpXwiki(member.getNickname());
             return true;
         }else
             return false;
@@ -96,7 +115,6 @@ public class MemberService {
         memberRepository.save(member);
         memberSearchRepository.save(member);
         signUpXwiki(member.getNickname(), userPw);
-
     }
 
 
@@ -139,11 +157,7 @@ public class MemberService {
 
     @Transactional
     public void sendReqFollowing(Long fromUserSeq, Long toUserSeq){
-        Member fromMember = memberRepository.findByMemberSeq(fromUserSeq);
-        Member toMember = memberRepository.findByMemberSeq(toUserSeq);
-        fromMember.getReqFollowing().add(toMember);
-        memberRepository.save(fromMember);
-        memberRepository.save(toMember);
+        memberRepository.insertPeerReq(fromUserSeq, toUserSeq);
     }
 
 
@@ -190,5 +204,29 @@ public class MemberService {
         return memberSearchRepository.findAllByNicknameLike(q);
     }
 
+
+    @Transactional
+    public String setProfileImg(Long memSeq, MultipartFile file){
+        Member member = getMemberBySeq(memSeq);
+        String message = fileService.writeFile(file, member.getNickname());
+        for (String errorMsg : FileService.errorMessage) {
+            if(errorMsg.equals(message)){
+                return message;
+            }
+        }
+        if(member.getProfileImgPath()!=null)
+            fileService.deleteFile(member.getProfileImgPath());
+        member.setProfileImgPath(message);
+        return "success";
+    }
+
+    @Transactional
+    public void test(ArrayList<String> arr){
+        for(int i =51, j=0; i<=90; i++, j++){
+            Member member = getMemberBySeq((long)i);
+            member.setProfileImgPath(arr.get(j));
+            memberRepository.save(member);
+        }
+    }
 
 }
