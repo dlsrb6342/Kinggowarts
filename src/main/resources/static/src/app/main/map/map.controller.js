@@ -9,15 +9,15 @@
 
 
     /** @ngInject */
-    function MapController($q, AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
+    function MapController($rootScope, $q, AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
     {
         var vm = this;
         
         vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
-        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
+        vm.clickUrl =  '../xwiki/bin/view/XWiki/';
 
-        vm.userLat = 0;
-        vm.userLng = 0;
+        //vm.userLat = 0;   mapLocation.userLastLat
+        //vm.userLng = 0;   mapLocation.userLastLng
         vm.curMapLevel = 3;     //현재 지도의 zoom level
         vm.lidForEvent = -1;
         vm.eventDataId = -1;
@@ -151,20 +151,15 @@
             
             //layout set null
             if(vm.categoryStatus == "customevent"){
-
-                //customEventShapes[curIdx].setMap(null);
             }
-
             else if(vm.categoryStatus == "regions"){
                 regionShapes[curIdx].setMap(null);
             }
-            //printedCategoryMarkers[curIdx].setMap(null);
-
+            
             //마커 삭제 불가능하게 하려 했는데 setStyle 함수 호출 에러..
             //drawingManager.setStyle(daum.maps.drawing.OverlayType.Marker, 'removable', 'false');
 
             //layout으로 부터 정보를 얻기 힘드므로 vm.markerData에서 얻음.
-            //console.log(vm.markerData[vm.categoryStatus][curIdx]);
             addDataToDrawingManager(vm.markerData[vm.categoryStatus][curIdx]);
             
         };
@@ -176,10 +171,26 @@
             var newCustomEventObj = removeOverlayAndGetData(modifyingData);
             var tempStatus = vm.categoryStatus;
 
-            PutAreaUser(modifyingData);
-            /*categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();
-            categoryStatusChangeProcess(tempStatus, true);*/
+            var respo = PutAreaUser(modifyingData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름을 설정하세요');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData(tempStatus);   //refresh region & goto state
+                    }
+                    else if(response.data == "noLocation"){
+                        alert('수정하려는 지역이 존재하지 않습니다.');
+                    }
+                    //console.log("asdf");
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
             
             isModifyCustomEventShape = false;   //수정 종료
             isModifyRegionShape = false;
@@ -312,14 +323,28 @@
                 $mdDialog.hide(answer);
             };
         }
-
-        var postData;
     //-----------------region Process-----------------------------
-        // 새로운 커스텀 이벤트 세부 내용 만들기 Process
+        // 새로운 지역 만들기 Process
         function makeRegionDetail(answer){
             //custom event data(detail) -> event data(detail + shape&marker)
-            postData = removeOverlayAndGetData(answer);
-            PostAreaUser(answer);
+            var postData = removeOverlayAndGetData(answer);
+            var respo = PostAreaUser(answer);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름을 설정하세요');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData("regions");   //refresh region & goto state
+                    }
+                    //console.log("asdf");
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
             //반드시 status를 바꾸기 전에 overlaydata를 저장해 놓을것. 
             //PostAreaUser(newRegionObj);
             
@@ -329,18 +354,49 @@
         //커스텀 지역 내용 수정 Process.
         function modifyRegionDetail(inData){
             //데이터 변경을 위한 statue 전환.
-            PutAreaUser(inData);
+            var respo = PutAreaUser(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름을 설정하세요');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData("regions");   //refresh region & goto state
+                    }
+                    else if(response.data == "noLocation"){
+                        alert('수정하려는 지역이 존재하지 않습니다.');
+                    }
+                    //console.log("asdf");
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
             selectedMarker = null;
             selectedMarkerIdx = 0;
         };
 
         function deleteRegion(inData){
-            //categoryStatusChangeProcess("none", true);
-            //createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-            //categoryStatusChangeProcess("regions", true);
             selectedMarker = null;
             selectedMarkerIdx = 0;
-            DeleteAreaUser(inData);
+            var respo = DeleteAreaUser(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noLocation"){
+                        alert('수정하려는 지역이 존재하지 않습니다.');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData("regions");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
     //----------------------------커스텀 내용 생성 / 수정----------------
@@ -538,32 +594,60 @@
         // 새로운 커스텀 이벤트 세부 내용 만들기 Process
         function makeCustomEventDetail(answer){
                   
-            PostCustomEventData(answer);
-
-            categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();
-            categoryStatusChangeProcess("customevent", true);
+            var respo = PostCustomEventData(answer);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noMember"){
+                        alert('사용자 정보 없음');
+                    }
+                    else if(response.data == "success"){
+                        refreshCustomEventData("customevent");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
         
         //커스텀 이벤트 내용 수정 Process.
         function modifyCustomEventDetail(answer){
 
-            PutCustomEventData(answer);
-            //데이터 변경을 위한 statue 전환.
-            categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-            categoryStatusChangeProcess("customevent", true);
+            var respo = PutCustomEventData(answer);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noMember"){
+                        alert('사용자 정보 없음');
+                    }
+                    else if(response.data == "noEvent"){
+                        alert('수정하려는 이벤트가 존재하지 않습니다.');
+                    }
+                    else if(response.data == "success"){
+                        refreshCustomEventData("customevent");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
+
             isModifyCustomEventInfo = false;    // modify mode 해제
-        };
+        }
 
 
         function deleteCustomEvent(inData){
             //inData의 id로 delete 진행.
-            DeleteCustomEventData(inData);
-            //markerData["customevent"][selectedMarkerIdx]["id"]
-            categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-            categoryStatusChangeProcess("customevent", true);
+            var respo = DeleteCustomEventData(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noEvent"){
+                        alert('수정하려는 이벤트가 존재하지 않습니다.');
+                    }
+                    else if(response.data == "success"){
+                        refreshCustomEventData("customevent");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
     //---------------좌하단 fab 버튼------------------------------------
@@ -712,7 +796,7 @@
         }
 
         //marker 생성 dialog
-        function showCreateCustomMarkerDialog(){
+        function showCreateCustomMarkerDialog(ev){
             $mdDialog.show({
                 controller: MarkerDialogController,
                 templateUrl: 'app/main/map/dialogCreateCustomMarker.html',
@@ -1339,7 +1423,7 @@
                 else if(vm.categoryStatus == "regions"){
                     selectedArea = vm.markerData["regions"][typeIdx];
                     vm.clickName = vm.markerData["regions"][typeIdx]["name"];
-                    vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" + vm.clickName;
+                    vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.clickName;
                     //selectedArea = subArea[typeIdx];          //subArea 정의 이전
                     //vm.clickName = subArea[typeIdx]["name"];
                     vm.openMapDialog();
@@ -1444,7 +1528,7 @@
                         selectedArea = shapeData;
                         selectedMarker = printedCategoryMarkers[idx];
                         selectedMarkerIdx = idx;
-                        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" + vm.clickName;
+                        vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.clickName;
                         vm.openMapDialog();
                     }    
                 });
@@ -1512,9 +1596,9 @@
         vm.moveToUserLocation = function(){
             getLocation();
             //alert(vm.userLat + " " + vm.userLng);
-            if(vm.userLat != 0 && vm.userLng != 0){
-                var dragendListenerLat = angular.copy(vm.userLat);
-                var dragendListenerLng = angular.copy(vm.userLng);
+            if(mapLocation.userLastLat != 0 && mapLocation.userLastLng!= 0){
+                var dragendListenerLat = angular.copy(mapLocation.userLastLat);
+                var dragendListenerLng = angular.copy(mapLocation.userLastLng);
                 var dragendMoveLatLon = isLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
                 if(false == dragendMoveLatLon){
                     //alert('out of region');
@@ -1557,27 +1641,7 @@
                 }
             }, true);
 
-        //Get User Location every 1 min. 1sec == 1000
-        getLocation();
-        $interval(getLocation, 60000); 
-        function getLocation() {
-            if (navigator.geolocation) { // GPS를 지원하는 경우
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    //alert(position.coords.latitude + ' ' + position.coords.longitude);
-                    //현재 user의 위치를 얻는다.
-                    vm.userLng = position.coords.longitude;
-                    vm.userLat = position.coords.latitude;
-                }, function(error) {
-                    console.error(error);
-                }, {
-                    enableHighAccuracy: true, //high Accuracy
-                    maximumAge: 0,
-                    timeout: 250000  //timeout Infinity시에 error 상태의 function이 절대 호출되지 않음.
-                });
-            } else {
-                alert('GPS를 지원하지 않습니다');
-            }
-        }
+        
 
     //---------------구역 다이얼로그 - 칩, 컨트롤러, 다이얼로그 --------------------------------------
 
@@ -1636,8 +1700,16 @@
             };
             $scope.movewiki = function(){  //wiki page로 이동 
                 $mdDialog.cancel();
-                $state.go('app.wiki');
-                //$state.go(vm.clickUrl);
+                $rootScope.wikipath = vm.clickUrl;
+ 
+                if($state.includes('app.wiki') == true)
+                {
+                    $state.reload();
+                }
+                else
+                {
+                    $state.go('app.wiki');
+                }
             };
             $scope.cancel = function() {
                 $mdDialog.cancel();
@@ -1648,7 +1720,7 @@
         }
 
     //-------------mapLocation service에 주기적으로 map 상태 갱신하기-------------------
-        $interval(updateMapLocationService, 2000); 
+        $interval(updateMapLocationService, 1000); 
         function updateMapLocationService() {
             mapLocation.lastLat = map.getCenter().getLat();
             mapLocation.lastLng = map.getCenter().getLng();
@@ -1742,8 +1814,7 @@
         categoryStatusChangeProcess(mapLocation.lastCategoryStatus); 
 
     //----------------------------DATA COMMUNICATION--------------------------
-        vm.refreshData = function(){
-
+        function refreshRegionData(targetState){
             var deferred = $q.defer();
             var httpProm1 = GetAreaAdmin();
             var httpProm2 = GetAreaUser();
@@ -1754,15 +1825,15 @@
                 function(results) {
                 //두 약속이 모두 지켜지면 asyncService서비스가 반한하는 약속을 지키고 두 약속이 전달하는 결과를 묶은 배열로 전달한다.
                     deferred.resolve(results);
-                    console.log(results);
+                    //console.log(results);
                     areaAdmin = results[0];
                     areaUser = results[1];
-                    console.log(areaUser);
+                    //console.log(areaUser);
                     subAreaData = makeSubAreaData(areaAdmin, areaUser);
                     categoryStatusChangeProcess("none", true);
                     createCategoryMarkersInJson();
-                    categoryStatusChangeProcess("none", false);
-                    console.log(subAreaData);
+                    categoryStatusChangeProcess(targetState, false);
+                    //console.log(subAreaData);
                 },
                 function(errors) {
                     deferred.reject(errors);
@@ -1770,7 +1841,19 @@
                 function(updates) {
                     deferred.update(updates);
             });
-
+        }
+        function refreshCustomEventData(targetState){
+            var respo = GetCustomEventData();
+            respo.then( 
+                function successFunc(response){
+                    vm.customEventData = response.data;
+                    categoryStatusChangeProcess("none", true);
+                    createCategoryMarkersInJson();
+                    categoryStatusChangeProcess(targetState, false);
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
         function makeSubAreaData(adminData, userData){
@@ -1810,19 +1893,16 @@
         
         function PostAreaUser(inData){
             var strObj = JSON.stringify(inData);
-            $http({
+            return $http({
                 method: 'POST',
                 url: './api/map',
                 data : JSON.stringify(inData),
-                headers: {'Content-Type' : 'application/json',
-                'x-auth-token': $sessionStorage.get('AuthToken'),
-                        }
-                }).then(
-                function successFunc(response){
-                    console.log(response)
-                },
-                 function failFunc(response){
-                    console.log(response)
+                headers: {
+                'x-auth-token': $sessionStorage.get('AuthToken')
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
                 });
 
                 
@@ -1833,9 +1913,12 @@
             return $http({
                 method: 'PUT',
                 url: './api/map' + '/' + putid,
-                data : inData,
+                data : JSON.stringify(inData),
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
-                        'Content-Type' : 'application/json'}
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
         }
         function DeleteAreaUser(inData){
@@ -1843,7 +1926,10 @@
             return $http({
                 method: 'DELETE',
                 url: './api/map' + '/' + delid,
-                headers: {'x-auth-token': $sessionStorage.get('AuthToken') }
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
         }
 
@@ -1857,27 +1943,17 @@
         }
 
         function PostCustomEventData(inData){
-            var d = new Date();
-            d.setDate(6);
-            var fd = d.getTime();
-            var r = new Date();
-            r.setDate(0);
-            var td = r.getTime();
-            $http({
+            return $http({
                 method: 'POST',
                 url: './api/event',
-                data : {
-                    "l_id" : 1,
-                    "title": "testregion",
-                    "creator" : {"memberSeq" : 1},
-                    "fromDate" : 1496709513624,
-                    "toDate" : 1496191135170,
-                    "about" : "this is customEvent",
-                    "tags" : [{"name" : "testTag"}]
-               },
-                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
-                        'Content-Type' : 'application/json'}
-            }).then(function successFunc(response){console.log(response)}, function failFunc(response){console.log(response)});
+                data : JSON.stringify(inData),
+                headers: {
+                'x-auth-token': $sessionStorage.get('AuthToken')
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+                });
 
         }
 
@@ -1887,9 +1963,12 @@
             return $http({
                 method: 'PUT',
                 url: './api/event' + '/' + putid,
-                data : $httpParamSerializerJQLike(inData),
+                data : JSON.stringify(inData),
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
-                        'Content-Type' : 'application/json'}
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
 
         }
@@ -1898,22 +1977,56 @@
             var delid = inData["id"];
             return $http({
                 method: 'DELETE',
-                url: './api/map' + '/' + delid,
-                headers: {'x-auth-token': $sessionStorage.get('AuthToken') }
+                url: './api/event' + '/' + delid,
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
         }
 
         function PostCustomMarkerData(inData){
+            return $http({
+                method: 'POST',
+                url: './api/marker',
+                data : JSON.stringify(inData),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
 
         }
 
         function PutCustomMarkerData(inData){
-            
+            var putid = inData["id"];
+            delete inData["id"];
+            return $http({
+                method: 'PUT',
+                url: './api/marker' + '/' + putid,
+                data : JSON.stringify(inData),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
+
         }
 
         function DeleteCustomMarkerData(inData){
-            
+            var delid = inData["id"];
+            return $http({
+                method: 'DELETE',
+                url: './api/marker' + '/' + delid,
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
         }
+
     }
     
 //------controller scope 밖 function

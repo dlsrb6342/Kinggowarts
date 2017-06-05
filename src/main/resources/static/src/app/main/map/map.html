@@ -49,11 +49,12 @@
 </md-button>
 
 <!-- 초기화 아이콘 -->
+<!-- 
 <md-button class="md-fab md-primary" style="position:absolute; z-index:99990;bottom:20px;right:160px;height:40px;width:40px;" ng-click="vm.refreshData()">
 <md-tooltip md-direction="top">Peer Location</md-tooltip>
 <md-icon md-font-icon="icon-refresh"; class="icon"></md-icon>
 </md-button>
-
+-->
 <!-- custom Event 아이콘 -->
 <!--
 <md-fab-speed-dial ng-if="vm.categoryStatus == 'customevent'" style="position:absolute; z-index:99990;bottom:40px;left:40px;height:40px;width:40px;" md-direction="up" md-open="vm.customEventIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.customEventIsOpen = !vm.customEventIsOpen">
@@ -111,7 +112,7 @@
 
       <md-fab-actions>
         <div ng-repeat="item in vm.customCategoryMenu">
-          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.selectCustomCategoryMenu(item.menu)">
+          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.selectCustomCategoryMenu(item.type)">
             <md-tooltip md-direction="left" md-visible="vm.customEvnetTooltipVisible" md-autohide="true">
               {{item.name}}
             </md-tooltip>
