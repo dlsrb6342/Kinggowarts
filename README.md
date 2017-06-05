@@ -62,21 +62,19 @@ npm install --save로 설치되는 api들은 모두 nodejs 모듈이기 때문�
 * Response Types: JSON
 
 * Response Value:
-```JSmin
+```
 {
-  "userId": "protos1000@naver.com", /*유저 아이디*/
-  "memberSeq": 1, /*유저 개인키*/
+  "userId": "user1@skku.edu",/*유저 아이디*/
+  "memberSeq": 51,/*유저 개인키*/
   "authorities": [
     {
       "authority": "ROLE_GUEST"
-    },
-    {
-      "authority": "ROLE_STUDENT"
     }
-  ], /*권한정보(교수가 없으면 의미없음)*/
-  "token": "82b86409-50bb-4b82-b4eb-abf28b2dd04a", /*인증토큰*/
-  "nickname": "haha", /*유저 닉네임*/
-  "type": "S" /*회원 종류 (역시나 교수가 없으면 의미없음)*/
+  ],/*권한정보(교수가 없으면 의미없음)*/
+  "token": "8c1a9901-4a07-4f1d-910c-d3244f3b9702",/*인증토큰*/
+  "nickname": "user1",/*유저 닉네임*/
+  "name": "유저1", /*유저 실명*/
+  "profileImgPath": "e2080ded-09ef-4a46-925b-f2e7665522b3_1.jpg"/*프로필사진 파일명*/
 }
 ```
 
@@ -88,13 +86,15 @@ npm install --save로 설치되는 api들은 모두 nodejs 모듈이기 때문�
 ```위에서 받아온 토큰은 로그인 이후에 rest 통신때 보내는 request의 header에
 x-auth-token 값으로 token 값을 넣어주면 인증이 된다. 
 ex) req.setRequestHeader('x-auth-token', token/*토큰값*/);
+프로필 사진은 /profileimg/파일명 으로 요청하면 보내준다.
+없으면 크기가 0인 스트링이 옴 ( "" )
 ```
 #### 2. XWiki 로그인
 * REST 요청은 아님
 * XWiki로 basic authentication와 함게 요청을 보내면 쿠키를 가져와서 XWiki 로그인 상태를 유지할 수 있음.
 * XWiki의 아이디로는 닉네임을 쓰고 패스워드는 동일.
 * 예시
-```javascript
+```
 var xhr = new XMLHttpRequest();
 //이런식으로 주소가 현재 호스트를 반영하도록 함
 xhr.open("GET", location.protocol+"//"+location.host+"/xwiki/bin/view/Main/", true);
@@ -104,59 +104,504 @@ xhr.send();
 ```
 
 
-#### 3. 회원가입
+#### 3. 회원가입 및 수정
 * 주소: /api/member/signup
-* HTTP Method: POST
-* Description: 회원가입 요청
-* Request Type: form data
-* Request Value
-```
-userId: 이메일 주소
-passWd: 패스워드
-nickname: 닉네임
-type: 회원 타입(S: 학생 T: 교수)
-```
+  * HTTP Method: POST
+  * Description: 회원가입 요청
+  * Request Type: form data
+  * Request Value
+  ```
+  userId: 이메일 주소
+  passWd: 패스워드 (6~16자)
+  nickname: 닉네임 (1~16자)
+  name: 이름 (1~16자)
+  ```
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-duplicateId: 아이디 겹침
-duplicateNickName: 닉네임 겹침
-```
-* Status codes
-```
-400: 잘못된 요청 (요청 타입이 잘못되었다거나 요청한 파라미터가 없다거나)
-```
-* Comment
-```
-회원가입 완료후에 사용자 이메일로 회원가입 요청 이메일이 간다. 거기에 있는 링크를 누르면 회원가입요청이 완료된다.
-회원가입 요청링크로 이동한 뒤 로그인을 시도하면(첫 로그인) 이때 Xwiki 회원가입이 자동으로 완료된다.
-따라서 Xwiki로그인은 Kinggowarts 로그인을 마친 뒤에 callback으로 해야함.
-```
-* TODO: 프로필 사진은 아직 미구현
+  * Response Types: text
+  * Response Value
+  ```
+  success: 성공적인 요청
+  duplicateId: 아이디 겹침
+  duplicateNickName: 닉네임 겹침
+  ```
+  * Status codes
+  ```
+  400: 잘못된 요청 (요청 타입이 잘못되었다거나 요청한 파라미터가 없다거나)
+  ```
+  * Comment
+  ```
+  회원가입 완료후에 사용자 이메일로 회원가입 요청 이메일이 간다. 거기에 있는 링크를 누르면 회원가입요청이 완료된다.
+  회원가입 요청링크로 이동한 뒤 로그인을 시도하면(첫 로그인) 이때 Xwiki 회원가입이 자동으로 완료된다.
+  따라서 Xwiki로그인은 Kinggowarts 로그인을 마친 뒤에 callback으로 해야함.
+  ```
+* 주소: /api/member/profileImg
+  * HTTP Method: POST
+  * Description: 프로필 사진 수정
+  * Request Type: form data
+  * Request Value
+  ```
+  <!--대략 이런식으로 보냅니다. 실제로 할때는 인증토큰도 같이 보내세요-->
+  <!--요청 파라미터는 Multipart형의 file 입니다. -->
+  <form id="uploadForm" enctype="multipart/form-data"> 
+  <input type="file" id="file" name="file">
+  </form>
+  <script>
+  var form = new FormData(document.getElementById('uploadForm'));
+  $.ajax({      
+          type:"POST",  
+          url:"./api/member/profileImg",    
+          data: form,
+          dataType:'text',
+          processData: false,
+          contentType: false,
+          success:function(args){   
+              console.log(args  )  
+          }
+      });
+  </script>
+  ```
+  * Response Types: text
+  * Response Value
+  ```
+  success: 성공적인 요청
+  그 이외: 에러메세지(wrongType: 이미지파일이아님, nullFile: 빈파일 ...)
+  ```
+* 주소: /api/member/changePassword
+  * HTTP Method: POST
+  * Description: 비밀번호 수정
+  * Request Type: form data
+  * Request Value
+  ```
+  newPassword: 새 비밀번호
+  lastPassword: 과거 비밀번호
+  ```
+  * Response Types: text
+  * Response Value
+  ```
+  success: 성공적인 요청
+  그 이외: 에러 메세지  
+  ```
 
-#### 4. 지도 구역
+
+#### 4. 지도 구역 관리
 * 주소: /api/map
-* HTTP Method: POST
-* Description: 지도 구역 추가 요청
-* Request Type: form data
-* Request Value
-```
-name : 구역이름
-center : 구역 중심 좌표
-shape : 구역 형태
-path : 구역을 이루는 좌표
-detail : 구역 상세 설명
-```
+  * HTTP Method: GET
+    * Description: 지도 구역 목록 요청
+    * Response Types: JSON
+    * Response Value
+        ```
+        [
+          {
+            "id": 45,
+            "name": "testregion",
+            "center": {
+              "id": 267,
+              "lng": 126.9738347803545,
+              "lat": 37.29410858054493
+            },
+            "path": [
+              {
+                "id": 268,
+                "lng": 126.9738347803545,
+                "lat": 37.29419858054493
+              },
+              {
+                "id": 269,
+                "lng": 126.9737347803545,
+                "lat": 37.29429858054493
+              },
+              ...
+            ],
+            "type": "user",
+            "shape": "POLYGON",
+            "detail": "this is customEvent",
+            "tags": [
+              {
+                "id": 45,
+                "name": "test"
+              },
+              ...
+            ]
+          },
+          ...
+        ]
+        ```
+    
+  * HTTP Method: POST
+    * Description: 지도 구역 추가 요청
+    * Request Type: application/json
+    * Request Value
+      ```
+      name: 구역이름
+      center: { lat : , lng : }
+      shape: 구역 형태
+      path: [ { lat : , lng : }, { lat : , lng : } ... ]
+      detail: 구역 상세 설명
+      tags: [ { name : }, { name : } ... ]
+      ```
 
-* Response Types: text
-* Response Value
-```
-success: 성공적인 요청
-duplicatedName : 구역 이름 겹침
-```
-* Status codes
-```
-400: 잘못된 요청 (요청 타입이 잘못되었다거나 요청한 파라미터가 없다거나)
-```
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      duplicatedName: 중복된 구역 이름
+      notAllowed: 허용되지 않은 요청
+      ```
+
+* 주소: /api/map/{id}
+  * HTTP Method: PUT
+    * Description: 지도 구역 수정 요청
+    * Request Type: application/json
+    * Request Value
+    ```
+    name: 구역이름
+    center: { lat : , lng : }
+    shape: 구역 형태
+    path: [ { lat : , lng : }, { lat : , lng : } ... ]
+    detail: 구역 상세 설명
+    tags: [ { name : }, { name : } ... ]
+    ```
+
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    notAllowed: 허용되지 않은 요청
+    duplicatedName: 중복된 구역 이름
+    noLocation: 구역 정보 없음
+    ```
+
+  * HTTP Method: DELETE
+    * Description: 지도 구역 삭제 요청
+    
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    notAllowed: 허용되지 않은 요청
+    noLocation: 구역 정보 없음
+    ```
+
+#### 5. 이벤트 관리
+* 주소: /api/event
+
+  * HTTP Method: GET
+    * Description: 모든 이벤트 목록
+  
+      * Response Types: JSON
+      * Response Value
+      ```
+      [
+        {
+          "id": 1,
+          "l_id": 1,
+          "title": "testregion",
+          "about": "this is customEvent",
+          "creator": {
+            "memberSeq": 1,
+            "userId": "protos1000@naver.com",
+            "nickname": "haha",
+            "type": "S",
+            "confirm": 3,
+            "lng": -1,
+            "lat": -1
+          },
+          "tags": [
+            {
+              "id": 40,
+              "name": "testTag"
+            }
+          ],
+          "fromDate": 1496709514000,
+          "toDate": 1496191135000
+        },
+        ...
+      ]
+      ```
+  * HTTP Method: POST
+    * Description: 이벤트 추가 요청
+    * Request Type: application/json
+    * Request Value
+  
+      ```
+      l_id: 구역 고유 번호
+      title: 이벤트 타이틀
+      about: 이벤트 상세 설명
+      creator: { memberSeq: 사용자 고유 번호 }
+      tags: [ { name : }, { name : } ... ]
+      fromDate: 이벤트 시작 날짜(Timestamp)
+      toDate: 이벤트 종료 날짜(Timestamp)
+      ```
+
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      noMember: 사용자 정보 없음
+      ```
+
+* 주소: /api/event/{id}
+  * HTTP Method: PUT
+    * Description: 이벤트 수정 요청
+    * Request Type: application/json
+    * Request Value
+      ```
+      l_id: 구역 고유 번호
+      title: 이벤트 타이틀
+      about: 이벤트 상세 설명
+      creator: { memberSeq: 사용자 고유 번호 }
+      tags: [ { name : }, { name : } ... ]
+      fromDate: 이벤트 시작 날짜(Timestamp)
+      toDate: 이벤트 종료 날짜(Timestamp)
+      ```
+
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      noEvent: 이벤트 정보 없음
+      noMember: 사용자 정보 없음
+      ```
+
+  * HTTP Method: DELETE
+    * Description: 이벤트 삭제 요청
+
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    noEvent: 이벤트 정보 없음
+    ```
+
+#### 6. Peer 관리
+* 주소: /api/member/reqPeerFromMe
+  * HTTP Method: GET
+    * Description: 내가 Peer 요청 보낸 목록을 가져옴
+    * Request Value: 없음 
+    * Response Types: JSON
+    * Request Value
+    ```
+    [
+      {
+        "memberSeq": 23,
+        "nickname": "tuser1",
+        "name": "jj",
+        "profileImgPath": ""
+      },
+      {
+        "memberSeq": 24,
+        "nickname": "tuser2",
+        "name": "afd",
+        "profileImgPath": ""
+      },
+      {
+        "memberSeq": 25,
+        "nickname": "tuser3",
+        "name": "asd",
+        "profileImgPath": ""
+      }
+    ]
+    ```
+    
+  * HTTP Method: POST
+    * Description: Peer 요청을 보냄
+    * Request Type: form data
+    * Request Value
+    ```
+    toSeq: 받는 사람의 member seq
+    ```
+    * Response Types: 없음
+
+* 주소: /api/member/reqPeerToMe
+  * HTTP Method: GET
+    * Description: 내가 Peer 요청 받은 목록을 가져옴
+    * Request Value: 없음 
+    * Response Types: JSON
+    * Request Value
+    ```
+    [
+      {
+        "memberSeq": 23,
+        "nickname": "tuser1",
+        "name": "jj",
+        "profileImgPath": ""
+      },
+      {
+        "memberSeq": 24,
+        "nickname": "tuser2",
+        "name": "afd",
+        "profileImgPath": ""
+      },
+      {
+        "memberSeq": 25,
+        "nickname": "tuser3",
+        "name": "asd",
+        "profileImgPath": ""
+      }
+    ]
+    ```
+    
+  * HTTP Method: POST
+    * Description: Peer 요청을 수락 or 거절
+    * Request Type: form data
+    * Request Value
+    ```
+    toSeq: 받는 사람의 member seq
+    type: ("true", "false") 수락: "true", 거절: "false"
+    ```
+    * Response Types: 없음
+
+
+
+* 주소: /api/member/peer
+  * HTTP Method: GET
+    * Description: Peer 목록을 가져옴(-1 좌표는 위치가 없다는 의미)
+    * Request Value: 없음 
+    * Response Types: JSON
+    * Request Value
+    ```
+    [
+      {
+        "memberSeq": 26,
+        "nickname": "tuser4",
+        "name": "gge",
+        "lng": -1,
+        "lat": -1,
+        "profileImgPath": ""
+      }
+    ]
+    ```
+    
+  * HTTP Method: DELETE
+    * Description: Peer를 삭제
+    * Request Type: url 파라미터
+    * Request Value
+    ```
+    toSeq: 받는 사람의 member seq
+    ```
+    * Response Types: 없음
+    
+    
+* 주소: /api/member/coordinate
+	* Description: 내 좌표를 갱신하고 peer들의 위치를 불러옴
+	* HTTP Method: PATCH
+	* Request Type: form data
+    * Request Value
+    ```
+    {
+	"lng" : 123.23, /*좌표값 ... 없는 좌표를 넣을때는 -1*/
+	"lat" : 123.53
+	}
+    ```
+    * Response Types: JSON
+    * Request Value
+    ```
+    [
+      {
+        "memberSeq": 26,
+        "nickname": "user4",
+        "lng": -1, // -1일땐 없는 좌표
+        "lat": -1
+      },
+      {
+        "memberSeq": 27,
+        "nickname": "user5",
+        "lng": -1,
+        "lat": -1
+      }
+    ]
+    ```
+
+#### 7. 마커 관리
+* 주소: /api/marker
+
+  * HTTP Method: GET
+    * Description: 모든 마커 목록
+      * Request Type: text
+      * Request Value
+      ```
+      q: 검색할 마커의 카테고리
+      ```
+      * Response Types: JSON
+      * Response Value
+      ```
+      [
+        {
+          "id": 2,
+          "center": {
+            "id": 313,
+            "lng": 999.123,
+            "lat": 8888.13312
+          },
+          "name": "marker test",
+          "markerCategory": {
+            "id": 3,
+            "name": "카페"
+          }
+        },
+        ...
+      ]
+      ```
+  * HTTP Method: POST
+    * Description: 마커 추가 요청
+    * Request Type: application/json
+    * Request Value
+    ```
+    {
+      "center": {
+        "lng": 999.123,
+        "lat": 8888.13312
+      },
+      "name": "marker test",
+      "markerCategory": {
+        "name": "카페"
+      }
+    }
+    ```
+
+    * Response Types: text
+    * Response Value
+      ```
+      success: 성공적인 요청
+      duplicatedName: 중복된 마커 이름
+      noCategory: 카테고리 정보 없음
+      notAllowed: 허용되지 않은 요청
+      ```
+
+* 주소: /api/marker/{id}
+  * HTTP Method: PUT
+    * Description: 마커 수정 요청
+    * Request Type: application/json
+    * Request Value
+    ```
+    {
+      "center": {
+        "lng": 999.123,
+        "lat": 8888.13312
+      },
+      "name": "marker test",
+      "markerCategory": {
+        "name": "카페"
+      }
+    }
+    ```
+
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    noMarker: 마커 정보 없음
+    duplicatedName: 중복된 마커 이름
+    noCategory: 카테고리 정보 없음
+    notAllowed: 허용되지 않은 요청
+    ```
+
+  * HTTP Method: DELETE
+    * Description: 마커 삭제 요청
+
+    * Response Types: text
+    * Response Value
+    ```
+    success: 성공적인 요청
+    noMarker: 마커 정보 없음
+    ```

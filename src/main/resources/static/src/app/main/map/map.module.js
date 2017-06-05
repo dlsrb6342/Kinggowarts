@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.map', ['ngMaterial'])
+        .module('app.map', ['ngMaterial', 'ngMessages'])
         .config(config);
 
     /** @ngInject */
@@ -28,21 +28,46 @@
                     {
                         return msApi.resolve('categoryMarker@get');
                     },
-                    SubAreaData: function(msApi)
+                    AreaAdmin: function(msApi, $http, $sessionStorage)
                     {
-                        return msApi.resolve('subArea@get');
+                        return $http({
+                            method: 'GET',
+                            url: './api/map?type=admin',
+                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+                        });
+                        //return msApi.resolve('subArea@get');
                     },
-                    CustomEventMarkerData: function(msApi)
+                    AreaUser: function(msApi, $http, $sessionStorage)
                     {
-                        return msApi.resolve('customEventMarker@get');
+                        return $http({
+                            method: 'GET',
+                            url: './api/map?type=user',
+                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+                        });
+                        //return msApi.resolve('subArea@get');
+                    },
+                    DrawingMenuData: function(msApi)
+                    {
+                        return msApi.resolve('drawingMenu@get');
+                    },
+                    CustomEventData: function(msApi, $http, $sessionStorage)
+                    {
+                        //return msApi.resolve('customEventData@get');
+                        return $http({
+                            method: 'GET',
+                            url: './api/event',
+                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+                        });
                     }
+                    
                 }
             });
 
         // Api
         msApiProvider.register('marker', ['app/data/map/marker.json']);
         msApiProvider.register('categoryMarker', ['app/data/map/categoryMarker.json']);
-        msApiProvider.register('subArea', ['app/data/map/subArea.json']);
-        msApiProvider.register('customEventMarker', ['app/data/map/customEventMarker.json']);
+        //msApiProvider.register('customEventData', ['app/data/map/customEvent.json']);
+        msApiProvider.register('drawingMenu', ['app/data/map/drawingMenu.json']);
+        
     }
 })();

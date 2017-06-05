@@ -13,15 +13,19 @@ public class UserAuthToken {
     private Collection<? extends GrantedAuthority> authorities;
     private String token;
     private String nickname;
-    private Character type;
+    private String name;
+    private String profileImgPath;
+    //private Character type;
 
 
-    public UserAuthToken(String username, Collection<? extends GrantedAuthority> collection, String token, String nickname, Character type, Long memberSeq) {
+    public UserAuthToken(String username, Collection<? extends GrantedAuthority> collection, String token, String nickname, /*Character type,*/ Long memberSeq, String name, String profileImgPath) {
         this.userId = username;
         this.authorities = collection;
         this.token = token;
         this.nickname = nickname;
-        this.type = type;
+        //this.type = type;
         this.memberSeq = memberSeq;
+        this.name =name;
+        this.profileImgPath = profileImgPath;
     }
 }

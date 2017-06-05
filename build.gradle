@@ -37,6 +37,8 @@ dependencies {
 	compile group: 'javax.mail', name: 'mail', version: '1.4.7'
 	compile group: 'org.springframework', name: 'spring-context-support', version: '4.3.8.RELEASE'
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.3'
+	compile group: 'org.apache.tika', name: 'tika-core', version: '1.14'
+	compile group: 'org.apache.tika', name: 'tika-parsers', version: '1.14'
 
 	runtime('mysql:mysql-connector-java')
 	compile('org.projectlombok:lombok')

@@ -16,7 +16,7 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
-    @RequestMapping(value="", method=RequestMethod.GET)
+    @GetMapping("")
     public Object findAll(@RequestParam(value="category", required=false) String category,
                                 @RequestParam(value="all") String all,
                                 @PageableDefault(sort={ "id" }, direction= Sort.Direction.DESC) Pageable pageable){
@@ -35,12 +35,12 @@ public class NoticeController {
         }
     }
 
-    @RequestMapping(value="/{id}", method=RequestMethod.GET)
+    @GetMapping("/{id}")
     public Notice findById(@PathVariable("id") long id){
         return noticeService.findById(id);
     }
 
-    @RequestMapping(value="/search", method=RequestMethod.GET)
+    @GetMapping("/search")
     public List<Notice> searchNotice(@RequestParam("q") String q){
         return noticeService.searchNotice(q);
     }

@@ -1,14 +1,12 @@
 package com.kinggowarts.map;
 
-import com.kinggowarts.map.models.Coordinate;
 import com.kinggowarts.map.models.Location;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import javax.transaction.Transactional;
+import java.util.*;
+
 
 @Service
 public class MapService {
@@ -18,56 +16,90 @@ public class MapService {
     private LocationSearchRepository locationSearchDao;
     @Autowired
     private CoordinateRepository coordinateDao;
+    @Autowired
+    private TagRepository tagDao;
 
-    List<HashMap<String, Object>> findAllCoordinate(String type){
+
+    List<Location> findAllCoordinate(String type) {
         List<Location> locationList = locationDao.findAllByType(type);
-        List<Object[]> coordinateList = coordinateDao.findAllByOrderByLocationIdAsc();
-        List<HashMap<String, Object>> result = new ArrayList<>();
-        for (Location location: locationList) {
-            if(location.getId() == 0)
-                continue;
-            HashMap<String, Object> hashMap = new HashMap<>();
-            HashMap<String, Double> center = new HashMap<>();
-            center.put("lng", location.getCenter_lng());
-            center.put("lat", location.getCenter_lat());
-            hashMap.put("name", location.getName());
-            hashMap.put("center", center);
-            List<HashMap<String, Object>> coorList = new ArrayList<>();
-            for (Object[] coordinate: coordinateList){
-                BigInteger l_id = (BigInteger)coordinate[0];
-                if(l_id.longValue() == location.getId()) {
-                    HashMap<String, Object> coor = new HashMap<>();
-                    coor.put("lat", coordinate[1]);
-                    coor.put("lng", coordinate[2]);
-                    coorList.add(coor);
-                }
-            }
-            hashMap.put("path", coorList);
-            result.add(hashMap);
-        }
-        return result;
+        return locationList;
     }
 
-    String saveLocation(String name, HashMap<String, Double> center, String shape,
-                      List<HashMap<String, Double>> path, String detail){
-        if(locationDao.findFirstByName(name) != null){
+    @Transactional
+    String saveLocation(Location location) {
+        if (locationDao.findByName(location.getName()) != null) {
             return "duplicatedName";
         } else {
-            Location location = new Location(name, center, "user", detail, shape);
-            int sequence_id = 0;
-            for (HashMap<String, Double> p : path) {
-                Coordinate coordinate = new Coordinate(sequence_id, location,
-                        p.get("lng"), p.get("lat"));
-                coordinateDao.save(coordinate);
-                sequence_id++;
+            if (!location.getType().equals("user")){
+                return "notAllowed";
             }
+            coordinateDao.save(location.getCenter());
+            coordinateDao.save(location.getPath());
+            tagDao.save(location.getTags());
             locationDao.save(location);
             locationSearchDao.save(location);
             return "success";
         }
     }
 
+    String editLocation(Location newLocation, long id){
+        Location location = locationDao.findOne(id);
+        if (location == null) {
+            return "noLocation";
+        } else if(!location.getType().equals("user")) {
+            return "notAllowed";
+        } else {
+            if(locationDao.findByName(newLocation.getName()).getId() != id){
+                return "duplicatedName";
+            }
+            coordinateDao.delete(location.getCenter());
+            coordinateDao.delete(location.getPath());
+            tagDao.delete(location.getTags());
+            newLocation.setId(id);
+            coordinateDao.save(newLocation.getCenter());
+            coordinateDao.save(newLocation.getPath());
+            tagDao.save(newLocation.getTags());
+            locationDao.save(newLocation);
+            locationSearchDao.save(newLocation);
+            return "success";
+        }
+    }
+
+    String deleteLocation(long id){
+        Location location = locationDao.findOne(id);
+        if (location == null) {
+            return "noLocation";
+        } else if(!location.getType().equals("user")) {
+            return "notAllowed";
+        } else {
+            locationDao.delete(location);
+            locationSearchDao.delete(location);
+            return "success";
+        }
+    }
+
     List<Location> searchLocation(String q){
-        return locationSearchDao.findAllByNameContainsOrDetailContains(q);
+        List<Location> searchListByName = searchName(q);
+        List<Location> searchListByTag = locationSearchDao.findAllByTagsName(q);
+        int nameSize = searchListByName.size();
+        int tagSize = searchListByTag.size();
+        List<Location> locationList = new ArrayList<>();
+
+        for(int i = 0; i < Math.max(nameSize, tagSize); i++){
+            if(i < nameSize)
+                locationList.add(searchListByName.get(i));
+            if(i < tagSize)
+                locationList.add(searchListByTag.get(i));
+        }
+
+        return locationList;
+    }
+
+    private List<Location> searchName(String q) {
+        if(q.equals("공대")) {
+            return locationSearchDao.findAllByNameLike(q);
+        } else {
+            return locationSearchDao.findAllByNameContains(q);
+        }
     }
 }

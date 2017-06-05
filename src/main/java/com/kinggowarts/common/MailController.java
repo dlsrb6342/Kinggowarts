@@ -15,7 +15,7 @@ public class MailController {
     @RequestMapping(value = "/api/mail/active")
     public String activeAccount(@RequestParam String code) throws Exception{
         if(memberService.activeUser(code))
-            return "forward:/";
+            return "forward:/login?auth=true";
         else{
             throw  new AccessDeniedException("403 returned");
         }
