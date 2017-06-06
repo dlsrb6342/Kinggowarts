@@ -81,8 +81,40 @@
                         // Success
                         function (response)
                         {
+                            console.log(response);
+                            var resArr = [];
+                            var tempArr = [];
+                            for (var i = 0; i < 4; i++){
+                                var arr = [];
+                                tempArr.push(arr);
+                            }
+                            var index = 0;
+                            for (var i = 0; i < 4; i++){
+                               for (var j = 0; j < 4; j++){
+                                   for (var k = index; k < (j+1) * 3; k++){
+                                       if(response[j].data[k]){
+                                           tempArr[j].push(response[j].data[k]);
+                                           index++;
+                                       }
+                                   }
+                               } 
+                            }
+
+                            var categoryArr = ["지도", "마커", "이벤트", "공지사항"];
+                            for (var i = 0; i < 4; i++){
+                                if(tempArr[i].length > 0){ // 해당 카테고리에 검색 결과가 있을 경우
+                                    var obj = { search_category : categoryArr[i] };
+                                    resArr.push(obj); // 검색 카테고리 분류를 위해 삽입.
+                                }
+
+                                // 각 tempArr에 담겨있던 검색 결과를 하나로 모은다.
+                                angular.forEach(tempArr[i], function (temp){
+                                    resArr.push(temp);
+                                });
+                            }
+                            console.log(resArr);
                             // Populate the results
-                            vm.populateResults(response);
+                            vm.populateResults(resArr);
                         },
                         // Error
                         function ()
@@ -115,8 +147,9 @@
                 return;
             }
 
-            var isArray = angular.isArray(results),
-                isNull = results === null;
+            var isArray = angular.isArray(results);
+                
+            var isNull = results === null;
 
             // Only accept arrays and null values
             if ( !isArray && !isNull )
@@ -125,7 +158,7 @@
             }
 
             // Reset the selected result
-            vm.selectedResultIndex = 0;
+            vm.selectedResultIndex = 1;
 
             // Populate the results
             vm.results = results;
