@@ -49,7 +49,7 @@
         function saveProfile()
         {
             if(vm.profile.newPassword != vm.profile.newPasswordConfirm){
-              alert('입력하신 비밀번호가 서로 일치하지 않습니다.');
+              alert('비밀번호 확인이 일치하지 않습니다.');
             }
             else {
               $http({

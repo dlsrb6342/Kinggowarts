@@ -8,11 +8,11 @@
 
     /** @ngInject */
 
-    function LoginController($state, $rootScope, $sessionStorage, $http, $httpParamSerializerJQLike)
+    function LoginController($state, $stateParams, $rootScope, $sessionStorage, $http, $httpParamSerializerJQLike)
     {
         // Data
         var vm = this;
-
+        console.log($stateParams);
         $sessionStorage.empty();
         $http({
                     method : 'GET',

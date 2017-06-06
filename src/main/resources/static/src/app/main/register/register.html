@@ -3,37 +3,49 @@
    
     <div id="register-form-wrapper" class="flex-scrollable md-whiteframe-1dp" layout="column" flex ms-scroll>
         <div id="register-form">
-            <div class="title"><h1>  Create Account</h1></div>
+            <div class="title"><h1>Create Account</h1></div>
                 
            
            <form name="registerForm" novalidate>
                 <md-input-container class="md-block" md-no-float>
                     <input name="userId" ng-model="vm.form.userId" placeholder="이메일 주소" ng-pattern="/^.+@+skku+\.+edu+$/"
                            required>
+                           
                     
                     <div ng-messages="registerForm.userId.$error" role="alert">
                         <div ng-message="required">
-                            <span>이메일 주소를 입력해 주세요</span>
+                            <span>올바른 이메일 주소를 입력해 주세요.</span>
                         </div>
                         <div ng-message="pattern">
-                            <span>skku 이메일 형식에 맞지 않습니다</span>
+                            <span>skku 이메일 형식에 맞지 않습니다.</span>
                         </div>
                     </div>
                 </md-input-container>
                 <md-input-container class="md-block" md-no-float>
-                    <input type="passWd" name="passWd" ng-model="vm.form.passWd" placeholder="패스워드" ng-minlength="6" ng-maxlength="16"
+                    <input type="password" name="passWd" ng-model="vm.form.passWd" placeholder="비밀번호" ng-minlength="6" ng-maxlength="16"
                             required>
                     <div ng-messages="registerForm.passWd.$error" role="alert" multiple>
                         <div ng-message="required">
-                            <span>패스워드를 입력해주세요</span>
+                            <span>비밀번호를 입력해주세요</span>
                         </div>
-                         <div ng-message="ng-minlength">
-                            <span>패스워드를 6자이상 입력해주세요</span>
+                         <div ng-message="minlength">
+                            <span>비밀번호는 최소 6자 이상 입력하셔야 합니다.</span>
                         </div>
-                        <div ng-message="ng-maxlength">
-                            <span>패스워드를 16자이하 입력해주세요</span>
+                        <div ng-message="maxlength">
+                            <span>비밀번호는 최대 16자까지 입력하실 수 있습니다.</span>
                         </div>
-
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block" md-no-float>
+                    <input type="password" name="passWdConfirm" ng-model="vm.form.passWdConfirm" placeholder="비밀번호 확인" ms-compare="vm.form.passWd"
+                            required>
+                    <div ng-messages="registerForm.passWdConfirm.$error" role="alert">
+                        <div ng-message="required">
+                            <span>비밀번호 확인을 입력해주세요</span>
+                        </div>
+                        <div ng-message="password">
+                            <span>비밀번호가 일치하지 않거나 잘못 입력하셨습니다.</span>
+                        </div>
                     </div>
                 </md-input-container>
                 <md-input-container class="md-block" md-no-float>
@@ -43,32 +55,32 @@
                         <div ng-message="required">
                             <span>닉네임을 입력해주세요</span>
                         </div>
-                        <div ng-message="ng-minlength">
-                            <span>닉네임을 1자이상 입력해주세요</span>
+                        <div ng-message="minlength">
+                            <span>닉네임은 최소 1자 이상 입력하셔야 합니다.</span>
                         </div>
-                        <div ng-message="ng-maxlength">
-                            <span>닉네임을 16자이하 입력해주세요</span>
+                        <div ng-message="maxlength">
+                            <span>닉네임은 최대 16자까지 입력하실 수 있습니다.</span>
                         </div>
                     </div>
                 </md-input-container>
                 
                 <md-input-container class="md-block" md-no-float>
-                    <input name="name" ng-model="vm.form.name" placeholder="사용자 이름" ng-minlength="1" ng-maxlength="16"
+                    <input name="name" ng-model="vm.form.username" placeholder="사용자 이름" ng-minlength="1" ng-maxlength="16"
                            required>
                     <div ng-messages="registerForm.name.$error" role="alert">
                         <div ng-message="required">
                             <span>이름을 입력해주세요</span>
                         </div>
-                        <div ng-message="ng-minlength">
-                            <span>이름을 1자이상 입력해주세요</span>
+                        <div ng-message="minlength">
+                            <span>이름은 최소 1자 이상 입력하셔야 합니다.</span>
                         </div>
-                        <div ng-message="ng-maxlength">
-                            <span>이름을 16자이하 입력해주세요</span>
+                        <div ng-message="maxlength">
+                            <span>닉네임은 최대 16자까지 입력하실 수 있습니다.</span>
                         </div>
                     </div>
                 </md-input-container>
                 <md-button type="submit" class="md-raised md-accent submit-button" aria-label="CREATE MY ACCOUNT"
-                           ng-disabled="registerForm.$invalid || registerForm.$pristine" ng-click="vm.register_loginfun(registerForm.userId.$viewValue,registerForm.passWd.$viewValue,registerForm.nickname.$viewValue,registerForm.name.$viewValue)">
+                           ng-disabled="registerForm.$invalid || registerForm.$pristine" ng-click="vm.submitForm($event)">
                     계정 만들기
                 </md-button>
             </form>

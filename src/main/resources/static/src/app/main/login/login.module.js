@@ -12,7 +12,7 @@
         // State
         $stateProvider
             .state('login', {
-                url      : '/login',
+                url      : '/login?auth',
                 views    : {
                     'main@' : {
                         templateUrl: 'app/main/login/login.html',
