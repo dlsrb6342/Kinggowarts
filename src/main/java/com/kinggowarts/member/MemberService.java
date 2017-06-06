@@ -5,10 +5,15 @@ import com.kinggowarts.common.MailService;
 import com.kinggowarts.common.utils.EncryptString;
 import com.kinggowarts.member.models.Member;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +27,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,9 +35,6 @@ import java.util.regex.Pattern;
 public class MemberService {
     @Autowired
     MemberRepository memberRepository;
-
-    @Autowired
-    MemberSearchRepository memberSearchRepository;
 
     @Autowired
     MailService mailService;
@@ -50,6 +49,12 @@ public class MemberService {
 
     @Value("${spring.wikiUri}")
     String wikiUri;
+
+    @Value("${spring.wiki.admin.id}")
+    String wikiId;
+
+    @Value("${spring.wiki.admin.pw}")
+    String wikiPw;
 
     @Transactional
     public String insertMember(Member member, String url){
@@ -82,6 +87,7 @@ public class MemberService {
         }else {
             lastMember.setPassWd(passwordEncoder.encode(newPassWd));
             memberRepository.save(lastMember);
+            changePasswordXwiki(lastMember.getNickname(), newPassWd);
             return "success";
         }
     }
@@ -115,7 +121,6 @@ public class MemberService {
         Member member = memberRepository.findFirstByUserId(userId);
         member.setConfirm(Member.COMPLETE_CONFIRM);
         memberRepository.save(member);
-        memberSearchRepository.save(member);
         signUpXwiki(member.getNickname(), userPw);
     }
 
@@ -141,6 +146,46 @@ public class MemberService {
             CloseableHttpResponse response = httpclient.execute(httpPost);
             try {
                // System.out.println(response.getStatusLine());
+                //API서버로부터 받은 JSON 문자열 데이터
+                //System.out.println(EntityUtils.toString(response.getEntity()));
+                //HttpEntity entity = response.getEntity();
+                //EntityUtils.consume(entity);
+            } finally {
+                response.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changePasswordXwiki(String nickname, String userPw) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+                .getRequestAttributes()).getRequest();
+        try {
+            ///xwiki/bin/view/XWiki/user10?xpage=passwd
+            HttpPost httpPost = new HttpPost(wikiUri+"/bin/view/XWiki/"+nickname+"?xpage=passwd");
+            //전달하고자 하는 PARAMETER를 List객체에 담는다
+            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            String encoding = Base64.getEncoder().encodeToString((wikiId+":"+wikiPw).getBytes());//.encod (wikiId+":"+wikiPw);
+            httpPost.setHeader("Authorization", "Basic " + encoding);
+
+
+            CredentialsProvider provider = new BasicCredentialsProvider();
+            UsernamePasswordCredentials credentials
+                    = new UsernamePasswordCredentials(wikiId, wikiPw);
+            provider.setCredentials(AuthScope.ANY, credentials);
+
+            List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+            nvps.add(new BasicNameValuePair("password", userPw));
+            nvps.add(new BasicNameValuePair("password2", userPw));
+            //UTF-8은 한글
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
+            //CloseableHttpClient httpclient = HttpClientBuilder.create().setDefaultCredentialsProvider(provider).build();
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+
+            CloseableHttpResponse response = httpclient.execute(httpPost);
+            try {
+                 System.out.println(response.getStatusLine());
                 //API서버로부터 받은 JSON 문자열 데이터
                 //System.out.println(EntityUtils.toString(response.getEntity()));
                 //HttpEntity entity = response.getEntity();
@@ -202,8 +247,8 @@ public class MemberService {
         return memberRepository.findAllFollow(memSeq);
     }
 
-    public ArrayList<Member> searchMember(String q){
-        return memberSearchRepository.findAllByNicknameLike(q);
+    public ArrayList<Member> searchMember(Long memberSeq, String searchParam){
+        return memberRepository.findValidPeerCand(memberSeq, searchParam);
     }
 
 
