@@ -29,5 +29,4 @@ src/main/resources/static/src/bower_components/
 src/main/resources/static/.tmp/
 classes/
 src/main/webapp/
-data/
 src/main/resources/sensitiveinfo.properties

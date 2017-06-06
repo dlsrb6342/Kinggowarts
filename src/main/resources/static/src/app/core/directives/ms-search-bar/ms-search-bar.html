@@ -23,19 +23,25 @@
     <div class="ms-search-bar-results" ng-if="MsSearchBar.results" ms-scroll>
         <div class="no-results" ng-if="MsSearchBar.results.length === 0">No Results!</div>
 
-        <div class="result" ng-repeat="result in MsSearchBar.results"
+        <div class="result" ng-repeat="result in MsSearchBar.results" 
+             ng-class="{'selected': $index == MsSearchBar.selectedResultIndex}">
+             <div ng-if="result.search_category" layout="row" layout-align="start center">
+                <div>
+                    <div class="description secondary-text">{{result.search_category}}</div>
+                </div>
+            </div>
+            <div ng-if="!result.search_category" layout="row" layout-align="start center" 
              ng-click="MsSearchBar.handleResultClick(result)"
              ng-mouseenter="MsSearchBar.handleMouseenter($index)"
              ng-mousedown="MsSearchBar.absorbEvent($event)"
-             ng-class="{'selected': $index == MsSearchBar.selectedResultIndex}"
              md-ink-ripple>
-            <div layout="row" layout-align="start center">
                 <div class="icon-container" layout="row" layout-align="center center">
                     <i ng-if="result.icon" class="icon {{result.icon}}"></i>
                     <div ng-if="!result.icon" class="square md-accent-bg"></div>
                 </div>
                 <div>
-                    <div class="title">{{result.title}}</div>
+                    <div ng-if="result.name" class="title">{{result.name}}</div>
+                    <div ng-if="!result.name" class="title">{{result.title}}</div>
                     <div class="description" ng-if="result.description">{{result.description}}</div>
                 </div>
             </div>
