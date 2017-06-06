@@ -13,7 +13,7 @@
 
         vm.peer = PeerData.data;
         vm.request = RequestData.data;
-        vm.recentwiki = RecentwikiData.data;
+        vm.recentwiki = RecentwikiData.data.searchResults;
 
         vm.timeline = {
             currenttimeline : "skku",
@@ -101,15 +101,11 @@
         vm.getWikiLink = function () 
         {
             
-            for (var i=0; i<vm.recentwiki.historySummaries.length; i++){
-                if((vm.wikihistory.Name.indexOf(vm.recentwiki.historySummaries[i].pageId) == -1) && (vm.recentwiki.historySummaries[i].space.substring(0,6)=="XWiki."))
-                {
-                    vm.wikihistory.Name.push(vm.recentwiki.historySummaries[i].pageId);
-                    var obj = {};
-                    obj.Title = vm.recentwiki.historySummaries[i].space.substring(6);
-                    obj.Link = '../xwiki/bin/view/XWiki/' + vm.recentwiki.historySummaries[i].space.substring(6);
-                    vm.wikihistory.Link.push(obj);
-                }
+            for (var i=0; i<vm.recentwiki.length; i++){
+                var obj = {};
+                obj.Title = vm.recentwiki[i].title;
+                obj.Link = '../xwiki/bin/view/XWiki/' + obj.Title;
+                vm.wikihistory.Link.push(obj);
             }
         };
 

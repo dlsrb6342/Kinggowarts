@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<div class="p-16" layout="row" layout-align="space-between center" ng-repeat="event in vm.timeline.notitime[vm.timeline.currenttimeline].content" ng-click = "vm.findtimelinelocation(event.location.id)">
+<div class="p-16" layout="row" layout-align="space-between center" ng-repeat="event in vm.timeline.notitime[vm.timeline.currenttimeline].content" ng-click = "vm.findtimelinelocation(event.location.id)" style="cursor: pointer;">
     <div>
         <div class="h3">{{event.title}}</div>
         <div>
