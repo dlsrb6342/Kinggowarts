@@ -7,7 +7,7 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($document, $rootScope, $q, $state, $timeout, $mdSidenav, $mdDialog, $translate, $mdToast, msNavigationService, $sessionStorage, $http)
+    function ToolbarController($document, $rootScope, $q, $state, $timeout, $mdSidenav, $mdDialog, $translate, $mdToast, msNavigationService, $sessionStorage, $http, profileImageFactory, mapLocation)
     {
         var vm = this;
 
@@ -35,7 +35,9 @@
             }
         ];
 
-        vm.userID = $sessionStorage.get('nickname');
+        vm.username = $sessionStorage.get('nickname');
+        profileImageFactory.image_path = $sessionStorage.get('profileImgPath');
+        vm.profileImg = profileImageFactory;
 
 
         // Methods
@@ -147,10 +149,41 @@
         function searchResultClick(item)
         {
             console.log(item);
-            // title이 있으면 공지사항이므로.ㄷ
-            if (item.title)
+            // title이 있으면 공지사항이므로
+            if ("contents" in item)
             {
+                console.log('notice!');
                 $state.go('app.notice.list.item', { title : item.category.name, id : item.id});
+            }
+            else if ("shape" in item){
+                console.log('map!');
+                mapLocation.lastLat = item.center.lat;
+                mapLocation.lastLng = item.center.lng;
+                mapLocation.searchResult.lat = item.center.lat;
+                mapLocation.searchResult.lng = item.center.lng;
+                mapLocation.searchResult.type = 'marker';
+                mapLocation.searchResult.id = item.id;
+                $state.go('app.map');
+            }
+            else if ("markerCategory" in item){
+                console.log('marker!');
+                mapLocation.lastLat = item.center.lat;
+                mapLocation.lastLng = item.center.lng;
+                mapLocation.searchResult.lat = item.center.lat;
+                mapLocation.searchResult.lng = item.center.lng;
+                mapLocation.searchResult.type = 'marker';
+                mapLocation.searchResult.id = item.id;
+                $state.go('app.map');
+            }
+            else {
+                console.log('event!');
+                mapLocation.lastLat = item.creator.lat;
+                mapLocation.lastLng = item.creator.lng;
+                mapLocation.searchResult.lat = item.creator.lat;
+                mapLocation.searchResult.lng = item.creator.lng;
+                mapLocation.searchResult.type = 'event';
+                mapLocation.searchResult.id = item.id;
+                $state.go('app.map');
             }
         }
 
