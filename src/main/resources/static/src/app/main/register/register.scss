@@ -4,23 +4,43 @@
     background: url('./../assets/images/backgrounds/skku.jpg') no-repeat;
     background-size: cover;
 
-    
-#register-form-wrapper {
+    #register-intro {
+        padding: 128px;
+
+        .logo {
+            width: 128px;
+            height: 128px;
+            line-height: 128px;
+            font-size: 86px;
+            font-weight: 500;
+            margin-bottom: 32px;
+            color: #FFFFFF;
+            border-radius: 2px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 42px;
+            font-weight: 300;
+        }
+
+        .description {
+            padding-top: 8px;
+            font-size: 14px;
+            max-width: 600px;
+        }
+    }
+
+    #register-form-wrapper {
         width: 416px;
         min-width: 416px;
         max-width: 416px;
         height: 100%;
-        background: url('./../assets/images/backgrounds/register.jpg');
-        text-align: center;
-        
-        .md-button[type=normal] {
-                    width: 100%;
-                    color : #0094ff;
-                }
+        background: #FFFFFF;
+
         #register-form {
-            padding: 48px 48px 0px 48px;
-            
-            
+            padding: 48px 48px 48px 48px;
+
             .logo {
                 width: 128px;
                 height: 128px;
@@ -40,7 +60,7 @@
                 padding-top: 8px;
             }
 
-            .form {
+            form {
                 width: 100%;
                 text-align: left;
                 padding-top: 32px;
@@ -63,7 +83,6 @@
                     margin: 16px auto;
                     display: block;
                 }
-                
             }
 
             .login {
@@ -93,7 +112,7 @@
             min-width: 100%;
             max-width: 100%;
             padding: 16px;
-            text-align: center;
+
             #register-form {
                 padding: 24px;
                 text-align: center;
