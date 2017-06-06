@@ -14,13 +14,13 @@
     <md-dialog-content>
 
     <div layout-gt-sm="row">
-        <p>주최자 : {{data.creater.memberSeq}}</p>
+        <p>주최자 : {{data.creator.nickname}}</p>
     </div>
     <div layout-gt-sm="row">
-        <p>시작일자 : {{data.fromDate}}</p>
+        <p><span>시작일자 :    </span><div><md-datepicker ng-model="fromDateD" md-placeholder="Enter date" disabled></md-datepicker></div></p>
     </div>
     <div layout-gt-sm="row">
-        <p>종료일자 : {{data.toDate}}</p>
+        <p><span>종료일자 :    </span><div><md-datepicker ng-model="toDateD" md-placeholder="Enter date" disabled></md-datepicker></div></p>
     </div>
 
     <div class="tags" layout="row" layout-align="start center" layout-wrap>
@@ -35,9 +35,6 @@
       <span flex></span>
       <md-button ng-if="canModify == true" ng-click="answer('delete')">
         삭제
-      </md-button>
-      <md-button ng-click="answer('modifyShape')">
-        도형수정하기
       </md-button>
       <md-button ng-click="answer('modifyInfo')">
         정보수정하기

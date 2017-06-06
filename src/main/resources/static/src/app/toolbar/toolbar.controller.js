@@ -7,7 +7,7 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $q, $state, $timeout, $mdSidenav, $translate, $mdToast, msNavigationService, $sessionStorage)
+    function ToolbarController($rootScope, $q, $state, $timeout, $mdSidenav, $translate, $mdToast, msNavigationService, $sessionStorage, $http)
     {
         var vm = this;
 
@@ -35,7 +35,7 @@
             }
         ];
 
-        vm.userID = $sessionStorage.get('useremail');
+        vm.userID = $sessionStorage.get('nickname');
 
         vm.languages = {
             en: {
@@ -109,6 +109,10 @@
          */
         function logout()
         {
+            $http({
+                    method : 'GET',
+                    url : '../xwiki/bin/logout/XWiki/XWikiLogout'
+                })
             $state.go('login');
         }
 
