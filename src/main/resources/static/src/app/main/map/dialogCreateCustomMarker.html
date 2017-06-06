@@ -1,0 +1,41 @@
+<md-dialog>
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+      <!-- <h2> {{vm.clickName}} </h2> // 위키 제목 -->
+        <h2 ng-if="isModify == false"> 새로운 {{data['markerCategory']['name']}} 마커 생성하기 </h2>
+        <h2 ng-if="isModify == true"> {{data['name']}} Region 정보 수정하기 </h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-font-icon="icon-close-circle-outline" class="icon"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+
+    <div layout-gt-sm="row">
+      <md-input-container class="md-block">
+        <label>제목</label>
+        <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="data['name']">
+      </md-input-container>
+    </div>
+    
+    <md-input-container class="md-block">
+      <label>카테고리 종류</label>
+      <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="data['markerCategory']['name']" disabled="true">
+    </md-input-container>
+
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="answer()">
+        Create
+      </md-button>
+      <md-button ng-click="cancel()">
+        Cancel
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
