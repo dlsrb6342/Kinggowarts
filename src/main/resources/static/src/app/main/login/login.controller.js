@@ -34,11 +34,14 @@
                     }),
                     headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
                 }).then(function successCallback(response){
+                    console.log(response);
                     
                     $sessionStorage.put('nickname', response.data.nickname, 50);
                     $sessionStorage.put('memberSeq', response.data.memberSeq, 50);
                     $sessionStorage.put('useremail', response.data.userId, 50);
                     $sessionStorage.put('AuthToken', response.data.token, 50);
+                    $sessionStorage.put('profileImgPath', response.data.profileImgPath, 50);
+                    $sessionStorage.put('username', response.data.name, 50);
 
                     var nickname = response.data.nickname;
 

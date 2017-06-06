@@ -73,9 +73,9 @@
                 </md-button>
 
                 <md-menu-content width="3">
-                    <md-menu-item class="md-indent" ui-sref="app.pages_profile">
+                    <md-menu-item class="md-indent" ng-click="vm.openProfileDialog($event)">
                         <md-icon md-font-icon="icon-account" class="icon"></md-icon>
-                        <md-button>My Profile</md-button>
+                        <md-button>프로필 수정</md-button>
                     </md-menu-item>
 
                    
@@ -122,5 +122,7 @@
                    aria-label="Toggle quick panel" translate translate-attr-aria-label="TOOLBAR.TOGGLE_QUICK_PANEL">
             <md-icon md-font-icon="icon-format-list-bulleted" class="icon"></md-icon>
         </md-button>
+
+        
     </div>
 </div>

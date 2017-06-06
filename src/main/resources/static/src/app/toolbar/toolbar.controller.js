@@ -7,7 +7,7 @@
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
-    function ToolbarController($rootScope, $q, $state, $timeout, $mdSidenav, $translate, $mdToast, msNavigationService, $sessionStorage, $http)
+    function ToolbarController($document, $rootScope, $q, $state, $timeout, $mdSidenav, $mdDialog, $translate, $mdToast, msNavigationService, $sessionStorage, $http)
     {
         var vm = this;
 
@@ -46,6 +46,7 @@
         vm.toggleMsNavigationFolded = toggleMsNavigationFolded;
         vm.search = search;
         vm.searchResultClick = searchResultClick;
+        vm.openProfileDialog = openProfileDialog;
 
         //////////
 
@@ -141,45 +142,8 @@
             var deferred = $q.all([mapSearchResult, markerSearchResult, eventSearchResult, noticeSearchResult]);
 
             return deferred;
-
-            // var navigation = [],
-            //     flatNavigation = msNavigationService.getFlatNavigation(),
-            //     deferred = $q.defer();
-
-
-            // for ( var x = 0; x < flatNavigation.length; x++ )
-            // {
-            //     if ( flatNavigation[x].uisref )
-            //     {
-            //         navigation.push(flatNavigation[x]);
-            //     }
-            // }
-
-
-            // if ( query )
-            // {
-            //     navigation = navigation.filter(function (item)
-            //     {
-            //         if ( angular.lowercase(item.title).search(angular.lowercase(query)) > -1 )
-            //         {
-            //             return true;
-            //         }
-            //     });
-            // }
-
-            // $timeout(function ()
-            // {
-            //     deferred.resolve(navigation);
-            // }, 1000);
-
-            // return deferred.promise;
         }
 
-        /**
-         * Search result click action
-         *
-         * @param item
-         */
         function searchResultClick(item)
         {
             console.log(item);
@@ -188,6 +152,18 @@
             {
                 $state.go('app.notice.list.item', { title : item.category.name, id : item.id});
             }
+        }
+
+        function openProfileDialog(ev)
+        {
+            $mdDialog.show({
+                controller         : 'ProfileDialogController',
+                controllerAs       : 'vm',
+                templateUrl        : 'app/toolbar/dialog/profile-dialog.html',
+                parent             : angular.element($document.find('#content-container')),
+                targetEvent        : ev,
+                clickOutsideToClose: true
+            });
         }
     }
 

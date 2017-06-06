@@ -3,7 +3,9 @@
     'use strict';
 
     angular
-        .module('app.toolbar', [])
+        .module('app.toolbar', [
+        	'flow'
+        	])
         .config(config);
 
     /** @ngInject */

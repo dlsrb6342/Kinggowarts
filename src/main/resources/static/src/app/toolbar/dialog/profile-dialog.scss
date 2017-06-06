@@ -1,0 +1,110 @@
+md-dialog {
+
+    &.profile-dialog {
+        max-width: 400px;
+        width: 400px;
+
+        md-toolbar {
+            height: 240px;
+            min-height: 240px;
+            max-height: 240px;
+
+            .title {
+                font-size: 17px;
+            }
+
+            .md-toolbar-tools-middle {
+                height: 144px;
+                min-height: 144px;
+                max-height: 144px;
+
+                &.dropping {
+
+                    .drop-text {
+                        display: flex;
+                    }
+                }
+
+                .drop-text {
+                    display: none;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    padding: 16px;
+                    text-align: center;
+                    border: 2px dashed rgba(0, 0, 0, 0.12);
+                    background: #FFFFFF;
+                    font-size: 20px;
+                    z-index: 100;
+                }
+                
+                .contact-avatar {
+                    margin: 0;
+                }
+
+                .contact-name {
+                    font-size: 24px;
+                    margin: 8px 0;
+                }
+            }
+
+            .md-toolbar-tools-bottom {
+                md-menu {
+                    margin: 0;
+                }
+            }
+        }
+
+        md-dialog-content {
+            display: block;
+            position: relative;
+
+            .birthday-input {
+                display: flex;
+                flex-direction: row;
+                width: 100%;
+                margin: 0;
+                padding: 0 0 32px 0;
+
+                .md-button {
+                    margin: 0;
+                    padding: 0;
+                    width: 24px;
+                    height: 24px;
+
+                    md-icon {
+                        color: rgba(0, 0, 0, 0.87);
+                    }
+                }
+
+                .md-datepicker-input-container {
+                    display: flex;
+                    flex: 1;
+                }
+            }
+
+            .textarea-wrapper {
+
+                md-input-container {
+                    margin-top: 0;
+                }
+
+                md-icon {
+                    color: rgba(0, 0, 0, 0.87);
+                    margin: 0 8px 0 0;
+                }
+            }
+        }
+
+        md-dialog-actions {
+            position: relative;
+            overflow-y: hidden;
+            overflow-x: auto;
+            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-top: 1px solid rgba(0, 0, 0, 0.12);
+        }
+    }
+}

@@ -1,0 +1,135 @@
+<!-- DIALOG -->
+<md-dialog class="profile-dialog" aria-label="New Task">
+
+    <form name="profileForm" class="md-inline-form" novalidate>
+
+        <!-- DIALOG TOOLBAR -->
+        <md-toolbar class="md-accent md-tall" layout="column">
+
+            <!-- TOOLBAR TOP -->
+            <div class="md-toolbar-tools md-toolbar-tools-top" layout="row" layout-align="space-between center">
+                <span class="title">프로필 수정</span>
+                <md-button class="md-icon-button" ng-click="vm.closeDialog()" aria-label="Close dialog">
+                    <md-icon md-font-icon="icon-close"></md-icon>
+                </md-button>
+            </div>
+            <!-- / TOOLBAR TOP -->
+
+            <!-- TOOLBAR MIDDLE -->
+            <div class="md-toolbar-tools md-toolbar-tools-middle" flex layout="column" layout-align="center center"
+            flow-init="vm.ngFlowOptions"
+            flow-name="vm.ngFlow.flow"
+            flow-files-submitted="vm.upload()"
+            flow-file-added="vm.fileAdded($file)"
+            flow-file-success="vm.fileSuccess($file, $message)"
+            flow-complete="vm.uploadComplete()"
+            flow-drop
+            flow-drag-enter="vm.dropping=true"
+            flow-drag-leave="vm.dropping=false"
+            ng-class="{'dropping':vm.dropping}"
+            >
+                <div layout="column" layout-align="center center">
+                    <img ng-if="vm.profile.profileImgPath" ng-src="{{vm.profile.profileImgPath}}" class="md-avatar avatar contact-avatar huge"
+                         alt="{{vm.profile.nickname}}"/>
+                    <img ng-if="!vm.profile.profileImgPath" ng-src="assets/images/avatars/profile.jpg" class="md-avatar avatar contact-avatar huge"
+                         alt="{{vm.profile.nickname}}"/>
+                    <div class="contact-name">{{vm.profile.nickname}}</div>
+                </div>
+            </div>
+            <!-- / TOOLBAR MIDDLE -->
+
+            <!--  TOOLBAR BOTTOM -->
+            <div class="md-toolbar-tools md-toolbar-tools-bottom" layout="row" layout-align="center center">
+
+                <div flex layout="row" layout-align="center center">
+
+                    <md-button class="md-icon-button"
+                               ng-click="vm.toggleInArray(vm.contact.id, vm.user.starred)"
+                               aria-label="Toggle starred">
+                        <md-icon ng-if="vm.exists(vm.contact.id,vm.user.starred)" md-font-icon="icon-star"
+                                 class="amber-fg"></md-icon>
+                        <md-icon ng-if="!vm.exists(vm.contact.id,vm.user.starred)"
+                                 md-font-icon="icon-star-outline"></md-icon>
+                    </md-button>
+
+                    <md-button class="md-icon-button" aria-label="More">
+                        <md-icon md-font-icon="icon-account-multiple-plus" ng-click="$mdOpenMenu($event)"></md-icon>
+                    </md-button>
+                </div>
+            </div>
+            <!-- / TOOLBAR BOTTOM -->
+
+        </md-toolbar>
+        <!-- / DIALOG TOOLBAR -->
+
+        <!-- DIALOG CONTENT -->
+        <md-dialog-content ms-scroll>
+
+            <md-input-container class="md-icon-float md-block">
+                <label>현재 비밀번호</label>
+                <md-icon md-font-icon="icon-account" class="name"></md-icon>
+                <input ng-model="vm.profile.lastPassword" type="password" ng-required md-autofocus>
+            </md-input-container>
+
+            <md-input-container class="md-icon-float md-block">
+                <label>새로운 비밀번호</label>
+                <md-icon></md-icon>
+                <input ng-model="vm.profile.newPassword" type="password" ng-required>
+            </md-input-container>
+
+            <md-input-container class="md-icon-float md-block">
+                <label>비밀번호 확인</label>
+                <md-icon></md-icon>
+                <input ng-model="vm.profile.newPasswordConfirm" type="password" ng-required>
+            </md-input-container>
+
+        </md-dialog-content>
+        <!-- / DIALOG CONTENT -->
+
+        <!-- DIALOG ACTIONS -->
+        <md-dialog-actions layout="row" layout-align="space-between center">
+            <div layout="row" layout-align="start center">
+                <md-button type="submit" ng-click="vm.saveProfile()"
+                           class="send-button md-accent md-raised"
+                           ng-disabled="profileForm.$invalid || profileForm.$pristine"
+                           aria-label="SAVE">
+                    비밀번호 수정
+                </md-button>
+
+            </div>
+        </md-dialog-actions>
+        <!-- / DIALOG ACTIONS -->
+
+    </form>
+    <!-- <form id="uploadForm" enctype="multipart/form-data"> 
+        <input type="text" id="title" name="title">
+        <input type="file" id="file" name="file">
+        <button class="btn btn-sm btn-primary" onclick="myFunction()"><i class="fa fa-plus"></i> 등록</button>
+    </form>
+    <script>
+    function myFunction(){
+
+        var form = new FormData(document.getElementById('uploadForm'));
+        // Display the key/value pairs
+        for (var pair of form.entries()) {
+            console.log(pair[0]);
+            console.log(pair[1]);
+        }
+        $.ajax({      
+                type:"POST",  
+                url:"./api/member/profileImg",    
+                data: form,
+                dataType:'text',
+                processData: false,
+                contentType: false,
+                beforeSend : function(xhr){
+                            xhr.setRequestHeader("x-auth-token", "cc619824-b51b-4784-8ce9-05f691ed495b");
+                },
+                success:function(args){   
+                    console.log(args  )  
+                }
+            });
+    }
+    </script> -->
+</md-dialog>
+<!-- / DIALOG -->
