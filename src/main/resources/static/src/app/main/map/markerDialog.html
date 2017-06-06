@@ -2,7 +2,7 @@
   <form ng-cloak>
     <md-toolbar>
       <div class="md-toolbar-tools">
-       <h2> {{data}} </h2> <!-- 위키 제목 -->
+       <h2> {{data.name}} </h2> <!-- 위키 제목 -->
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
           <md-icon md-font-icon="icon-close-circle-outline" class="icon"></md-icon>
@@ -21,6 +21,15 @@
         More on Wikipedia
       </md-button>
       <span flex></span>
+      <md-button ng-click="('delete')">
+        삭제
+      </md-button>
+      <md-button ng-click="('modifyInfo')">
+        이름수정
+      </md-button>
+      <md-button ng-click="answer('modifyShape')">
+        위치수정
+      </md-button>
       <md-button ng-click="cancel()">
         Cancel
       </md-button>
