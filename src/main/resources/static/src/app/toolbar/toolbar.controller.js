@@ -37,31 +37,10 @@
 
         vm.userID = $sessionStorage.get('nickname');
 
-        vm.languages = {
-            en: {
-                'title'      : 'English',
-                'translation': 'TOOLBAR.ENGLISH',
-                'code'       : 'en',
-                'flag'       : 'us'
-            },
-            es: {
-                'title'      : 'Spanish',
-                'translation': 'TOOLBAR.SPANISH',
-                'code'       : 'es',
-                'flag'       : 'es'
-            },
-            tr: {
-                'title'      : 'Turkish',
-                'translation': 'TOOLBAR.TURKISH',
-                'code'       : 'tr',
-                'flag'       : 'tr'
-            }
-        };
 
         // Methods
         vm.toggleSidenav = toggleSidenav;
         vm.logout = logout;
-        vm.changeLanguage = changeLanguage;
         vm.setUserStatus = setUserStatus;
         vm.toggleHorizontalMobileMenu = toggleHorizontalMobileMenu;
         vm.toggleMsNavigationFolded = toggleMsNavigationFolded;
@@ -80,8 +59,6 @@
             // Select the first status as a default
             vm.userStatus = vm.userStatusOptions[0];
 
-            // Get the selected language directly from angular-translate module setting
-            vm.selectedLanguage = vm.languages[$translate.preferredLanguage()];
         }
 
 
@@ -113,43 +90,6 @@
         }
 
         /**
-         * Change Language
-         */
-        function changeLanguage(lang)
-        {
-            vm.selectedLanguage = lang;
-
-            /**
-             * Show temporary message if user selects a language other than English
-             *
-             * angular-translate module will try to load language specific json files
-             * as soon as you change the language. And because we don't have them, there
-             * will be a lot of errors in the page potentially breaking couple functions
-             * of the template.
-             *
-             * To prevent that from happening, we added a simple "return;" statement at the
-             * end of this if block. If you have all the translation files, remove this if
-             * block and the translations should work without any problems.
-             */
-            if ( lang.code !== 'en' )
-            {
-                var message = 'Fuse supports translations through angular-translate module, but currently we do not have any translations other than English language. If you want to help us, send us a message through ThemeForest profile page.';
-
-                $mdToast.show({
-                    template : '<md-toast id="language-message" layout="column" layout-align="center start"><div class="md-toast-content">' + message + '</div></md-toast>',
-                    hideDelay: 7000,
-                    position : 'top right',
-                    parent   : '#content'
-                });
-
-                return;
-            }
-
-            // Change the language
-            $translate.use(lang.code);
-        }
-
-        /**
          * Toggle horizontal mobile menu
          */
         function toggleHorizontalMobileMenu()
@@ -173,43 +113,66 @@
          */
         function search(query)
         {
-            var navigation = [],
-                flatNavigation = msNavigationService.getFlatNavigation(),
-                deferred = $q.defer();
+            console.log(query);
+            var mapSearchResult= $http({
+                method : 'GET',
+                url : "./api/map/search?q=" + query,
+                headers: {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            })
 
-            // Iterate through the navigation array and
-            // make sure it doesn't have any groups or
-            // none ui-sref items
-            for ( var x = 0; x < flatNavigation.length; x++ )
-            {
-                if ( flatNavigation[x].uisref )
-                {
-                    navigation.push(flatNavigation[x]);
-                }
-            }
+            var markerSearchResult= $http({
+                method : 'GET',
+                url : "./api/marker/search?q=" + query,
+                headers: {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            })
 
-            // If there is a query, filter the navigation;
-            // otherwise we will return the entire navigation
-            // list. Not exactly a good thing to do but it's
-            // for demo purposes.
-            if ( query )
-            {
-                navigation = navigation.filter(function (item)
-                {
-                    if ( angular.lowercase(item.title).search(angular.lowercase(query)) > -1 )
-                    {
-                        return true;
-                    }
-                });
-            }
+            var eventSearchResult= $http({
+                method : 'GET',
+                url : "./api/event/search?q=" + query,
+                headers: {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            })
 
-            // Fake service delay
-            $timeout(function ()
-            {
-                deferred.resolve(navigation);
-            }, 1000);
+            var noticeSearchResult= $http({
+                method : 'GET',
+                url : "./api/notice/search?q=" + query,
+                headers: {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            })
 
-            return deferred.promise;
+            var deferred = $q.all([mapSearchResult, markerSearchResult, eventSearchResult, noticeSearchResult]);
+
+            return deferred;
+
+            // var navigation = [],
+            //     flatNavigation = msNavigationService.getFlatNavigation(),
+            //     deferred = $q.defer();
+
+
+            // for ( var x = 0; x < flatNavigation.length; x++ )
+            // {
+            //     if ( flatNavigation[x].uisref )
+            //     {
+            //         navigation.push(flatNavigation[x]);
+            //     }
+            // }
+
+
+            // if ( query )
+            // {
+            //     navigation = navigation.filter(function (item)
+            //     {
+            //         if ( angular.lowercase(item.title).search(angular.lowercase(query)) > -1 )
+            //         {
+            //             return true;
+            //         }
+            //     });
+            // }
+
+            // $timeout(function ()
+            // {
+            //     deferred.resolve(navigation);
+            // }, 1000);
+
+            // return deferred.promise;
         }
 
         /**
@@ -219,19 +182,11 @@
          */
         function searchResultClick(item)
         {
-            // If item has a link
-            if ( item.uisref )
+            console.log(item);
+            // title이 있으면 공지사항이므로.ㄷ
+            if (item.title)
             {
-                // If there are state params,
-                // use them...
-                if ( item.stateParams )
-                {
-                    $state.go(item.state, item.stateParams);
-                }
-                else
-                {
-                    $state.go(item.state);
-                }
+                $state.go('app.notice.list.item', { title : item.category.name, id : item.id});
             }
         }
     }
