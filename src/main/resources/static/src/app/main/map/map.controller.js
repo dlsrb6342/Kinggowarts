@@ -330,6 +330,10 @@
             $scope.answer = function() {
                 $mdDialog.hide($scope.retData);
             };
+            $scope.newTag = function(chip)
+             {
+                 return { name : chip };
+             };
         }
 
     //-------------region 내용 다이얼로그-------------------------
@@ -545,6 +549,10 @@
                 $scope.retData["l_id"] = inLid;
                 $mdDialog.hide($scope.retData);
             };
+            $scope.newTag = function(chip)
+             {
+                 return { name : chip };
+             };
         }
 
     //-------------커스텀 내용 다이얼로그-------------------------
@@ -1611,6 +1619,7 @@
                     selectedArea = vm.markerData["regions"][typeIdx];
                     vm.clickName = vm.markerData["regions"][typeIdx]["name"];
                     vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.clickName;
+                    vm.tags = vm.markerData["regions"][typeIdx]["tags"];
                     //selectedArea = subArea[typeIdx];          //subArea 정의 이전
                     //vm.clickName = subArea[typeIdx]["name"];
                     vm.openMapDialog();
@@ -1716,6 +1725,7 @@
                         selectedMarker = printedCategoryMarkers[idx];
                         selectedMarkerIdx = idx;
                         vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.clickName;
+                        vm.tags = shapeData["tags"];
                         vm.openMapDialog();
                     }    
                 });
@@ -1876,7 +1886,7 @@
         }
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
-        function MapDialogController($scope, $mdDialog, $state, clickName) {
+        function MapDialogController($scope, $mdDialog, $state, clickName, $rootScope) {
             $scope.canMakeEvent = false;
             if(vm.categoryStatus == "regions"){
                 $scope.canMakeEvent = true;
@@ -2352,5 +2362,4 @@
     }
 
     
-
 })();
