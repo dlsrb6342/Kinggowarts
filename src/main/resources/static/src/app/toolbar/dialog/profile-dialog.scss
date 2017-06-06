@@ -13,32 +13,34 @@ md-dialog {
                 font-size: 17px;
             }
 
+            
+
+            &.dropping {
+
+                .drop-text {
+                    display: flex;
+                }
+            }
+
+            .drop-text {
+                display: none;
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                padding: 16px;
+                text-align: center;
+                border: 2px dashed rgba(0, 0, 0, 0.12);
+                background: #FFFFFF;
+                font-size: 20px;
+                z-index: 100;
+            }
+
             .md-toolbar-tools-middle {
                 height: 144px;
                 min-height: 144px;
                 max-height: 144px;
-
-                &.dropping {
-
-                    .drop-text {
-                        display: flex;
-                    }
-                }
-
-                .drop-text {
-                    display: none;
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    bottom: 0;
-                    left: 0;
-                    padding: 16px;
-                    text-align: center;
-                    border: 2px dashed rgba(0, 0, 0, 0.12);
-                    background: #FFFFFF;
-                    font-size: 20px;
-                    z-index: 100;
-                }
                 
                 .contact-avatar {
                     margin: 0;

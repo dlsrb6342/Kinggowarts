@@ -17,6 +17,13 @@
         service.lastLng = 126.9753990;  //app 첫 진입시 사용자 위치가 아닌 성대 중앙으로 이동
         service.lastZoomLevel = 3;
         service.lastCategoryStatus = "none";
+
+        service.searchResult = {
+            lat : 0,
+            lng : 0,
+            type : '',
+            id : 0
+        }
         
 
 

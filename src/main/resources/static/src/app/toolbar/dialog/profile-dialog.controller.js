@@ -7,7 +7,7 @@
         .controller('ProfileDialogController', ProfileDialogController);
 
     /** @ngInject */
-    function ProfileDialogController($http, $httpParamSerializerJQLike, $mdDialog, $sessionStorage)
+    function ProfileDialogController($http, $httpParamSerializerJQLike, $mdDialog, $sessionStorage, profileImageFactory)
     {
         var vm = this;
 
@@ -15,8 +15,8 @@
         vm.allFields = false;
         vm.profile = {};
         vm.profile.nickname = $sessionStorage.get('nickname');
-        vm.profile.profileImgPath = $sessionStorage.get('profileImgPath');
-        console.log($sessionStorage.get('AuthToken'));
+        vm.profile.profileImg = profileImageFactory;
+        console.log(profileImageFactory);
 
         // Methods
         vm.init = init();
@@ -90,7 +90,7 @@
 
         function fileAdded(file)
         {
-            console.log(file);
+            //console.log(file);
         }
 
         /**
@@ -118,12 +118,14 @@
          */
         function fileSuccess(file, message)
         {
-            // Iterate through the media list, find the one we
-            // are added as a temp and replace its data
-            // Normally you would parse the message and extract
-            // the uploaded file data from it
-            console.log(file);
             console.log(message);
+            if(message != 'error'){
+              $sessionStorage.put('profileImgPath', message, 50);
+              profileImageFactory.image_path = message;
+            }
+            else{
+              alert('에러가 발생했습니다.');
+            }
         }
 
     }

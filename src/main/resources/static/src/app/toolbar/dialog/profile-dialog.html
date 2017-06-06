@@ -1,10 +1,22 @@
-<!-- DIALOG -->
+DIALOG -->
 <md-dialog class="profile-dialog" aria-label="New Task">
 
     <form name="profileForm" class="md-inline-form" novalidate>
 
         <!-- DIALOG TOOLBAR -->
-        <md-toolbar class="md-accent md-tall" layout="column">
+        <md-toolbar class="md-accent md-tall" layout="column" 
+            flow-init="vm.ngFlowOptions"
+            flow-name="vm.ngFlow.flow"
+            flow-files-submitted="vm.upload()"
+            flow-file-added="vm.fileAdded($file)"
+            flow-file-success="vm.fileSuccess($file, $message)"
+            flow-complete="vm.uploadComplete()"
+            flow-drop
+            flow-drag-enter="vm.dropping=true"
+            flow-drag-leave="vm.dropping=false"
+            ng-class="{'dropping':vm.dropping}">
+
+
 
             <!-- TOOLBAR TOP -->
             <div class="md-toolbar-tools md-toolbar-tools-top" layout="row" layout-align="space-between center">
@@ -15,49 +27,39 @@
             </div>
             <!-- / TOOLBAR TOP -->
 
+
+            <div class="drop-text hint-text" layout="row" layout-align="center center">
+                <span>이미지를 끌어다 놓으세요.</span>
+            </div>
+
             <!-- TOOLBAR MIDDLE -->
             <div class="md-toolbar-tools md-toolbar-tools-middle" flex layout="column" layout-align="center center"
-            flow-init="vm.ngFlowOptions"
-            flow-name="vm.ngFlow.flow"
-            flow-files-submitted="vm.upload()"
-            flow-file-added="vm.fileAdded($file)"
-            flow-file-success="vm.fileSuccess($file, $message)"
-            flow-complete="vm.uploadComplete()"
-            flow-drop
-            flow-drag-enter="vm.dropping=true"
-            flow-drag-leave="vm.dropping=false"
-            ng-class="{'dropping':vm.dropping}"
             >
+
                 <div layout="column" layout-align="center center">
-                    <img ng-if="vm.profile.profileImgPath" ng-src="{{vm.profile.profileImgPath}}" class="md-avatar avatar contact-avatar huge"
+                    <img ng-if="vm.profile.profileImg.image_path" ng-src="profileimg/{{vm.profile.profileImg.image_path}}" class="md-avatar avatar contact-avatar huge"
                          alt="{{vm.profile.nickname}}"/>
-                    <img ng-if="!vm.profile.profileImgPath" ng-src="assets/images/avatars/profile.jpg" class="md-avatar avatar contact-avatar huge"
+                    <img ng-if="!vm.profile.profileImg.image_path" ng-src="assets/images/avatars/profile.jpg" class="md-avatar avatar contact-avatar huge"
                          alt="{{vm.profile.nickname}}"/>
                     <div class="contact-name">{{vm.profile.nickname}}</div>
                 </div>
+
+                <div flex></div>
             </div>
             <!-- / TOOLBAR MIDDLE -->
 
             <!--  TOOLBAR BOTTOM -->
             <div class="md-toolbar-tools md-toolbar-tools-bottom" layout="row" layout-align="center center">
 
-                <div flex layout="row" layout-align="center center">
-
-                    <md-button class="md-icon-button"
-                               ng-click="vm.toggleInArray(vm.contact.id, vm.user.starred)"
-                               aria-label="Toggle starred">
-                        <md-icon ng-if="vm.exists(vm.contact.id,vm.user.starred)" md-font-icon="icon-star"
-                                 class="amber-fg"></md-icon>
-                        <md-icon ng-if="!vm.exists(vm.contact.id,vm.user.starred)"
-                                 md-font-icon="icon-star-outline"></md-icon>
+                <div flex layout="column" layout-align="center center">
+                    <md-button class="md-primary md-raised" flow-btn>
+                        이미지 업로드
                     </md-button>
-
-                    <md-button class="md-icon-button" aria-label="More">
-                        <md-icon md-font-icon="icon-account-multiple-plus" ng-click="$mdOpenMenu($event)"></md-icon>
-                    </md-button>
+                    <span class="h6 secondary-text mb-8">※이미지를 직접 끌어다 놓아서 업로드하실 수도 있습니다.</span>
                 </div>
             </div>
             <!-- / TOOLBAR BOTTOM -->
+
 
         </md-toolbar>
         <!-- / DIALOG TOOLBAR -->
@@ -67,19 +69,19 @@
 
             <md-input-container class="md-icon-float md-block">
                 <label>현재 비밀번호</label>
-                <md-icon md-font-icon="icon-account" class="name"></md-icon>
+                <md-icon md-font-icon="icon-account-key"></md-icon>
                 <input ng-model="vm.profile.lastPassword" type="password" ng-required md-autofocus>
             </md-input-container>
 
             <md-input-container class="md-icon-float md-block">
                 <label>새로운 비밀번호</label>
-                <md-icon></md-icon>
+                <md-icon md-font-icon="icon-key-change"></md-icon>
                 <input ng-model="vm.profile.newPassword" type="password" ng-required>
             </md-input-container>
 
             <md-input-container class="md-icon-float md-block">
                 <label>비밀번호 확인</label>
-                <md-icon></md-icon>
+                <md-icon md-font-icon="icon-key-change"></md-icon>
                 <input ng-model="vm.profile.newPasswordConfirm" type="password" ng-required>
             </md-input-container>
 
@@ -132,4 +134,4 @@
     }
     </script> -->
 </md-dialog>
-<!-- / DIALOG -->
+<!-- / DIALOG
