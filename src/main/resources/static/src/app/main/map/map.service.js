@@ -18,14 +18,15 @@
         service.lastZoomLevel = 3;
         service.lastCategoryStatus = "none";
         
+
+
         //사용자 위치 정보로 interval마다 위치정보를 갱신합니다. 초기 정보는 바꿔도 상관 없습니다.
         service.userLastLat = 0.0;
         service.userLastLng = 0.0;
-	
+
 	   //Get User Location every 1 min. 1sec == 1000
-        getLocation();
-        $interval(getLocation, 60000); 
-        function getLocation() {
+        
+        service.getLocation = function() {
             if (navigator.geolocation) { // GPS를 지원하는 경우
                 navigator.geolocation.getCurrentPosition(function(position) {
                     //alert(position.coords.latitude + ' ' + position.coords.longitude);
@@ -43,6 +44,9 @@
                 alert('GPS를 지원하지 않습니다');
             }
         }
+
+        service.getLocation();
+        $interval(service.getLocation, 60000); 
     }
 
 })();
