@@ -15,43 +15,49 @@
 
         $sessionStorage.empty();
 
+        vm.isdisabled = false;
+
         // Methods
         vm.loginfun = function (email,password) {
-
-            $http({
-                method : 'POST',
-                url : './api/auth/login',
-                data : $httpParamSerializerJQLike({
-                    username : email,
-                    password : password
-                }),
-                headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
-            }).then(function successCallback(response){
-                
-                $sessionStorage.put('nickname', response.data.nickname, 50);
-                $sessionStorage.put('memberSeq', response.data.memberSeq, 50);
-                $sessionStorage.put('useremail', response.data.userId, 50);
-                $sessionStorage.put('AuthToken', response.data.token, 50);
-
-                var nickname = response.data.nickname;
-
+            if (vm.isdisabled == false){
+                vm.isdisabled = true;
                 $http({
-                    method : 'GET',
-                    url : location.protocol+"//"+location.host+"/xwiki/bin/login/",
-                    withCredentials: true,
-                    headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
+                    method : 'POST',
+                    url : './api/auth/login',
+                    data : $httpParamSerializerJQLike({
+                        username : email,
+                        password : password
+                    }),
+                    headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
                 }).then(function successCallback(response){
+                    
+                    $sessionStorage.put('nickname', response.data.nickname, 50);
+                    $sessionStorage.put('memberSeq', response.data.memberSeq, 50);
+                    $sessionStorage.put('useremail', response.data.userId, 50);
+                    $sessionStorage.put('AuthToken', response.data.token, 50);
 
-                    $state.go('app.map');
+                    var nickname = response.data.nickname;
 
+                    $http({
+                        method : 'GET',
+                        url : location.protocol+"//"+location.host+"/xwiki/bin/login/",
+                        withCredentials: true,
+                        headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
+                    }).then(function successCallback(response){
+
+                        $state.go('app.map');
+
+                    }, function errorCallback(response) {
+                        vm.isdisabled = false;
+                        alert('위키 로그인에 실패하였습니다.');
+                    });
+                    
                 }, function errorCallback(response) {
-                    alert('위키 로그인에 실패하였습니다.');
+                    vm.isdisabled = false;
+                    alert('아이디나 비밀번호를 확인해주세요.');
                 });
-                
-            }, function errorCallback(response) {
-                alert('아이디나 비밀번호를 확인해주세요.');
-            });
-
+            }
+            
         };
 
         $rootScope.$broadcast('msSplashScreen::remove');

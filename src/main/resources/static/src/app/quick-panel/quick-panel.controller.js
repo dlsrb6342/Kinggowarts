@@ -62,6 +62,8 @@
 
         vm.searchresult;
 
+        vm.defaultimg = "./assets/images/avatars/profile.jpg";
+
         var today = new Date();
 
         
@@ -77,8 +79,8 @@
             for(var value in vm.peer){
                 
                 vm.peerlist.checklist.push(vm.peer[value].memberSeq);
-                if(vm.peer[value].profileImgPath == "") vm.peer[value].profileImgPath = "33d69673-d5d4-4af3-9f79-659cfb5ba0bc_23.jpg";
-                vm.peer[value].profileImgPath = "./profileimg/"+ vm.peer[value].profileImgPath;
+                if(vm.peer[value].profileImgPath == "") vm.peer[value].profileImgPath = vm.defaultimg;
+                else vm.peer[value].profileImgPath = "./profileimg/"+ vm.peer[value].profileImgPath;
 
                 if(vm.peer[value].lat == -1 && vm.peer[value].lng == -1){
                     vm.peerlist.peer.n_active.push(vm.peer[value]);
@@ -223,8 +225,8 @@
                 vm.searchresult = response.data;
 
                 for (var value in vm.searchresult){
-                    if(vm.searchresult[value].profileImgPath == "") vm.searchresult[value].profileImgPath = "33d69673-d5d4-4af3-9f79-659cfb5ba0bc_23.jpg";
-                    vm.searchresult[value].profileImgPath = "./profileimg/"+vm.searchresult[value].profileImgPath;
+                    if(vm.searchresult[value].profileImgPath == "") vm.searchresult[value].profileImgPath = vm.defaultimg;
+                    else vm.searchresult[value].profileImgPath = "./profileimg/"+vm.searchresult[value].profileImgPath;
                 }
                 showsearch.focus();
             });
