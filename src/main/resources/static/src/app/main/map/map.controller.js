@@ -14,7 +14,7 @@
         var vm = this;
         
         vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
-        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
+        vm.clickUrl = '../xwiki/bin/view/XWiki/';
 
         vm.userLat = 0;
         vm.userLng = 0;
@@ -255,6 +255,10 @@
             $scope.answer = function() {
                 $mdDialog.hide($scope.retData);
             };
+            $scope.newTag = function(chip)
+             {
+                 return { name : chip };
+             };
         }
 
     //-------------region 내용 다이얼로그-------------------------
@@ -425,6 +429,10 @@
                 $scope.retData["l_id"] = inLid;
                 $mdDialog.hide($scope.retData);
             };
+            $scope.newTag = function(chip)
+             {
+                 return { name : chip };
+             };
         }
 
     //-------------커스텀 내용 다이얼로그-------------------------
@@ -1339,7 +1347,8 @@
                 else if(vm.categoryStatus == "regions"){
                     selectedArea = vm.markerData["regions"][typeIdx];
                     vm.clickName = vm.markerData["regions"][typeIdx]["name"];
-                    vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" + vm.clickName;
+                    vm.clickUrl = '../xwiki/bin/view/XWiki/' + vm.clickName;
+                    vm.tags = vm.markerData["regions"][typeIdx]["tags"];
                     //selectedArea = subArea[typeIdx];          //subArea 정의 이전
                     //vm.clickName = subArea[typeIdx]["name"];
                     vm.openMapDialog();
@@ -1444,7 +1453,8 @@
                         selectedArea = shapeData;
                         selectedMarker = printedCategoryMarkers[idx];
                         selectedMarkerIdx = idx;
-                        vm.clickUrl = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/" + vm.clickName;
+                        vm.clickUrl = '../xwiki/bin/view/XWiki/' + vm.clickName;
+                        vm.tags = shapeData["tags"];
                         vm.openMapDialog();
                     }    
                 });
@@ -1625,8 +1635,9 @@
         }
 
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
-        function MapDialogController($scope, $mdDialog, $state, clickName) {
+        function MapDialogController($scope, $mdDialog, $state, clickName, $rootScope) {
             $scope.canMakeEvent = false;
+
             if(vm.categoryStatus == "regions"){
                 $scope.canMakeEvent = true;
             }
@@ -1636,8 +1647,16 @@
             };
             $scope.movewiki = function(){  //wiki page로 이동 
                 $mdDialog.cancel();
-                $state.go('app.wiki');
-                //$state.go(vm.clickUrl);
+                $rootScope.wikipath = vm.clickUrl;
+  
+                if($state.includes('app.wiki') == true)
+                 {
+                     $state.reload();
+                 }
+                 else
+                 {
+                    $state.go('app.wiki');
+                 }
             };
             $scope.cancel = function() {
                 $mdDialog.cancel();
