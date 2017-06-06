@@ -1,4 +1,4 @@
-<md-dialog>
+<md-dialog flex="40">
   <form ng-cloak>
     <md-toolbar>
       <div class="md-toolbar-tools">
@@ -19,23 +19,17 @@
         document.getElementById("clickWiki").src = "http://fanatic1.iptime.org:8080/xwiki/bin/view/XWiki/";
     </script>-->
     
-      <iframe frameborder=" 0" id="domainframe" src= "{{clickUrl | trustAsResourceUrl}}" width="500px" height = "400px" scrolling="auto";></iframe> 
+      <iframe frameborder=" 0" id="domainframe" src= "{{clickUrl | trustAsResourceUrl}}" width="100%" height = "300px" scrolling="auto";></iframe> 
      <!-- <iframe frameborder="0" id="clickWiki" src=" " width="500px" height = "400px" scrolling="auto";></iframe>-->
     <!-- </md-dialog-content> -->
 
-<!--
-    <md-dialog-actions layout="row">
-    <md-chips ng-model="ctrl.tags" md-removable="true" placeholder="Enter a tag" secondary-placeholder="+Tag"></md-chips>
-    </md-dialog-actions> -->
-
-    
-    <md-dialog-actions layout="row">
-    <div class="tags">
-      <md-chips ng-model= "tags" placeholder="Enter a tag">
-
-      </md-chips>
+    <md-dialog-content>
+    <div class="tags" layout="row" layout-align="start center" layout-wrap>
+      <div class="tag" layout="row" style="height:30px;" layout-align="start center" data-ng-repeat="tag in tags">
+        <div class="tag-label"> <p># {{tag.name}}</p></div>
+      </div>
     </div>
-    </md-dialog-actions>
+    </md-dialog-content>
 
 
     <md-dialog-actions layout="row">
@@ -53,7 +47,7 @@
       </md-button>
       <md-button ng-click="cancel()">
         Cancel
-      </md-button>
+      </md-button>  
     </md-dialog-actions>
   </form>
 </md-dialog>
