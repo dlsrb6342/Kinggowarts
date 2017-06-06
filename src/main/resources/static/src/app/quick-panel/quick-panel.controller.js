@@ -7,13 +7,13 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(peerLocation, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state, $sessionStorage, $httpParamSerializerJQLike, SkkuData, CsData, FbData)
+    function QuickPanelController(peerLocation, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state, $sessionStorage, $httpParamSerializerJQLike, SkkuData, CsData, FbData, mapLocation, $scope)
     {
         var vm = this;
 
         vm.peer = PeerData.data;
         vm.request = RequestData.data;
-        vm.recentwiki = RecentwikiData.data;
+        vm.recentwiki = RecentwikiData.data.searchResults;
 
         vm.timeline = {
             currenttimeline : "skku",
@@ -62,7 +62,56 @@
 
         vm.searchresult;
 
+        vm.defaultimg = "./assets/images/avatars/profile.jpg";
+
         var today = new Date();
+
+        $scope.$watch(
+            function watchEvent(scope){
+                return(mapLocation.userCord);
+            },
+            function handleEvent(newValue, oldValue){
+                if(mapLocation.userCord[0] != 0 && mapLocation.userCord[1] != 0){
+                    var userloc = {
+                        lng : mapLocation.userCord[1],
+                        lat : mapLocation.userCord[0]
+                    };
+
+                    $http({
+                        method : 'PATCH',
+                        url : './api/member/coordinate',
+                        data : JSON.stringify(userloc),
+                        headers: {
+                            'x-auth-token' : $sessionStorage.get('AuthToken')
+                        }
+                    }).then (function (response){
+                        for(var value in response.data){
+                            for (var avalue in vm.peerlist.peer.active){
+                                if(vm.peerlist.peer.active[avalue].memberSeq == response.data[value].memberSeq){
+                                    vm.peerlist.peer.active[avalue].lat = response.data[value].lat;
+                                    vm.peerlist.peer.active[avalue].lng = response.data[value].lng;
+                                    if(vm.peerlist.peer.active[avalue].lat == -1 && vm.peerlist.peer.active[avalue].lng == -1){
+                                        vm.peerlist.peer.n_active.push(vm.peerlist.peer.active[avalue]);
+                                        vm.peerlist.peer.active.splice(vm.peerlist.peer.active[avalue]);
+                                    }
+                                    break;
+                                }
+                            }
+                            for (var avalue in vm.peerlist.peer.n_active){
+                                if(vm.peerlist.peer.n_active[avalue].memberSeq == response.data[value].memberSeq){
+                                    vm.peerlist.peer.n_active[avalue].lat = response.data[value].lat;
+                                    vm.peerlist.peer.n_active[avalue].lng = response.data[value].lng;
+                                    if(vm.peerlist.peer.n_active[avalue].lat != -1 || vm.peerlist.peer.n_active[avalue].lng != -1){
+                                        vm.peerlist.peer.active.push(vm.peerlist.peer.n_active[avalue]);
+                                        vm.peerlist.peer.n_active.splice(vm.peerlist.peer.n_active[avalue]);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                }
+            }, true);
 
         
         vm.findtimelinelocation = function (locid) {
@@ -77,8 +126,8 @@
             for(var value in vm.peer){
                 
                 vm.peerlist.checklist.push(vm.peer[value].memberSeq);
-                if(vm.peer[value].profileImgPath == "") vm.peer[value].profileImgPath = "33d69673-d5d4-4af3-9f79-659cfb5ba0bc_23.jpg";
-                vm.peer[value].profileImgPath = "./profileimg/"+ vm.peer[value].profileImgPath;
+                if(vm.peer[value].profileImgPath == "") vm.peer[value].profileImgPath = vm.defaultimg;
+                else vm.peer[value].profileImgPath = "./profileimg/"+ vm.peer[value].profileImgPath;
 
                 if(vm.peer[value].lat == -1 && vm.peer[value].lng == -1){
                     vm.peerlist.peer.n_active.push(vm.peer[value]);
@@ -99,15 +148,11 @@
         vm.getWikiLink = function () 
         {
             
-            for (var i=0; i<vm.recentwiki.historySummaries.length; i++){
-                if((vm.wikihistory.Name.indexOf(vm.recentwiki.historySummaries[i].pageId) == -1) && (vm.recentwiki.historySummaries[i].space.substring(0,6)=="XWiki."))
-                {
-                    vm.wikihistory.Name.push(vm.recentwiki.historySummaries[i].pageId);
-                    var obj = {};
-                    obj.Title = vm.recentwiki.historySummaries[i].space.substring(6);
-                    obj.Link = '../xwiki/bin/view/XWiki/' + vm.recentwiki.historySummaries[i].space.substring(6);
-                    vm.wikihistory.Link.push(obj);
-                }
+            for (var i=0; i<vm.recentwiki.length; i++){
+                var obj = {};
+                obj.Title = vm.recentwiki[i].title;
+                obj.Link = '../xwiki/bin/view/XWiki/' + obj.Title;
+                vm.wikihistory.Link.push(obj);
             }
         };
 
@@ -223,8 +268,8 @@
                 vm.searchresult = response.data;
 
                 for (var value in vm.searchresult){
-                    if(vm.searchresult[value].profileImgPath == "") vm.searchresult[value].profileImgPath = "33d69673-d5d4-4af3-9f79-659cfb5ba0bc_23.jpg";
-                    vm.searchresult[value].profileImgPath = "./profileimg/"+vm.searchresult[value].profileImgPath;
+                    if(vm.searchresult[value].profileImgPath == "") vm.searchresult[value].profileImgPath = vm.defaultimg;
+                    else vm.searchresult[value].profileImgPath = "./profileimg/"+vm.searchresult[value].profileImgPath;
                 }
                 showsearch.focus();
             });

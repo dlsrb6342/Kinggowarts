@@ -15,51 +15,25 @@
         
         
         // Methods
-        //File upload
-        $scope.images = [];
-        //ÆÄÀÏ Ã³¸®
-        $scope.processFiles = function (uploadImages) {
-            angular.forEach(uploadImages, function (flowFile, i) {
-                var fileReader = new FileReader();
-                fileReader.onload = function (event) {
-                    var uri = event.target.result;
-                    $scope.images[i] = uri;
-                };
-                fileReader.readAsDataURL(flowFile.file);
-            });
-        };
-
-        //image upload
-        $scope.imageUpload = function (file) {
-
-            if (file != null) {
-                file.upload = Upload.upload({
-                    url: './api/member/imageUpload',
-                    method: 'POST',
-                    file: file
-                }).success(function (data) {
-                    console.log('Success');
-                });
-            }
-        };
-        
+       
            
         
+        //register function
+	vm.register_loginfun = function (email,password,nick,username) {
         
-	vm.register_loginfun = function (username,email,password,location_share) {
-        //user È¸¿øÁ¤º¸ ¼­¹ö¿¡ Àü¼Û
 	    $http({
 	        method: 'POST',
 	        url: './api/member/signup',
 	        data: $httpParamSerializerJQLike({
-	            nickname : username,
-	            userId : email,
-	            passWd : password,
-	            type : location_share,
+	        	userId: email,
+                	passWd: password,
+                	nickname: nick,
+                	name: username
 	        }),
 	        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 	        })
             $state.go('login');
+            alert('íšŒì›ê°€ì…ì— ì„±ê³µí•˜ì…¨ìŠµë‹ˆë‹¤');
         };
 
 	$rootScope.$broadcast('msSplashScreen::remove');

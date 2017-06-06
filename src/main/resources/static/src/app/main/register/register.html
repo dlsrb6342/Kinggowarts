@@ -1,74 +1,74 @@
-﻿    
+    
 <div id="register" layout="row" layout-align="end end">
    
     <div id="register-form-wrapper" class="flex-scrollable md-whiteframe-1dp" layout="column" flex ms-scroll>
         <div id="register-form">
             <div class="title"><h1>  Create Account</h1></div>
                 
-            <div flow-init
-                 flow-files-submitted="$flow.upload()"
-                 flow-files-added="processFiles($files)">
-                <div class="drop" flow-drop="" ng-class="dropClass">
-                    <md-button type="normal" class="btn btn-primary" flow-btn>계정 이미지 선택</md-button>
-                </div>
-                <div ng-repeat="file in $flow.files track by $index" class="motelRoom">
-                    <span>{{file.name}}</span>
-                    <div class="thumbnail" ng-show="$flow.files.length">
-                        <img flow-img="file" />
-                    </div>
-              
-
-                    <div class="btn-group">
-                        <md-button type="normal" class="btn btn-xs btn-danger" ng-click="file.cancel()">취소</md-button>
-                    </div>
-                </div>
-            </div>
-
-            <md-button type="normal" ng-click="imageUpload(file)" class="btn btn-info">이미지 업로드</md-button>
-
+           
            <form name="registerForm" novalidate>
                 <md-input-container class="md-block" md-no-float>
-                    <input name="username" ng-model="vm.form.username" placeholder="사용자 이름"
+                    <input name="userId" ng-model="vm.form.userId" placeholder="이메일 주소" ng-pattern="/^.+@+skku+\.+edu+$/"
                            required>
-                    <div ng-messages="registerForm.username.$error" role="alert">
+                    
+                    <div ng-messages="registerForm.userId.$error" role="alert">
                         <div ng-message="required">
-                            <span>사용자 이름을 입력해 주세요</span>
-                        </div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block" md-no-float>
-                    <input type="email" name="email" ng-model="vm.form.email" placeholder="이메일"
-                           ng-pattern="/^.+@.+\..+$/" required>
-                    <div ng-messages="registerForm.email.$error" role="alert" multiple>
-                        <div ng-message="required">
-                            <span>이메일을 입력해주세요</span>
+                            <span>이메일 주소를 입력해 주세요</span>
                         </div>
                         <div ng-message="pattern">
-                            <span>이메일 형식에 맞지 않습니다</span>
+                            <span>skku 이메일 형식에 맞지 않습니다</span>
                         </div>
                     </div>
                 </md-input-container>
                 <md-input-container class="md-block" md-no-float>
-                    <input type="password" name="password" ng-model="vm.form.password" placeholder="패스워드"
-                           required>
-                    <div ng-messages="registerForm.password.$error" role="alert">
+                    <input type="passWd" name="passWd" ng-model="vm.form.passWd" placeholder="패스워드" ng-minlength="6" ng-maxlength="16"
+                            required>
+                    <div ng-messages="registerForm.passWd.$error" role="alert" multiple>
                         <div ng-message="required">
                             <span>패스워드를 입력해주세요</span>
+                        </div>
+                         <div ng-message="ng-minlength">
+                            <span>패스워드를 6자이상 입력해주세요</span>
+                        </div>
+                        <div ng-message="ng-maxlength">
+                            <span>패스워드를 16자이하 입력해주세요</span>
+                        </div>
+
+                    </div>
+                </md-input-container>
+                <md-input-container class="md-block" md-no-float>
+                    <input type="nickname" name="nickname" ng-model="vm.form.nickname" placeholder="닉네임" ng-minlength="1" ng-maxlength="16"
+                           required>
+                    <div ng-messages="registerForm.nickname.$error" role="alert">
+                        <div ng-message="required">
+                            <span>닉네임을 입력해주세요</span>
+                        </div>
+                        <div ng-message="ng-minlength">
+                            <span>닉네임을 1자이상 입력해주세요</span>
+                        </div>
+                        <div ng-message="ng-maxlength">
+                            <span>닉네임을 16자이하 입력해주세요</span>
                         </div>
                     </div>
                 </md-input-container>
                 
                 <md-input-container class="md-block" md-no-float>
-                    <input name="location_share" ng-model="vm.form.usertype" placeholder="회원 타입(S: 학생 T: 교수)"
+                    <input name="name" ng-model="vm.form.name" placeholder="사용자 이름" ng-minlength="1" ng-maxlength="16"
                            required>
-                    <div ng-messages="registerForm.usertype.$error" role="alert">
+                    <div ng-messages="registerForm.name.$error" role="alert">
                         <div ng-message="required">
-                            <span>회원 타입을 입력해주세요</span>
+                            <span>이름을 입력해주세요</span>
+                        </div>
+                        <div ng-message="ng-minlength">
+                            <span>이름을 1자이상 입력해주세요</span>
+                        </div>
+                        <div ng-message="ng-maxlength">
+                            <span>이름을 16자이하 입력해주세요</span>
                         </div>
                     </div>
                 </md-input-container>
                 <md-button type="submit" class="md-raised md-accent submit-button" aria-label="CREATE MY ACCOUNT"
-                           ng-disabled="registerForm.$invalid || registerForm.$pristine" ng-click="vm.register_loginfun(registerForm.username.$viewValue,registerForm.email.$viewValue,registerForm.password.$viewValue,registerForm.location_share.$viewValue)">
+                           ng-disabled="registerForm.$invalid || registerForm.$pristine" ng-click="vm.register_loginfun(registerForm.userId.$viewValue,registerForm.passWd.$viewValue,registerForm.nickname.$viewValue,registerForm.name.$viewValue)">
                     계정 만들기
                 </md-button>
             </form>

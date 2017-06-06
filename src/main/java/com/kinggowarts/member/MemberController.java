@@ -81,7 +81,8 @@ public class MemberController {
 
     @GetMapping(value = "/search")
     public ArrayList<Member> searchMember(@RequestParam String q) {
-        return memberService.searchMember(q);
+        UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return memberService.searchMember(user.getMemSeq(), q);
     }
 
     @GetMapping(value = "/{memberSeq}")
