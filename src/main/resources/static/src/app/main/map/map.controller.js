@@ -9,27 +9,25 @@
 
 
     /** @ngInject */
-    function MapController($q, AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, MarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
+    function MapController(MPrinter, MCafe, MInEat, MInRest, MOutRest, MATM, CategoryTypes, $rootScope, $q, AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
     {
         var vm = this;
         
         vm.clickName = "none"; //클릭한 구역 폴리곤(area)의 name
-        vm.clickUrl = '../xwiki/bin/view/XWiki/';
+        vm.clickUrl =  '../xwiki/bin/view/XWiki/';
 
-        vm.userLat = 0;
-        vm.userLng = 0;
+        //vm.userLat = 0;   mapLocation.userLastLat
+        //vm.userLng = 0;   mapLocation.userLastLng
         vm.curMapLevel = 3;     //현재 지도의 zoom level
         vm.lidForEvent = -1;
         vm.eventDataId = -1;
         //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region
         vm.categoryStatus = "none";
-        var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant", "customevent", "regions"];
-        var markerDataSkeleton = {};
-
-        for(var i=0; i<categoryTypes.length; i++){
-            markerDataSkeleton[categoryTypes[i]] = [];
-        }
-        vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
+        //var categoryTypes = ["bank", "toilet", "busstop", "print", "vendingmachine", "insideRestaurant", "customevent", "regions"];
+        var categoryTypes = CategoryTypes.data;
+        var markerDataSkeleton = initAllMarkerData();
+        vm.markerData = markerDataSkeleton;
+        //markerDataSkeleton = MarkerData;
 
         var areaAdmin, areaUser;
         var subAreaData = makeSubAreaData(AreaAdmin, AreaUser);//GetSubAreaData();
@@ -46,6 +44,8 @@
             level: mapLocation.lastZoomLevel
         };
         var map = new daum.maps.Map(container, options);
+        //mapLocation.map = map;
+
 
 //----------------------------------------------------------------------
         var isModifyCustomEventInfo = false;    //event info 수정상태
@@ -54,7 +54,71 @@
         var isModifyRegionShape = false;
         var isModifyRegionInfo = false;
 
+        // 초기 resolve된 data 처리
+        function initAllMarkerData(){
+            var ret = {};
 
+            for(var i=0; i<categoryTypes.length; i++){
+                ret[categoryTypes[i]] = [];
+            }
+
+            ret = initMarkerData(MPrinter, ret);
+            ret = initMarkerData(MCafe, ret);
+            ret = initMarkerData(MInRest, ret);
+            ret = initMarkerData(MOutRest, ret);
+            ret = initMarkerData(MInEat, ret);
+            ret = initMarkerData(MATM, ret);
+
+            return ret;
+        }
+
+        function initMarkerData(inData, ret){
+            var data = inData.data;
+            if(data.length != 0){
+                ret[data[0]["markerCategory"]["name"]] = data;
+            }
+            return ret;
+        }
+
+        $interval(function(){
+            console.log(vm.categoryStatus);
+        }, 1000); 
+
+        //모든 마커 초기화후 none으로.
+        /*function refreshAllMarkerData(){
+            var promArr = [];
+            for(var i = 0; i<categoryTypes.length; i++){
+                promArr[i] = GetCustomMarkerData(categoryTypes[i]);
+            }
+            //약속을 $q.all 메서드를 이용해 새로운 약속을 만든다.
+            $q.all(promArr)
+            .then(
+                function(results) {
+                //약속이 모두 지켜지면 asyncService서비스가 반한하는 약속을 지키고 두 약속이 전달하는 결과를 묶은 배열로 전달한다.
+                    deferred.resolve(results);
+                    areaAdmin = results[0];
+                    areaUser = results[1];
+                    for(var i=0; i<results.length; i++){
+                        var data = results[i].data;
+                        markerDataSkeleton[categoryTypes[i]] = [];
+                        for(var k = 0; k < data.length; k++){
+                            markerDataSkeleton[categoryTypes[i]][k] = data[k];
+                        }
+                    }
+                    categoryStatusChangeProcess("none", true);
+                    createCategoryMarkersInJson();
+                    categoryStatusChangeProcess("none", false);
+                },
+                function(errors) {
+                    deferred.reject(errors);
+                },
+                function(updates) {
+                    deferred.update(updates);
+            });
+            resetMarkerData()
+        }*/
+
+        
         //로그인 되어있지 않은 사용자가 맵에 접근시 로그인 페이지로 돌려보냄
         
         function usercheck(){
@@ -151,20 +215,15 @@
             
             //layout set null
             if(vm.categoryStatus == "customevent"){
-
-                //customEventShapes[curIdx].setMap(null);
             }
-
             else if(vm.categoryStatus == "regions"){
                 regionShapes[curIdx].setMap(null);
             }
-            //printedCategoryMarkers[curIdx].setMap(null);
-
+            
             //마커 삭제 불가능하게 하려 했는데 setStyle 함수 호출 에러..
             //drawingManager.setStyle(daum.maps.drawing.OverlayType.Marker, 'removable', 'false');
 
             //layout으로 부터 정보를 얻기 힘드므로 vm.markerData에서 얻음.
-            //console.log(vm.markerData[vm.categoryStatus][curIdx]);
             addDataToDrawingManager(vm.markerData[vm.categoryStatus][curIdx]);
             
         };
@@ -176,10 +235,26 @@
             var newCustomEventObj = removeOverlayAndGetData(modifyingData);
             var tempStatus = vm.categoryStatus;
 
-            PutAreaUser(modifyingData);
-            /*categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();
-            categoryStatusChangeProcess(tempStatus, true);*/
+            var respo = PutAreaUser(modifyingData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름을 설정하세요');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData(tempStatus);   //refresh region & goto state
+                    }
+                    else if(response.data == "noLocation"){
+                        alert('수정하려는 지역이 존재하지 않습니다.');
+                    }
+                    //console.log("asdf");
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
             
             isModifyCustomEventShape = false;   //수정 종료
             isModifyRegionShape = false;
@@ -316,14 +391,28 @@
                 $mdDialog.hide(answer);
             };
         }
-
-        var postData;
     //-----------------region Process-----------------------------
-        // 새로운 커스텀 이벤트 세부 내용 만들기 Process
+        // 새로운 지역 만들기 Process
         function makeRegionDetail(answer){
             //custom event data(detail) -> event data(detail + shape&marker)
-            postData = removeOverlayAndGetData(answer);
-            PostAreaUser(answer);
+            var postData = removeOverlayAndGetData(answer);
+            var respo = PostAreaUser(answer);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름을 설정하세요');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData("regions");   //refresh region & goto state
+                    }
+                    //console.log("asdf");
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
             //반드시 status를 바꾸기 전에 overlaydata를 저장해 놓을것. 
             //PostAreaUser(newRegionObj);
             
@@ -333,18 +422,49 @@
         //커스텀 지역 내용 수정 Process.
         function modifyRegionDetail(inData){
             //데이터 변경을 위한 statue 전환.
-            PutAreaUser(inData);
+            var respo = PutAreaUser(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름을 설정하세요');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData("regions");   //refresh region & goto state
+                    }
+                    else if(response.data == "noLocation"){
+                        alert('수정하려는 지역이 존재하지 않습니다.');
+                    }
+                    //console.log("asdf");
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
             selectedMarker = null;
             selectedMarkerIdx = 0;
         };
 
         function deleteRegion(inData){
-            //categoryStatusChangeProcess("none", true);
-            //createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-            //categoryStatusChangeProcess("regions", true);
             selectedMarker = null;
             selectedMarkerIdx = 0;
-            DeleteAreaUser(inData);
+            var respo = DeleteAreaUser(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noLocation"){
+                        alert('수정하려는 지역이 존재하지 않습니다.');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        refreshRegionData("regions");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
     //----------------------------커스텀 내용 생성 / 수정----------------
@@ -408,7 +528,7 @@
                 {
                     "name": "",
                     "l_id" : inLid,
-                    "creater" : {"memberSeq" : ""},
+                    "creator" : {"memberSeq" : ""},
                     "fromDate" : "",
                     "toDate" : "",
                     "detail" : "",
@@ -423,9 +543,9 @@
                 $mdDialog.cancel();
             };
             $scope.answer = function() {
-                $scope.retDate["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
-                $scope.retData["fromDate"] = Date.parse(fromDateD);
-                $scope.retData["toDate"] = Date.parse(toDateD);
+                $scope.retData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
+                $scope.retData["fromDate"] = Date.parse($scope.fromDateD);
+                $scope.retData["toDate"] = Date.parse($scope.toDateD);
                 $scope.retData["l_id"] = inLid;
                 $mdDialog.hide($scope.retData);
             };
@@ -546,35 +666,63 @@
         // 새로운 커스텀 이벤트 세부 내용 만들기 Process
         function makeCustomEventDetail(answer){
                   
-            PostCustomEventData(answer);
-
-            categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();
-            categoryStatusChangeProcess("customevent", true);
+            var respo = PostCustomEventData(answer);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noMember"){
+                        alert('사용자 정보 없음');
+                    }
+                    else if(response.data == "success"){
+                        refreshCustomEventData("customevent");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
         
         //커스텀 이벤트 내용 수정 Process.
         function modifyCustomEventDetail(answer){
 
-            PutCustomEventData(answer);
-            //데이터 변경을 위한 statue 전환.
-            categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-            categoryStatusChangeProcess("customevent", true);
+            var respo = PutCustomEventData(answer);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noMember"){
+                        alert('사용자 정보 없음');
+                    }
+                    else if(response.data == "noEvent"){
+                        alert('수정하려는 이벤트가 존재하지 않습니다.');
+                    }
+                    else if(response.data == "success"){
+                        refreshCustomEventData("customevent");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
+
             isModifyCustomEventInfo = false;    // modify mode 해제
-        };
+        }
 
 
         function deleteCustomEvent(inData){
             //inData의 id로 delete 진행.
-            DeleteCustomEventData(inData);
-            //markerData["customevent"][selectedMarkerIdx]["id"]
-            categoryStatusChangeProcess("none", true);
-            createCategoryMarkersInJson();  //markerData에 있는 데이터를 기반으로 마커 재작성.
-            categoryStatusChangeProcess("customevent", true);
+            var respo = DeleteCustomEventData(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noEvent"){
+                        alert('수정하려는 이벤트가 존재하지 않습니다.');
+                    }
+                    else if(response.data == "success"){
+                        refreshCustomEventData("customevent");   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
-    //---------------좌하단 fab 버튼------------------------------------
+    //---------------좌하단 fab drawing 버튼------------------------------------
         // 클릭 시 호출되는 핸들러 입니다
         vm.selectDrawOverlay = function(type) {
             if(type == "CREATE"){
@@ -706,6 +854,7 @@
                     //커스텀 이벤트 도형을 수정중인 경우
                     if(isModifyCustomCategoryMarker == true){
                         //위치 수정
+                        //console.log("call modifyCustomMarker in vm.selectCustomCategoryMenu");
                         modifyCustomMarker(vm.markerData[vm.categoryStatus][selectedMarkerIdx]);
                     }
                     else{
@@ -717,48 +866,54 @@
                     alert('need to make at least 1 marker');
                 }
             }
-        }
+        };
 
-        //marker 생성 dialog
-        function showCreateCustomMarkerDialog(){
+
+
+
+        var isModifyCustomCategoryMarkerDetail = false;
+//------------------------------------------
+        function showCreateCustomMarkerDialog(ev) {
             $mdDialog.show({
-                controller: MarkerDialogController,
+                controller: showCreateCustomMarkerDialogController,
                 templateUrl: 'app/main/map/dialogCreateCustomMarker.html',
                 parent: angular.element(document.body),
                 targetEvent: ev,
                 clickOutsideToClose:true,
-                fullscreen: false // Only for -xs, -sm breakpoints.
+                fullscreen: false, // Only for -xs, -sm breakpoints.
             })
             .then(function(answer) {
-                if(isModifyCustomCategoryMarker == true){
-                    isModifyCustomCategoryMarker = false;
-                    modifyCustomMarker(answer);
-                }
-                else if(isModifyCustomCategoryMarker == false){
+                if(isModifyCustomCategoryMarkerDetail == false){
                     createCustomMarker(answer);
                 }
+                else{
+                    modifyCustomMarker(answer);
+                }
+                
             }, function() {
                 //alert('none..');
             });
         };
 
-        function MarkerDialogController($scope, $mdDialog) {
-            //$scope.data = selectedMarker.getTitle();
-            if(isModifyCustomCategoryMarker == true){
-                $scope.isModify = true;
-                $scope.retData = vm.markerData[vm.categoryStatus][selectedMarkerIdx];
+        // Region의 내용을 보여주는 다이얼로그 컨트롤러
+        function showCreateCustomMarkerDialogController($scope, $mdDialog) {
+            if (isModifyCustomCategoryMarkerDetail != true){
+                $scope.data = {};
+                $scope.data["name"] = "";
+                $scope.data["center"] = {"lat" : 0.0, "lng" : 0.0};
+                $scope.data["markerCategory"] = {"name" : vm.categoryStatus};
+                $scope.data["type"] = "user";
             }
             else{
-                $scope.isModify = false;
-                $scope.retData = {
-                    "name" : "",
-                    "center" : {"lat" : 0.0, "lng" : 0.0},
-                    "markerCategory": { "name": vm.categoryStatus }
-                };
+                $scope.data = vm.markerData[vm.categoryStatus][selectedMarkerIdx];
+
             }
-            //$scope.categoryStatus = vm.markerData[vm.categoryStatus][selectedMarkerIdx];
-            $scope.categoryStatus = vm.categoryStatus;
-            
+            if($scope.data["type"] == "user"){
+                $scope.canModify = true;
+            }
+            else{
+                $scope.canModify = false;
+            }
             $scope.hide = function() {
                 $mdDialog.hide();
             };
@@ -766,15 +921,37 @@
                 $mdDialog.cancel();
             };
             $scope.answer = function(answer) {
-                $mdDialog.hide($scope.retData);
+                //console.log($scope.data);
+                
+                $mdDialog.hide($scope.data);
             };
         }
 
-
+       
         //지금까지 생성한 마커를 post합니다.
         function createCustomMarker(inData){
             var ret = removeOverlayAndGetData(inData);
-            PostCustomMarkerData(ret);
+            //console.log("ret create custom marker");
+            console.log(ret);
+            var respo = PostCustomMarkerData(ret);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noCategory"){
+                        alert('해당 카테고리가 존재하지 않습니다.');
+                    }
+                    else if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름으로 시도하세요.');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('허용되지 않은 요청');
+                    }
+                    else if(response.data == "success"){
+                        refreshCustomMarkerData(inData["markerCategory"]["name"], false);   //refresh region & goto state
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
         //수정된 정보를 put 합니다.
@@ -782,18 +959,57 @@
             var ret;
             // 위치만 바뀜.
             if(isModifyCustomCategoryMarker == true){
+                isModifyCustomCategoryMarker = false;
                 ret = removeOverlayAndGetData(inData);
             }
-            else{   //내용만 바뀜.
+            else if(isModifyCustomCategoryMarkerDetail == true){   //내용만 바뀜.
+                isModifyCustomCategoryMarkerDetail = false;
                 ret = inData;
             }
-            PutCustomMarkerData(inData);
+            var respo = PutCustomMarkerData(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "noCategory"){
+                        alert('해당 카테고리가 존재하지 않습니다.');
+                    }
+                    else if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름으로 시도하세요.');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('허용되지 않은 요청');
+                    }
+                    else if(response.data == "success"){
+                        //categoryStatusChangeProcess("none", true);
+                        refreshCustomMarkerData(inData["markerCategory"]["name"], false);   //refresh region & goto state
+                    }
+                    else if(response.data == "noMarker"){
+                        alert('수정하고자 하는 마커가 없습니다.');
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
-        function deleteCustomMarker(indata){
-            DeleteCustomMarkerData(indata);
+        function deleteCustomMarker(inData){
+            var respo = DeleteCustomMarkerData(inData);
+            respo.then(
+                function successFunc(response){
+                    if(response.data == "success"){
+                        //categoryStatusChangeProcess("none", true);
+                        refreshCustomMarkerData(inData["markerCategory"]["name"], false);   //refresh region & goto state
+                    }
+                    else if(response.data == "noMarker"){
+                        alert('수정하고자 하는 마커가 없습니다.');
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
 
         }
+
+
         function showMarkerDialog(ev) {
             $mdDialog.show({
                 controller: MarkerDialogController,
@@ -809,11 +1025,11 @@
                     modifyShape(vm.markerData[vm.categoryStatus][selectedMarkerIdx]);
                 }
                 else if(answer == "modifyInfo"){
-                    isModifyCustomCategoryMarker = true;
+                    isModifyCustomCategoryMarkerDetail = true;
                     showCreateCustomMarkerDialog();
                 }
                 else if(answer == "delete"){
-                    deleteCustomMarker(vm.markerData[categoryStatus][selectedMarkerIdx]);
+                    deleteCustomMarker(vm.markerData[vm.categoryStatus][selectedMarkerIdx]);
                 }
             }, function() {
                 //alert('none..');
@@ -928,67 +1144,116 @@
         }
 
     //----------------------------------카테고리 선택 메뉴 --------------------------
-        var categoryLevel = "none";
-
-        //answer가 leaf category(categoryTypes 배열의 요소)에 없으면 categoryLevel에 해당.
-        vm.categorySelect = function(answer){
-            if(-1 != categoryTypes.indexOf(answer)){
-                //vm.categoryStatus = answer;
-                categoryStatusChangeProcess(answer, false);             
+        
+        vm.catCount = 0;
+        vm.limitNum = 4;
+        var currentCategoryIdx = 0;
+        vm.nextCat = false;
+        vm.currentCategoryData = [];         //인쇄할 4개 이하의 카테고리 array
+        var currentWholeCategoryData = [];   //해당 카테고리의 전체 array
+        function get4CategoryObj(curIdx, objc){
+            var ret = [];
+            //console.log("oblen : " + objc.length);
+            var fixedCurIdx = curIdx;
+            for(var i = 0; i<objc.length-fixedCurIdx && i<4; i++, curIdx++){
+                ret[i] = objc[curIdx];
+                //console.log("...");
             }
-            //inner에 해당하는 object 배열을 categoryLevel로 만든다.
+            if(objc.length > curIdx){
+                vm.nextCat = true;
+            }
             else{
-                var idx = 0;
-                for(idx = 0; idx < vm.categoryMenu.length; idx++){
-                    if(vm.categoryMenu[idx]["type"] == answer){
-                        break;
+                vm.nextCat = false;
+            }
+            vm.limitNum = i;
+            //console.log("lmitm : " + vm.limitNum);
+            return ret;
+        }
+
+        initCategorySelect();
+        function initCategorySelect(){
+            //configNextCat();
+            currentCategoryIdx = 0;
+            currentWholeCategoryData = vm.categoryMenu; //초기 데이터
+            //console.log(vm.categoryMenu);
+            vm.currentCategoryData = get4CategoryObj(currentCategoryIdx, currentWholeCategoryData);
+            vm.limitNum = 4;
+            vm.catCount = 0;
+            //console.log(vm.currentCategoryData);
+        }
+        function configNextCat(){
+            if(vm.currentCategoryData.length > 4){
+                vm.nextCat = true;
+            }
+        }
+        //
+        vm.categorySelect = function(answer){
+            //console.log(answer);
+            if(answer == "NEXT"){
+                currentCategoryIdx += 4;
+                vm.currentCategoryData = get4CategoryObj(currentCategoryIdx, currentWholeCategoryData);
+                //configNextCat();
+                $timeout(function () {
+                        vm.categoryIsOpen = true;
+                    }, 600);
+            }
+            else{
+                for(var i=0; i<vm.currentCategoryData.length; i++){
+                    if(vm.currentCategoryData[i]["type"] == answer){
+                        vm.currentCategoryData = vm.currentCategoryData[i];
                     }
                 }
-                vm.categoryLevel = vm.categoryMenu[idx]["inner"];
-                $timeout(function () {
-                    vm.categoryIsOpen = true;
-                }, 600);
+                //더 이상 inner 카테고리가 없는 경우
+                if(!("inner" in vm.currentCategoryData)){
+                    //vm.categoryStatus = answer;
+                    if(vm.currentCategoryData["type"] == "none"){
+                        //없는 카테고리이므로 되돌아간다.
+                        categoryStatusChangeProcess("none", false);
+                        initCategorySelect();
+                        //currentCategoryIdx = 0;
+                        //vm.catCount = 1;
+                    }
+                    else{
+                        categoryStatusChangeProcess(vm.currentCategoryData["type"], false);
+                        initCategorySelect();
+                        //currentCategoryIdx = 0;
+                        //vm.catCount = 1;
+                    }
+                    
+                }
+                else{
+                    currentWholeCategoryData = vm.currentCategoryData["inner"];
+                    currentCategoryIdx = 0;
+                    vm.currentCategoryData = get4CategoryObj(currentCategoryIdx, currentWholeCategoryData);
+                    //카테고리 재 오픈
+                    $timeout(function () {
+                        vm.categoryIsOpen = true;
+                    }, 600);
+                }
+                
             }
+           
         }
-        vm.categoryLevel = "none";  //카테고리 버튼의 세부 레벨(편의시설 - 다음 level)
+        
         vm.categoryIsOpen = false;  //카테고리 버튼의 open 여부 bind
         vm.tooltipVisible = false;  //카테고리 툴팁의 visible 여부 bind
-        vm.returnToNone = false;    //카테고리 세부 레벨 초기화 여부
-        var catCount = 0;   //카테고리 한번 더 누를 시 마커 제거
-
-        //카테고리 버튼 클릭 함수. 특정 카테고리 마커가 생성된 경우 이를 제거한다.
+       
+        //카테고리 버튼 클릭 함수.
         vm.categoryFabClicked = function(){
-            if(vm.categoryStatus != "none"){
-                //none 상태가 아닌경우 catCount가 0인경우 방금 categoryStatus가 select된 상태임.
-                if(catCount == 0)
-                    catCount++;
-                else{   //none이 아닌 다른 status 상태에서 category 버튼이 눌림.
-                    //vm.categoryStatus = "none";
-                    categoryStatusChangeProcess("none", false);
-                    catCount = 0;
-                }
-               
-            }
-            else{   //외부에서 status가 변한 상태일 수 있으므로 catCount를 초기화.
-                vm.categoryIsOpen = !vm.categoryIsOpen;
-                catCount = 0;
-            }
+           
         }
-
+        //var curChgCategorStatus = "none";
         //카테고리 툴팁 띄우기 지연
         $scope.$watch(function() { return vm.categoryIsOpen}, function(newVal) {
             if (newVal) {
+                if(vm.catCount == 1){
+                        categoryStatusChangeProcess("none", false);
+                    }
                 $timeout(function() {
                     vm.tooltipVisible = vm.categoryIsOpen;     //delay open
-                    if(vm.categoryLevel != "none")  
-                        vm.returnToNode = true;     //버튼 open시 카테고리 레벨이 "none"이 아니면 close시 none 레벨로 돌아간다.
-                    else
-                        vm.returnToNode = false;
                 }, 600);
             } else {
                     vm.tooltipVisible = vm.categoryIsOpen;     //delay 없이 바로 close
-                    if(vm.categoryLevel != "none" && vm.returnToNode == true)
-                        vm.categoryLevel = "none";
             }
         }, true);
 
@@ -1019,7 +1284,7 @@
             OVER_OFFSET_Y = OVER_MARKER_HEIGHT, // 오버 마커의 기준 Y좌표
             //SPRITE_MARKER_URL = 'http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markers_sprites2.png', // 스프라이트 마커 이미지 URL
             //SPRITE_MARKER_URL = 'http://imageshack.com/a/img922/8380/GgDPqi.png', // 스프라이트 마커 임시 이미지 URL
-            SPRITE_MARKER_URL = 'assets/images/marker/marker_sprites_transparent.png', // 스프라이트 마커 임시 이미지 URL
+            SPRITE_MARKER_URL = 'assets/images/marker/marker_sprites_transparent0.png', // 스프라이트 마커 임시 이미지 URL
             SPRITE_WIDTH = 125, // 스프라이트 이미지 너비
             SPRITE_HEIGHT = 307, // 스프라이트 이미지 높이. 이미지 변경시 너비와 높이 변경 필수.
             SPRITE_GAP = 10; // 스프라이트 이미지에서 마커간 간격
@@ -1034,6 +1299,7 @@
         for (var i = 0, k=0; k < categoryTypes.length; i++, k++) {
             //every 6 marker, change marker url.
             if(k % 6 == 0){
+                SPRITE_MARKER_URL = 'assets/images/marker/marker_sprites_transparent'+ (k/6) + '.png';
                 i = 0 ;
             }
             var gapX = (MARKER_WIDTH + SPRITE_GAP), // 스프라이트 이미지에서 마커로 사용할 이미지 X좌표 간격 값
@@ -1071,11 +1337,12 @@
     //-------------status/data 갱신에 따른 카테고리 마커 생성 및 출력-----------------------
         /*
         카테고리 등록하는법.
-        1. marker Json 파일의 data object에 categoryName : [{}, {} ...] 추가
-        2. sprites 이미지에 해당하는 마커 이미지 추가(SPRITE_WIDTH, SPRITE_HEIGHT 변경 필수)
-        3. categoryTypes[]에 추가하고자 하는 category name 추가.
-        4. category dialog에서 해당 카테고리 선택시 vm.categoryStatus를 categoryName으로 변경
-        *. categoryTypes[]와 sprites 이미지 순서가 같아야함. JSON 파일 카테고리 순서는 무관.
+        1. categoryMarker.json 파일에 카테고리를 수정하거나 등록합니다. level의 마지막인 경우 inner key를 쓰지 않음.
+            name은 카테고리 툴팁설명 내용, type는 카테고리 종류 구분을 위한 변수.
+        2. sprites 이미지에 해당하는 마커 이미지 추가합니다.
+        3. categoryTypes.json에 추가하고자 하는 category 타입 그대로 추가.
+        4. map.module.js http 추가
+            ** categoryTypes[]와 sprites 이미지 순서가 같아야한다. 그 외의 모든 데이터는 순서와 관련 없다.
         */
 
         var printedCategoryMarkers = [];    //현재 출력되는 모든 타케고리 마커 모음.
@@ -1095,6 +1362,11 @@
             isModifyCustomEventShape = false;
             isModifyRegionShape = false;
             isModifyCustomCategoryMarker = false;
+
+            isModifyCustomCategoryMarkerDetail = false;
+            //modifyCustomMarker = false;
+            isModifyCustomEventInfo = false;
+            isModifyRegionInfo = false;
 
             // 바꾸기 이전의 상태가 none인 경우 기본 도형 제거
 
@@ -1175,14 +1447,13 @@
             customEventShapes = []; //init customEventShapes
             regionShapes = [];
             //marker.json 정보에서 categoryMarkers obj 생성.
-
-            for(var i=0; i<categoryTypes.length; i++){
-                markerDataSkeleton[categoryTypes[i]] = [];
-            }
-            vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
+            //console.log(markerDataSkeleton);
+            vm.markerData = markerDataSkeleton;
+            
+            //vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
             //vm.markerData <- regions, customEvent
-            vm.markerData["customevent"] = [];
-            vm.markerData["regions"] = [];
+            //vm.markerData["customevent"] = [];
+            //vm.markerData["regions"] = [];
             vm.customEventDataOrderbyRegions = {};
             //createCategoryMarkersInJson();  //처음 페이지 진입 시 카테고리 별 마커 및 도형을 미리 만듭니다.
 
@@ -1347,7 +1618,7 @@
                 else if(vm.categoryStatus == "regions"){
                     selectedArea = vm.markerData["regions"][typeIdx];
                     vm.clickName = vm.markerData["regions"][typeIdx]["name"];
-                    vm.clickUrl = '../xwiki/bin/view/XWiki/' + vm.clickName;
+                    vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.clickName;
                     vm.tags = vm.markerData["regions"][typeIdx]["tags"];
                     //selectedArea = subArea[typeIdx];          //subArea 정의 이전
                     //vm.clickName = subArea[typeIdx]["name"];
@@ -1453,7 +1724,7 @@
                         selectedArea = shapeData;
                         selectedMarker = printedCategoryMarkers[idx];
                         selectedMarkerIdx = idx;
-                        vm.clickUrl = '../xwiki/bin/view/XWiki/' + vm.clickName;
+                        vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.clickName;
                         vm.tags = shapeData["tags"];
                         vm.openMapDialog();
                     }    
@@ -1520,11 +1791,11 @@
         var arriveMarker = null;
         var isArriveMarkerOn = false;
         vm.moveToUserLocation = function(){
-            getLocation();
+            mapLocation.getLocation();
             //alert(vm.userLat + " " + vm.userLng);
-            if(vm.userLat != 0 && vm.userLng != 0){
-                var dragendListenerLat = angular.copy(vm.userLat);
-                var dragendListenerLng = angular.copy(vm.userLng);
+            if(mapLocation.userLastLat != 0 && mapLocation.userLastLng!= 0){
+                var dragendListenerLat = angular.copy(mapLocation.userLastLat);
+                var dragendListenerLng = angular.copy(mapLocation.userLastLng);
                 var dragendMoveLatLon = isLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
                 if(false == dragendMoveLatLon){
                     //alert('out of region');
@@ -1567,27 +1838,7 @@
                 }
             }, true);
 
-        //Get User Location every 1 min. 1sec == 1000
-        getLocation();
-        $interval(getLocation, 60000); 
-        function getLocation() {
-            if (navigator.geolocation) { // GPS를 지원하는 경우
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    //alert(position.coords.latitude + ' ' + position.coords.longitude);
-                    //현재 user의 위치를 얻는다.
-                    vm.userLng = position.coords.longitude;
-                    vm.userLat = position.coords.latitude;
-                }, function(error) {
-                    console.error(error);
-                }, {
-                    enableHighAccuracy: true, //high Accuracy
-                    maximumAge: 0,
-                    timeout: 250000  //timeout Infinity시에 error 상태의 function이 절대 호출되지 않음.
-                });
-            } else {
-                alert('GPS를 지원하지 않습니다');
-            }
-        }
+        
 
     //---------------구역 다이얼로그 - 칩, 컨트롤러, 다이얼로그 --------------------------------------
 
@@ -1637,7 +1888,6 @@
         //구역 폴리곤 클릭 시 다이얼로그 컨트롤러 
         function MapDialogController($scope, $mdDialog, $state, clickName, $rootScope) {
             $scope.canMakeEvent = false;
-
             if(vm.categoryStatus == "regions"){
                 $scope.canMakeEvent = true;
             }
@@ -1648,15 +1898,15 @@
             $scope.movewiki = function(){  //wiki page로 이동 
                 $mdDialog.cancel();
                 $rootScope.wikipath = vm.clickUrl;
-  
+ 
                 if($state.includes('app.wiki') == true)
-                 {
-                     $state.reload();
-                 }
-                 else
-                 {
+                {
+                    $state.reload();
+                }
+                else
+                {
                     $state.go('app.wiki');
-                 }
+                }
             };
             $scope.cancel = function() {
                 $mdDialog.cancel();
@@ -1667,7 +1917,7 @@
         }
 
     //-------------mapLocation service에 주기적으로 map 상태 갱신하기-------------------
-        $interval(updateMapLocationService, 2000); 
+        $interval(updateMapLocationService, 1000); 
         function updateMapLocationService() {
             mapLocation.lastLat = map.getCenter().getLat();
             mapLocation.lastLng = map.getCenter().getLng();
@@ -1761,8 +2011,8 @@
         categoryStatusChangeProcess(mapLocation.lastCategoryStatus); 
 
     //----------------------------DATA COMMUNICATION--------------------------
-        vm.refreshData = function(){
-
+        function refreshRegionData(targetState){
+            
             var deferred = $q.defer();
             var httpProm1 = GetAreaAdmin();
             var httpProm2 = GetAreaUser();
@@ -1773,15 +2023,15 @@
                 function(results) {
                 //두 약속이 모두 지켜지면 asyncService서비스가 반한하는 약속을 지키고 두 약속이 전달하는 결과를 묶은 배열로 전달한다.
                     deferred.resolve(results);
-                    console.log(results);
+                    //console.log(results);
                     areaAdmin = results[0];
                     areaUser = results[1];
-                    console.log(areaUser);
+                    //console.log(areaUser);
                     subAreaData = makeSubAreaData(areaAdmin, areaUser);
                     categoryStatusChangeProcess("none", true);
                     createCategoryMarkersInJson();
-                    categoryStatusChangeProcess("none", false);
-                    console.log(subAreaData);
+                    categoryStatusChangeProcess(targetState, false);
+                    //console.log(subAreaData);
                 },
                 function(errors) {
                     deferred.reject(errors);
@@ -1789,7 +2039,19 @@
                 function(updates) {
                     deferred.update(updates);
             });
-
+        }
+        function refreshCustomEventData(targetState){
+            var respo = GetCustomEventData();
+            respo.then( 
+                function successFunc(response){
+                    vm.customEventData = response.data;
+                    categoryStatusChangeProcess("none", true);
+                    createCategoryMarkersInJson();
+                    categoryStatusChangeProcess(targetState, false);
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
         }
 
         function makeSubAreaData(adminData, userData){
@@ -1829,19 +2091,16 @@
         
         function PostAreaUser(inData){
             var strObj = JSON.stringify(inData);
-            $http({
+            return $http({
                 method: 'POST',
                 url: './api/map',
                 data : JSON.stringify(inData),
-                headers: {'Content-Type' : 'application/json',
-                'x-auth-token': $sessionStorage.get('AuthToken'),
-                        }
-                }).then(
-                function successFunc(response){
-                    console.log(response)
-                },
-                 function failFunc(response){
-                    console.log(response)
+                headers: {
+                'x-auth-token': $sessionStorage.get('AuthToken')
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
                 });
 
                 
@@ -1852,9 +2111,12 @@
             return $http({
                 method: 'PUT',
                 url: './api/map' + '/' + putid,
-                data : inData,
+                data : JSON.stringify(inData),
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
-                        'Content-Type' : 'application/json'}
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
         }
         function DeleteAreaUser(inData){
@@ -1862,7 +2124,10 @@
             return $http({
                 method: 'DELETE',
                 url: './api/map' + '/' + delid,
-                headers: {'x-auth-token': $sessionStorage.get('AuthToken') }
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
         }
 
@@ -1876,27 +2141,17 @@
         }
 
         function PostCustomEventData(inData){
-            var d = new Date();
-            d.setDate(6);
-            var fd = d.getTime();
-            var r = new Date();
-            r.setDate(0);
-            var td = r.getTime();
-            $http({
+            return $http({
                 method: 'POST',
                 url: './api/event',
-                data : {
-                    "l_id" : 1,
-                    "title": "testregion",
-                    "creator" : {"memberSeq" : 1},
-                    "fromDate" : 1496709513624,
-                    "toDate" : 1496191135170,
-                    "about" : "this is customEvent",
-                    "tags" : [{"name" : "testTag"}]
-               },
-                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
-                        'Content-Type' : 'application/json'}
-            }).then(function successFunc(response){console.log(response)}, function failFunc(response){console.log(response)});
+                data : JSON.stringify(inData),
+                headers: {
+                'x-auth-token': $sessionStorage.get('AuthToken')
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+                });
 
         }
 
@@ -1906,9 +2161,12 @@
             return $http({
                 method: 'PUT',
                 url: './api/event' + '/' + putid,
-                data : $httpParamSerializerJQLike(inData),
+                data : JSON.stringify(inData),
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
-                        'Content-Type' : 'application/json'}
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
 
         }
@@ -1917,22 +2175,88 @@
             var delid = inData["id"];
             return $http({
                 method: 'DELETE',
-                url: './api/map' + '/' + delid,
-                headers: {'x-auth-token': $sessionStorage.get('AuthToken') }
+                url: './api/event' + '/' + delid,
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') },
+                transformResponse: [function (data) {
+                    return data;
+                }]
             });
         }
 
+        function GetCustomMarkerData(types){
+            return $http({
+                method: 'GET',
+                url: './api/marker?q=' + types,
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken')},
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
+        }
+
+        function refreshCustomMarkerData(types, noChange){
+            var respo = GetCustomMarkerData(types);
+            respo.then( 
+                function successFunc(response){
+                    var data = JSON.parse(response.data);
+                    
+                    markerDataSkeleton[types] = [];
+                    for(var i = 0; i < data.length; i++){
+                        markerDataSkeleton[types][i] = data[i];
+                    }
+                    if(noChange == false){
+                        categoryStatusChangeProcess("none", true);
+                        createCategoryMarkersInJson();
+                        categoryStatusChangeProcess(types, false);
+                    }    
+                },
+                 function failFunc(response){
+                    console.log(response);
+                }); 
+        }
+
         function PostCustomMarkerData(inData){
+            return $http({
+                method: 'POST',
+                url: './api/marker',
+                data : JSON.stringify(inData),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
 
         }
 
         function PutCustomMarkerData(inData){
-            
+            var putid = inData["id"];
+            delete inData["id"];
+            return $http({
+                method: 'PUT',
+                url: './api/marker' + '/' + putid,
+                data : JSON.stringify(inData),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
+
         }
 
         function DeleteCustomMarkerData(inData){
-            
+            var delid = inData["id"];
+            return $http({
+                method: 'DELETE',
+                url: './api/marker' + '/' + delid,
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken') },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
         }
+
     }
     
 //------controller scope 밖 function
@@ -2038,5 +2362,4 @@
     }
 
     
-
 })();
