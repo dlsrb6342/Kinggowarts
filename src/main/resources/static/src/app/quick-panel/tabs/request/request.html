@@ -30,7 +30,7 @@
 <div id = "showsearchresult" ng-if="vm.prequest.currentrequest == 'send'">
     <center>
         <md-input-container  md-no-float>
-            <input type="email" name="nickname" id = "nickname" placeholder="닉네임 입력">
+            <input name="nickname" id = "nickname" placeholder="닉네임 입력">
         </md-input-container>
 
         <md-button type="submit" class="md-raised md-accent submit-button" aria-label="FIND" ng-click="vm.finduser()">
@@ -41,7 +41,7 @@
     <md-list class="checklist" ng-if="vm.searchresult.length > 0 ">
 
         <md-list-item class="contact" ng-repeat="item in vm.searchresult" ng-click="vm.sendrequest(item.memberSeq)" aria-label="RESULT">
-            <img ng-src="{{item.profileImgPath}}" class="md-avatar"/>{{item.name}}
+            <img ng-src="{{item.profileImgPath}}" class="md-avatar"/>{{item.nickname}}
         </md-list-item>    
 
     </md-list>

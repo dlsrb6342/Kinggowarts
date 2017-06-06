@@ -7,7 +7,7 @@
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(peerLocation, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state, $sessionStorage, $httpParamSerializerJQLike, SkkuData, CsData, FbData)
+    function QuickPanelController(peerLocation, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state, $sessionStorage, $httpParamSerializerJQLike, SkkuData, CsData, FbData, mapLocation, $scope)
     {
         var vm = this;
 
@@ -65,6 +65,53 @@
         vm.defaultimg = "./assets/images/avatars/profile.jpg";
 
         var today = new Date();
+
+        $scope.$watch(
+            function watchEvent(scope){
+                return(mapLocation.userCord);
+            },
+            function handleEvent(newValue, oldValue){
+                if(mapLocation.userCord[0] != 0 && mapLocation.userCord[1] != 0){
+                    var userloc = {
+                        lng : mapLocation.userCord[1],
+                        lat : mapLocation.userCord[0]
+                    };
+
+                    $http({
+                        method : 'PATCH',
+                        url : './api/member/coordinate',
+                        data : JSON.stringify(userloc),
+                        headers: {
+                            'x-auth-token' : $sessionStorage.get('AuthToken')
+                        }
+                    }).then (function (response){
+                        for(var value in response.data){
+                            for (var avalue in vm.peerlist.peer.active){
+                                if(vm.peerlist.peer.active[avalue].memberSeq == response.data[value].memberSeq){
+                                    vm.peerlist.peer.active[avalue].lat = response.data[value].lat;
+                                    vm.peerlist.peer.active[avalue].lng = response.data[value].lng;
+                                    if(vm.peerlist.peer.active[avalue].lat == -1 && vm.peerlist.peer.active[avalue].lng == -1){
+                                        vm.peerlist.peer.n_active.push(vm.peerlist.peer.active[avalue]);
+                                        vm.peerlist.peer.active.splice(vm.peerlist.peer.active[avalue]);
+                                    }
+                                    break;
+                                }
+                            }
+                            for (var avalue in vm.peerlist.peer.n_active){
+                                if(vm.peerlist.peer.n_active[avalue].memberSeq == response.data[value].memberSeq){
+                                    vm.peerlist.peer.n_active[avalue].lat = response.data[value].lat;
+                                    vm.peerlist.peer.n_active[avalue].lng = response.data[value].lng;
+                                    if(vm.peerlist.peer.n_active[avalue].lat != -1 || vm.peerlist.peer.n_active[avalue].lng != -1){
+                                        vm.peerlist.peer.active.push(vm.peerlist.peer.n_active[avalue]);
+                                        vm.peerlist.peer.n_active.splice(vm.peerlist.peer.n_active[avalue]);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                }
+            }, true);
 
         
         vm.findtimelinelocation = function (locid) {
