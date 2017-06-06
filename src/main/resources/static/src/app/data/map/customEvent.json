@@ -7,7 +7,7 @@
 					"creater" : {"memberSeq": "77"},
 					"fromDate" : "",
 					"toDate" : "",
-					"detail" : "this is customEvent",
+					"about" : "this is customEvent",
 					"tags":[{"name": ""}, {"name": "safk"}]
 					
 				},
@@ -18,8 +18,8 @@
 					"creater" : "",
 					"fromDate" : "",
 					"toDate" : "",
-					"detail" : "this is customEvent",
-					"tags":[]
+					"about" : "this is customEvent",
+					"tags":[{"name": "26동"}, {"name": "test"}]
 					
 				}
 			]
