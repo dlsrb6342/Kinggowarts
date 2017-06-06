@@ -14,6 +14,10 @@
         var vm = this;
 
         $sessionStorage.empty();
+        $http({
+                    method : 'GET',
+                    url : '../xwiki/bin/logout/XWiki/XWikiLogout'
+                })
 
         vm.isdisabled = false;
 
