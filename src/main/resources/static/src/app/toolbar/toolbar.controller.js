@@ -86,10 +86,6 @@
          */
         function logout()
         {
-            $http({
-                    method : 'GET',
-                    url : '../xwiki/bin/logout/XWiki/XWikiLogout'
-                })
             $state.go('login');
         }
 

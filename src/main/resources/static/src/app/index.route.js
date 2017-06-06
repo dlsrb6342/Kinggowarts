@@ -49,7 +49,7 @@
                     RecentwikiData: function ($http)
                     {
                         var obj;
-                        obj = $http.get('../xwiki/rest/wikis/xwiki/modifications?start=0&number=100');
+                        obj = $http.get('../xwiki/rest/wikis/xwiki/query?q=where++(doc.hidden+<>+true+or+doc.hidden+is+null)+and+doc.fullName+not+in+(select+doc.fullName+from+XWikiDocument+doc%2c+BaseObject+obj+where+obj.name+%3d+doc.fullName+and+obj.className+%3d+%27XWiki.XWikiUsers%27)+and+(doc.space+like+%27XWiki%27+or+doc.space+like+%27XWiki.%25%27)++order+by+doc.date+desc&type=hql&start=0&number=23');
                         return obj;
                     },
                     SkkuData: function ($http, $sessionStorage)

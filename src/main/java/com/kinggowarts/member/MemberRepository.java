@@ -28,6 +28,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "insert into req_peer values(:fromSeq, :toSeq)", nativeQuery = true)
     void insertPeerReq(@Param("fromSeq") Long fromSeq, @Param("toSeq") Long toSeq);
 
+   // @Query("Select new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname, mem.name, mem.profileImgPath) FROM Member mem where mem.memberSeq not in (Select mem2.memberSeq from Member mem2 JOIN mem2.)")
+        // @Query("SELECT mem.memberSeq, mem.nickname, mem.userId, mem.lng, mem.lat FROM Member mem JOIN mem.follower peer WHERE peer.memberSeq = ?1")
+   @Query("Select new com.kinggowarts.member.models.Member(mem.memberSeq, mem.nickname, mem.name, mem.profileImgPath) FROM Member mem where mem.nickname like CONCAT('%',:searchParam,'%') and mem.memberSeq not in (Select mem2.memberSeq from Member mem2 JOIN mem2.reqFollowing peer WHERE peer.memberSeq = :mySeq) and mem.memberSeq not in (Select mem2.memberSeq from Member mem2 JOIN mem2.reqFollower peer WHERE peer.memberSeq = :mySeq) and mem.memberSeq not in (Select mem2.memberSeq from Member mem2 JOIN mem2.following peer WHERE peer.memberSeq = :mySeq) and mem.memberSeq not in (Select mem2.memberSeq from Member mem2 JOIN mem2.follower peer WHERE peer.memberSeq = :mySeq)")
+   ArrayList<Member> findValidPeerCand(@Param("mySeq") Long mySeq, @Param("searchParam") String searchParam);
+
 
     /*
     @SqlResultSetMapping(
