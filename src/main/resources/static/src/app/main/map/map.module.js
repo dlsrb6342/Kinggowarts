@@ -131,11 +131,12 @@
                     },
                     CustomEventData: function(msApi, $http, $sessionStorage)
                     {
-                        return $http({
+                        return msApi.resolve('customEvent@get');
+                        /*return $http({
                             method: 'GET',
                             url: './api/event',
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
+                        });*/
                     },
                     CategoryTypes: function(msApi)
                     {
@@ -146,6 +147,7 @@
             });
 
         // Api
+        msApiProvider.register('customEvent', ['app/data/map/customEvent.json']);
         msApiProvider.register('marker', ['app/data/map/marker.json']);
         msApiProvider.register('categoryTypes', ['app/data/map/categoryTypes.json']);
         msApiProvider.register('categoryMarker', ['app/data/map/categoryMarker.json']);
