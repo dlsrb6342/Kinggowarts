@@ -10,26 +10,6 @@
     </md-button>
   </md-fab-trigger>
 
-  <!-- <md-fab-actions>
-    <div ng-repeat="item in vm.categoryMenu" ng-if="vm.categoryLevel=='none'">
-      <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.categorySelect(item.type)">
-        <md-tooltip md-direction="left" md-visible="vm.tooltipVisible" md-autohide="true">
-          {{item.name}}
-        </md-tooltip>
-
-        <md-icon md-font-icon="{{item.icon}}" aria-label="{{item.name}}"></md-icon>
-      </md-button>
-    </div>
-    <div ng-repeat="item in vm.categoryLevel track by $index" ng-if="vm.categoryLevel!='none'">
-      <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.categorySelect(item.type)">
-        <md-tooltip md-direction="left" md-visible="vm.tooltipVisible" md-autohide="true">
-          {{item.name}}
-        </md-tooltip>
-
-        <md-icon md-font-icon="{{item.icon}}" aria-label="{{item.name}}"></md-icon>
-      </md-button>
-    </div>
-  </md-fab-actions> -->
   <md-fab-actions>
     <div ng-repeat="item in vm.currentCategoryData | limitTo:vm.limitNum track by $index">
       <md-button class="md-fab md-raised md-mini" ng-click="vm.categorySelect(item.type)">
@@ -45,33 +25,12 @@
         <md-tooltip md-direction="left" md-visible="vm.tooltipVisible" md-autohide="true">
           Next
         </md-tooltip>
-        <md-icon md-font-icon=""></md-icon>
+        <md-icon md-font-icon="icon-skip-next"></md-icon>
       </md-button>
     </div>
   </md-fab-actions>
 </md-fab-speed-dial>
-
-<!--
-<md-fab-speed-dial style="position:absolute; z-index:99990;bottom:40px;right:200px;height:40px;width:40px;" md-direction="up" md-open="vm.categoryIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.categoryFabClicked()">
-        <md-fab-trigger>
-          <md-button aria-label="menu" class="md-fab md-warn">
-            <md-icon md-svg-src="img/icons/menu.svg"></md-icon>
-          </md-button>
-        </md-fab-trigger>
-
-        <md-fab-actions>
-          <md-button aria-label="Twitter" class="md-fab md-raised md-mini">
-            <md-icon md-svg-src="img/icons/twitter.svg" aria-label="Twitter"></md-icon>
-          </md-button>
-          <md-button aria-label="Facebook" class="md-fab md-raised md-mini">
-            <md-icon md-svg-src="img/icons/facebook.svg" aria-label="Facebook"></md-icon>
-          </md-button>
-          <md-button aria-label="Google Hangout" class="md-fab md-raised md-mini">
-            <md-icon md-svg-src="img/icons/hangout.svg" aria-label="Google Hangout"></md-icon>
-          </md-button>
-        </md-fab-actions>
-</md-fab-speed-dial>
--->
+                                              
 <!-- User 위치이동 아이콘 -->
 
 <md-button class="md-fab md-mini" style="position:absolute; z-index:99990;bottom:20px;right:70px;height:40px;width:40px;" ng-click="vm.moveToUserLocation()">

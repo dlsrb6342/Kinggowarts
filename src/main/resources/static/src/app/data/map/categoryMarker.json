@@ -28,8 +28,7 @@
             {"name":"동아리", "type":"none", "icon" : "icon-radio-tower"},
             {"name":"지역/구역", "type":"Region", "icon" : "icon-vector-square", "inner" :  
             	[
-                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"},
-                    {"name":"이벤트", "type":"customevent", "icon" : "icon-vector-square"}
+                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"}
                 ]
             }
         ]

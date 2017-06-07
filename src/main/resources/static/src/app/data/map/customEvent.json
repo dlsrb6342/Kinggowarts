@@ -1,26 +1,5 @@
 {
 	"data":[
-				{
-					"id" : 1,
-					"l_id" : 10,
-					"name": "events",
-					"creater" : {"memberSeq": "77"},
-					"fromDate" : "",
-					"toDate" : "",
-					"detail" : "this is customEvent",
-					"tags":[{"name": ""}, {"name": "safk"}]
-					
-				},
-				{
-					"id" : 4,
-					"l_id" : 12,
-					"name": "events2",
-					"creater" : "",
-					"fromDate" : "",
-					"toDate" : "",
-					"detail" : "this is customEvent",
-					"tags":[]
-					
-				}
+				
 			]
 }
