@@ -304,6 +304,14 @@
             }).then(function (response){
                 vm.peerlist.checklist.push(user.memberSeq);
                 vm.deleteCheckItem(user);
+                $http.get('./api/member/peer', {
+                    headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
+                }).then(function(responsepeer){
+                    vm.peer = responsepeer.data;
+                    vm.peerinit();
+                    var showpeer = document.getElementById("showpeerlistcontainer");
+                    showpeer.focus();
+                });
             });
 
         }
