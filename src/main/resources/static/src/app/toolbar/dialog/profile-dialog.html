@@ -127,35 +127,4 @@ DIALOG -->
         <!-- / DIALOG ACTIONS -->
 
     </form>
-    <!-- <form id="uploadForm" enctype="multipart/form-data"> 
-        <input type="text" id="title" name="title">
-        <input type="file" id="file" name="file">
-        <button class="btn btn-sm btn-primary" onclick="myFunction()"><i class="fa fa-plus"></i> 등록</button>
-    </form>
-    <script>
-    function myFunction(){
-
-        var form = new FormData(document.getElementById('uploadForm'));
-        // Display the key/value pairs
-        for (var pair of form.entries()) {
-            console.log(pair[0]);
-            console.log(pair[1]);
-        }
-        $.ajax({      
-                type:"POST",  
-                url:"./api/member/profileImg",    
-                data: form,
-                dataType:'text',
-                processData: false,
-                contentType: false,
-                beforeSend : function(xhr){
-                            xhr.setRequestHeader("x-auth-token", "cc619824-b51b-4784-8ce9-05f691ed495b");
-                },
-                success:function(args){   
-                    console.log(args  )  
-                }
-            });
-    }
-    </script> -->
 </md-dialog>
-<!-- / DIALOG
