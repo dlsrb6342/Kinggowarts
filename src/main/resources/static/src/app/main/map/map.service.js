@@ -18,6 +18,13 @@
         service.lastZoomLevel = 3;
         service.lastCategoryStatus = "none";
         
+        service.searchResult = {
+            lat : 0,
+            lng : 0,
+            type : '',
+            id : 0,
+            name : ''
+        }
 
 
         //사용자 위치 정보로 interval마다 위치정보를 갱신합니다. 초기 정보는 바꿔도 상관 없습니다.

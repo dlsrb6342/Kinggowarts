@@ -37,6 +37,12 @@
         vm.categoryMenu = CategoryMarkerData.data;
         vm.selectedCustomEventIdx = -1;
         vm.customEventDataOrderbyRegions = {};
+
+        var disableAllListener = false;
+
+        var isPeerOnMap = false;                //peer가 맵 위에 있는지 여부
+        var peerOnMapCustomOverlays = [];       //현재 맵 위에 있는 peer custom overlay들.
+        var peerOnMapTransparnetMarkers = [];   //현재 맵 위에 있는 투명 markers
         
         var container = document.getElementById('map');
         var options = {
@@ -79,10 +85,6 @@
             }
             return ret;
         }
-
-        $interval(function(){
-            console.log(vm.categoryStatus);
-        }, 1000); 
 
         //모든 마커 초기화후 none으로.
         /*function refreshAllMarkerData(){
@@ -657,7 +659,6 @@
     //-----------------Process-----------------------------
         // 새로운 커스텀 이벤트 세부 내용 만들기 Process
         function makeCustomEventDetail(answer){
-                  
             var respo = PostCustomEventData(answer);
             respo.then(
                 function successFunc(response){
@@ -763,6 +764,11 @@
                     alert('need to make at least 1 marker and 1 region');
                 }
             }
+            else if(type == "CANCEL"){
+                var tempStatusForRegionMenu = vm.categoryStatus;
+                categoryStatusChangeProcess("none", true);
+                categoryStatusChangeProcess(tempStatusForRegionMenu, false);
+            }
             else{
                 // 그리기 중이면 그리기를 취소합니다
                 drawingManager.cancel();
@@ -820,7 +826,8 @@
 
         vm.customCategoryMenu = [
             {"name":"NEW", "type":"MARKER", "icon" : "icon-map-marker"},  
-            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"}   
+            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"},
+            {"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
         //카테고리 메뉴 선택 = inputType : CREATE, MARKER
         vm.selectCustomCategoryMenu = function(inputType){
@@ -858,6 +865,11 @@
                     alert('need to make at least 1 marker');
                 }
             }
+            else if(inputType == "CANCEL"){
+                var tempStatusForCustomCategoryMenu = vm.categoryStatus;
+                categoryStatusChangeProcess("none", true);
+                categoryStatusChangeProcess(tempStatusForCustomCategoryMenu, false);
+            }
         };
 
 
@@ -876,9 +888,11 @@
             })
             .then(function(answer) {
                 if(isModifyCustomCategoryMarkerDetail == false){
+                    disableAllMarkerListener();
                     createCustomMarker(answer);
                 }
                 else{
+                    disableAllMarkerListener();
                     modifyCustomMarker(answer);
                 }
                 
@@ -887,7 +901,7 @@
             });
         };
 
-        // Region의 내용을 보여주는 다이얼로그 컨트롤러
+        // 커스텀마커 내용을 보여주는 다이얼로그 컨트롤러
         function showCreateCustomMarkerDialogController($scope, $mdDialog) {
             if (isModifyCustomCategoryMarkerDetail != true){
                 $scope.data = {};
@@ -895,9 +909,13 @@
                 $scope.data["center"] = {"lat" : 0.0, "lng" : 0.0};
                 $scope.data["markerCategory"] = {"name" : vm.categoryStatus};
                 $scope.data["type"] = "user";
+                $scope.status = vm.categoryStatus;
+                $scope.isModify = false;
             }
             else{
                 $scope.data = vm.markerData[vm.categoryStatus][selectedMarkerIdx];
+                $scope.status = vm.categoryStatus;
+                $scope.isModify = true;
 
             }
             if($scope.data["type"] == "user"){
@@ -922,9 +940,10 @@
        
         //지금까지 생성한 마커를 post합니다.
         function createCustomMarker(inData){
+            disableAllMarkerListener();
             var ret = removeOverlayAndGetData(inData);
             //console.log("ret create custom marker");
-            console.log(ret);
+            //console.log(ret);
             var respo = PostCustomMarkerData(ret);
             respo.then(
                 function successFunc(response){
@@ -940,15 +959,18 @@
                     else if(response.data == "success"){
                         refreshCustomMarkerData(inData["markerCategory"]["name"], false);   //refresh region & goto state
                     }
+                    enableAllMarkerListener();
                 },
                  function failFunc(response){
                     console.log(response);
+                    enableAllMarkerListener();
                 });
         }
 
         //수정된 정보를 put 합니다.
         function modifyCustomMarker(inData){
             var ret;
+            disableAllMarkerListener()
             // 위치만 바뀜.
             if(isModifyCustomCategoryMarker == true){
                 isModifyCustomCategoryMarker = false;
@@ -957,6 +979,8 @@
             else if(isModifyCustomCategoryMarkerDetail == true){   //내용만 바뀜.
                 isModifyCustomCategoryMarkerDetail = false;
                 ret = inData;
+                console.log("내용만 바뀜");
+                console.log(inData);
             }
             var respo = PutCustomMarkerData(inData);
             respo.then(
@@ -977,13 +1001,16 @@
                     else if(response.data == "noMarker"){
                         alert('수정하고자 하는 마커가 없습니다.');
                     }
+                    enableAllMarkerListener();
                 },
                  function failFunc(response){
                     console.log(response);
+                    enableAllMarkerListener();
                 });
         }
 
         function deleteCustomMarker(inData){
+            disableAllMarkerListener();
             var respo = DeleteCustomMarkerData(inData);
             respo.then(
                 function successFunc(response){
@@ -998,6 +1025,7 @@
                  function failFunc(response){
                     console.log(response);
                 });
+            enableAllMarkerListener();
 
         }
 
@@ -1013,14 +1041,17 @@
             })
             .then(function(answer) {
                 if(answer == "modifyShape"){
+                    disableAllMarkerListener();
                     isModifyCustomCategoryMarker = true;
                     modifyShape(vm.markerData[vm.categoryStatus][selectedMarkerIdx]);
                 }
                 else if(answer == "modifyInfo"){
+                    disableAllMarkerListener();
                     isModifyCustomCategoryMarkerDetail = true;
                     showCreateCustomMarkerDialog();
                 }
                 else if(answer == "delete"){
+                    disableAllMarkerListener();
                     deleteCustomMarker(vm.markerData[vm.categoryStatus][selectedMarkerIdx]);
                 }
             }, function() {
@@ -1084,6 +1115,23 @@
 
         //data에 해당하는 마커/도형을 drawing manager에게 전달하여 사용자가 수정 가능하도록 한다.
         function addDataToDrawingManager(data){
+            //전달 이전에 미리 그려놓은 그림 삭제
+            //DrawingManager가 존재하는 경우 그림그리는 도중일 수 있으므로 남은 그림을 제거한다.
+            if(drawingManager != null){
+                var drawingManagerOverlays = drawingManager.getOverlays();
+                if(drawingManagerOverlays["marker"].length != 0){
+                    drawingManager.remove(drawingManagerOverlays["marker"][0]);
+                }
+                if(drawingManagerOverlays["circle"].length != 0){
+                    drawingManager.remove(drawingManagerOverlays["circle"][0]);
+                }
+                else if(drawingManagerOverlays["rectangle"].length != 0){
+                    drawingManager.remove(drawingManagerOverlays["rectangle"][0]);
+                }
+                else if(drawingManagerOverlays["polygon"].length != 0){
+                    drawingManager.remove(drawingManagerOverlays["polygon"][0]);
+                }
+            }
             //add marker
             drawingManager.put(daum.maps.drawing.OverlayType.MARKER, new daum.maps.LatLng(data["center"]["lat"], data["center"]["lng"]), 1);
             //add shape
@@ -1115,11 +1163,19 @@
             for(var i = 0; i< printedCategoryMarkers.length; i++){
                 printedCategoryMarkers[i].setClickable(false);
             }
+            for(var i=0; i< peerOnMapTransparnetMarkers.length; i++){
+                peerOnMapTransparnetMarkers[i].setClickable(false);
+            }
+            disableAllListener = true;
         };
         function enableAllMarkerListener(){
             for(var i = 0; i< printedCategoryMarkers.length; i++){
                 printedCategoryMarkers[i].setClickable(true);
             }
+            for(var i=0; i< peerOnMapTransparnetMarkers.length; i++){
+                peerOnMapTransparnetMarkers[i].setClickable(true);
+            }
+            disableAllListener = false; //polygon listener를 위함
         };
         function findIdWithName(inName){
             for(var i =0; i<vm.markerData["regions"].length; i++){
@@ -1463,7 +1519,6 @@
                     //markerData에 해당 region의 정보 등록
                     //subAreaData에서 l_id를 가진 정보 찾기
                     var targetIdx = -1;
-                    //console.log("intLid" + intLid);
                     for(var k=0; k<subAreaData.length; k++){
                         if(subAreaData[k]["id"] == intLid){
                             targetIdx = k;
@@ -1475,7 +1530,7 @@
                         markerDataCustomeventLen++;
                     }
                     else{
-                        console.log("error in createCategoryMarkersInJson");
+                        //console.log("같은 지역에 여러 이벤트 생성중");
                     }
                     
                 }
@@ -1501,7 +1556,7 @@
                         markerDataCustomeventLen++;
                     }
                     else{
-                        console.log("error in createCategoryMarkersInJson");
+                        //console.log("같은 지역에 여러 이벤트 생성중");
                     }
                 }         
             }
@@ -1521,7 +1576,7 @@
                         customEventShapes[idx] = createShapes(vm.markerData["customevent"], idx, "customevent");
                     }
                     else if(categoryTypes[loop] == "regions"){                    
-                        regionShapes[idx] = createShapes(vm.markerData["regions"], idx, "regions");
+                        regionShapes[idx] = createShapes(vm.markerData["regions"], idx, "regions", loop);
                     }
                 }
             }
@@ -1625,7 +1680,7 @@
         };
 
         //도형을 생성합니다.
-        function createShapes(data, idx, categoryType){
+        function createShapes(data, idx, categoryType, idxOfCategory){
             var shapeData = data[idx];
             var ret;
             if(categoryType == "regions"){
@@ -1710,10 +1765,18 @@
 
                 daum.maps.event.addListener(ret, 'click', function(mouseEvent) {
                     //도형이 수정중이 아닌 경우에만 모든 listener enable.
-                    if(isModifyRegionShape == false){
+                    if(isModifyRegionShape == false && disableAllListener == false){
+
                         vm.clickName = shapeData["name"];
                         selectedArea = shapeData;
+                        if(selectedMarker !== undefined && selectedMarker != null){
+                            selectedMarker.setImage(selectedMarker.normalImage)
+                        }
                         selectedMarker = printedCategoryMarkers[idx];
+                        //console.log(selectedMarker);
+                        if(selectedMarker !== undefined && selectedMarker != null){
+                            selectedMarker.setImage(clickImage[categoryTypes[idxOfCategory]]);
+                        }
                         selectedMarkerIdx = idx;
                         vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.clickName;
                         vm.openMapDialog();
@@ -1816,10 +1879,11 @@
         //퀵패널 timeline에서 위치 클릭할 경우 그 위치로 지도가 이동합니다. 구역 중심 좌표가 나중에 생기면 그 좌표로 이동하면 될 것 같습니다.
 
         $scope.$watch(
-            function watchEvent(scope){
+            function watchEvent(){
                 return(peerLocation.eventlocation);
             },
             function handleEvent(newValue, oldValue){
+                console.log(peerLocation.eventlocation);
                 for (var value in areas){
                     if (peerLocation.eventlocation == areas[value].name){
                         var moveEventLocation = areas[value].path[0];
@@ -1828,7 +1892,73 @@
                 }
             }, true);
 
-        
+
+        //Search watch
+        /*
+        $scope.$watch(
+            function watchEvent(scope){
+                return(mapLocation.searchResult);
+            },
+            function handleEvent(newValue, oldValue){
+                if(map != null){
+                    var resultIdx = -1;
+                    map.panTo(new daum.maps.LatLng(mapLocation.searchResult["lat"], mapLocation.searchResult["lng"]);
+                    map.setLevel(1);    //zoon max
+                    //chage state
+                    categoryStatusChangeProcess("none", true);
+                    if(mapLocation.searchResult == "event"){
+                        categoryStatusChangeProcess("customevent", false);
+                        //search
+                        resultIdx = searchIdxWithId("customevent", mapLocation.searchResult["id"]);
+                        if(resultIdx == -1){
+                            alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
+                            return;
+                        }
+                        selectedMarkerIdx = resultIdx;
+                        selectedMarker = printedCategoryMarkers[selectedMarkerIdx];
+                        //open dialog
+
+                    }
+                    else if(mapLocation.searchResult == "map"){
+                        categoryStatusChangeProcess("regions", false);
+                        //search
+                        resultIdx = searchIdxWithId("regions", mapLocation.searchResult["id"]);
+                        if(resultIdx == -1){
+                            alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
+                            return;
+                        }
+                        selectedMarkerIdx = resultIdx;
+                        vm.clickName = shapeData[mapLocation.searchResult["name"]];
+                        vm.clickUrl =  '../xwiki/bin/view/XWiki/' + mapLocation.searchResult["name"];
+                        selectedMarker = printedCategoryMarkers[selectedMarkerIdx];
+                        //open dialog
+                    }
+                    else{
+                        categoryStatusChangeProcess(mapLocation.searchResult["type"], false);
+                        //search
+                        resultIdx = searchIdxWithId("type", mapLocation.searchResult["id"]);
+                        if(resultIdx == -1){
+                            alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
+                            return;
+                        }
+                        selectedMarkerIdx = resultIdx;
+                        selectedMarker = printedCategoryMarkers[selectedMarkerIdx];
+                        //open dialog
+                    }
+
+                }
+                
+            }, true);
+            */
+        //id와 status로 마커 정보가 담긴 vm.markerData에서의 위치(idx)를 검색한다. idx = selectedMarkerIdx
+        function searchIdxWithId(status, id){
+            for(var i=0; i<vm.markerData[status].length; i++){
+                if(vm.markerData[status][i]["id"] == id){
+                    return i;
+                }
+            }
+            return -1;
+        }
 
     //---------------구역 다이얼로그 - 칩, 컨트롤러, 다이얼로그 --------------------------------------
 
@@ -1916,18 +2046,57 @@
         }
 
     //----------------------------------친구 위치 맵에 올리기-----------------------------------------
-        var isPeerOnMap = false;                //peer가 맵 위에 있는지 여부
-        var peerOnMapCustomOverlays = [];       //현재 맵 위에 있는 peer custom overlay들.
-        var peerOnMapTransparnetMarkers = [];   //현재 맵 위에 있는 투명 markers
-        var arrIdx = 0;                         //peerCustomOverlays[]의 index
+    
+        var arrIdx = 0;                         //peerCustomOverlay[]의 index
         var peerTransparentImageSrc = 'assets/images/marker/marker_avatar_transparent.png', // 마커이미지의 주소입니다    
             peerTransparentImageSize = new daum.maps.Size(35, 35), // 마커이미지의 크기입니다
             peerTransparentImageOption = {offset: new daum.maps.Point(21, 18)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
         // 투명 avatar 마커 이미지 생성
         var peerTransparentMarkerImage = new daum.maps.MarkerImage(peerTransparentImageSrc, peerTransparentImageSize, peerTransparentImageOption);
-                        
         
+        var isNowUsingPeerClusterOverlay = false;
+
+        var peerClusterOverlay = [];
+        
+        var timerPeerClusterOverlay;
+        var isTimerPeerClusterOverlayOn = false;
+
+        function removePeerClusterOverlay(){
+            if(isNowUsingPeerClusterOverlay == true){   //create 도중 remove 인 경우
+                return;
+            }
+            isNowUsingPeerClusterOverlay = true;
+            for(var i=0; i<peerClusterOverlay.length ;i++){
+                //unset peerclusteroverlay
+
+            }
+            isNowUsingPeerClusterOverlay = false;
+        }
+            
+
+        function makePeerClusterOverlay(lat, lng) {
+            if(isNowUsingPeerClusterOverlay == true){   //remove 도중 makePeer 인경우 remove 실행&create shutdown
+                return;
+            }
+            //create peer at lat, lng
+            var clusterLen = peerClusterOverlay.length;
+            //오버레이 생성
+            peerClusterOverlay[clusterLen] = 1;
+
+
+            if (isTimerPeerClusterOverlayOn == true) {
+                clearTimeout(timerPeerClusterOverlay);
+            }
+            isTimerPeerClusterOverlayOn = true;
+            timerPeerClusterOverlay = setTimeout(function(){
+                removePeerClusterOverlay();
+                isTimerPeerClusterOverlayOn = false;
+                }, 12000);
+        }
+
+
         vm.peerOnMapFunciton = function(){
+            //console.log(peerLocation.peer);
             //remove all peers on map
             for(var value = 0; value < arrIdx; ++value){
                 peerOnMapCustomOverlays[value].setMap(null);
@@ -1965,7 +2134,22 @@
                         peerOnMapCustomOverlays[arrIdx] = peerCustomOverlay;
                         peerTransparentMarker.setMap(map);
                         peerOnMapTransparnetMarkers[arrIdx] = peerTransparentMarker;
+
+                                    // 마커에 click 이벤트를 등록합니다
+                        daum.maps.event.addListener(peerTransparentMarker, 'click', function () {
+
+                            // 클릭된 마커가 없거나 click 마커가 클릭된 마커가 아니면
+                            if(peerTransparentMarker == null){
+                                return;
+                            }
+                            else{
+                                //search peer nearby & overlay
+                            }
+                            
+                        });
+
                         arrIdx++;
+
                     }
                 }
                 //peer type == Professor
@@ -1989,12 +2173,13 @@
             }
         };
 
-        // peer 변경 감시(watch)
+        // peer 변경 감시(watch)하고 맵에 올라가는 사진을 갱신한다
         $scope.$watch(function() { return peerLocation.peer}, function(newVal) {
             if(isPeerOnMap == true){
                 vm.peerOnMapFunciton();
                 vm.peerOnMapFunciton();   
             }
+
         }, true);
 
         createCategoryMarkersInJson();  //처음 페이지 진입 시 카테고리 별 마커 및 도형을 미리 만듭니다.
@@ -2013,15 +2198,12 @@
                 function(results) {
                 //두 약속이 모두 지켜지면 asyncService서비스가 반한하는 약속을 지키고 두 약속이 전달하는 결과를 묶은 배열로 전달한다.
                     deferred.resolve(results);
-                    //console.log(results);
                     areaAdmin = results[0];
                     areaUser = results[1];
-                    //console.log(areaUser);
                     subAreaData = makeSubAreaData(areaAdmin, areaUser);
                     categoryStatusChangeProcess("none", true);
                     createCategoryMarkersInJson();
                     categoryStatusChangeProcess(targetState, false);
-                    //console.log(subAreaData);
                 },
                 function(errors) {
                     deferred.reject(errors);
@@ -2146,8 +2328,13 @@
         }
 
         function PutCustomEventData(inData){
+            //$scope.retData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
             var putid = inData["id"];
             delete inData["id"];
+            delete inData["creator"];
+            inData["creator"] = {};
+            inData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
+
             return $http({
                 method: 'PUT',
                 url: './api/event' + '/' + putid,
@@ -2221,11 +2408,25 @@
 
         function PutCustomMarkerData(inData){
             var putid = inData["id"];
-            delete inData["id"];
+            var putData = angular.copy(inData);
+            delete putData["id"];
+            delete putData["center"]["id"];
+            delete putData["markerCategory"]["id"];
+            console.log(putData);
+            //putData["center"] = {};
+            /*putData["center"] = inData["center"];
+            putData["markerCategory"] = inData["markerCategory"];
+
+            var putid = inData["id"];
+            delete putData["id"];
+            delete putData["center"]["id"];
+            delete putData["markerCategory"]["id"];
+            console.log(putData);
+            */
             return $http({
                 method: 'PUT',
                 url: './api/marker' + '/' + putid,
-                data : JSON.stringify(inData),
+                data : JSON.stringify(putData),
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
                         },
                 transformResponse: [function (data) {
