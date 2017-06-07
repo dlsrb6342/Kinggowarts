@@ -71,10 +71,10 @@
                 return(mapLocation.userCord);
             },
             function handleEvent(newValue, oldValue){
-                if(mapLocation.userCord[0] != 0 && mapLocation.userCord[1] != 0){
+                if(mapLocation.userCord.lat != 0 && mapLocation.userCord.lng != 0){
                     var userloc = {
-                        lng : mapLocation.userCord[1],
-                        lat : mapLocation.userCord[0]
+                        lng : mapLocation.userCord.lng,
+                        lat : mapLocation.userCord.lat
                     };
 
                     $http({
@@ -85,30 +85,10 @@
                             'x-auth-token' : $sessionStorage.get('AuthToken')
                         }
                     }).then (function (response){
-                        for(var value in response.data){
-                            for (var avalue in vm.peerlist.peer.active){
-                                if(vm.peerlist.peer.active[avalue].memberSeq == response.data[value].memberSeq){
-                                    vm.peerlist.peer.active[avalue].lat = response.data[value].lat;
-                                    vm.peerlist.peer.active[avalue].lng = response.data[value].lng;
-                                    if(vm.peerlist.peer.active[avalue].lat == -1 && vm.peerlist.peer.active[avalue].lng == -1){
-                                        vm.peerlist.peer.n_active.push(vm.peerlist.peer.active[avalue]);
-                                        vm.peerlist.peer.active.splice(vm.peerlist.peer.active[avalue]);
-                                    }
-                                    break;
-                                }
-                            }
-                            for (var avalue in vm.peerlist.peer.n_active){
-                                if(vm.peerlist.peer.n_active[avalue].memberSeq == response.data[value].memberSeq){
-                                    vm.peerlist.peer.n_active[avalue].lat = response.data[value].lat;
-                                    vm.peerlist.peer.n_active[avalue].lng = response.data[value].lng;
-                                    if(vm.peerlist.peer.n_active[avalue].lat != -1 || vm.peerlist.peer.n_active[avalue].lng != -1){
-                                        vm.peerlist.peer.active.push(vm.peerlist.peer.n_active[avalue]);
-                                        vm.peerlist.peer.n_active.splice(vm.peerlist.peer.n_active[avalue]);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
+                        vm.peer = response.data;
+                        vm.peerinit();
+                        var showpeer = document.getElementById("showpeerlistcontainer");
+                        showpeer.focus();
                     });
                 }
             }, true);
@@ -123,25 +103,9 @@
 
         function init()
         {
-            for(var value in vm.peer){
-                
-                vm.peerlist.checklist.push(vm.peer[value].memberSeq);
-                if(vm.peer[value].profileImgPath == "") vm.peer[value].profileImgPath = vm.defaultimg;
-                else vm.peer[value].profileImgPath = "./profileimg/"+ vm.peer[value].profileImgPath;
-
-                if(vm.peer[value].lat == -1 && vm.peer[value].lng == -1){
-                    vm.peerlist.peer.n_active.push(vm.peer[value]);
-                    vm.peerlist.peer.n_active[vm.peerlist.peer.n_active.length-1].weight = [vm.peerlist.peer.n_active.length-1];
-                }
-                else{
-                    vm.peerlist.peer.active.push(vm.peer[value]);
-                    vm.peerlist.peer.active[vm.peerlist.peer.active.length-1].weight = [vm.peerlist.peer.active.length-1];
-                }
-            }
-
+            vm.peerinit();
             vm.getWikiLink();
             getnotice();
-            peerLocation.peer = vm.peerlist.peer;
         };
         
         //최근 wiki 수정항목의 주소를 가져오는 함수
@@ -171,6 +135,30 @@
                 }
             }
         };
+
+        //peer정보를 처리하는 함수
+        vm.peerinit = function(){
+
+            vm.peerlist.peer.active= [];
+            vm.peerlist.peer.n_active = [];
+            vm.peerlist.checklist = [];
+            for(var value in vm.peer){
+                
+                vm.peerlist.checklist.push(vm.peer[value].memberSeq);
+                if(vm.peer[value].profileImgPath == "") vm.peer[value].profileImgPath = vm.defaultimg;
+                else vm.peer[value].profileImgPath = "./profileimg/"+ vm.peer[value].profileImgPath;
+
+                if(vm.peer[value].lat == -1 && vm.peer[value].lng == -1){
+                    vm.peerlist.peer.n_active.push(vm.peer[value]);
+                    vm.peerlist.peer.n_active[vm.peerlist.peer.n_active.length-1].weight = [vm.peerlist.peer.n_active.length-1];
+                }
+                else{
+                    vm.peerlist.peer.active.push(vm.peer[value]);
+                    vm.peerlist.peer.active[vm.peerlist.peer.active.length-1].weight = [vm.peerlist.peer.active.length-1];
+                }
+            }
+            peerLocation.peer = vm.peerlist.peer;     
+        }
 
         //최근 위키 수정 항목을 클릭했을 때 그 위키 페이지로 이동하는 함수
         vm.wikigo = function (wikilink) 
@@ -273,8 +261,6 @@
                 }
                 showsearch.focus();
             });
-
-            
         }
 
         //피어 요청을 보내는 함수
@@ -319,6 +305,7 @@
                 vm.peerlist.checklist.push(user.memberSeq);
                 vm.deleteCheckItem(user);
             });
+
         }
 
         //피어 요청을 거부하는 함수
