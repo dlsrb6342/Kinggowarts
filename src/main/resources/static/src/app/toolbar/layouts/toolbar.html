@@ -60,22 +60,23 @@
                            translate translate-attr-aria-label="TOOLBAR.USER_SETTINGS">
                     <div layout="row" layout-align="space-between center">
                         <div class="avatar-wrapper">
-                            <img md-menu-align-target class="avatar" src="assets/images/avatars/profile.jpg">
+                            <img ng-if="!vm.profileImg.image_path" md-menu-align-target class="avatar" ng-src="assets/images/avatars/profile.jpg">
+                            <img ng-if="vm.profileImg.image_path" md-menu-align-target class="avatar" ng-src="profileimg/{{vm.profileImg.image_path}}">
                             <md-icon md-font-icon ng-class="vm.userStatus.icon"
                                      ng-style="{'color': vm.userStatus.color }"
                                      class="icon status s16">
                             </md-icon>
                         </div>
-                        <span class="username" hide-xs>{{vm.userID}}</span>
+                        <span class="username" hide-xs>{{vm.username}}</span>
                         <md-icon md-font-icon="icon-chevron-down"
                                  class="icon s16" hide-sm></md-icon>
                     </div>
                 </md-button>
 
                 <md-menu-content width="3">
-                    <md-menu-item class="md-indent" ui-sref="app.pages_profile">
+                    <md-menu-item class="md-indent" ng-click="vm.openProfileDialog($event)">
                         <md-icon md-font-icon="icon-account" class="icon"></md-icon>
-                        <md-button>My Profile</md-button>
+                        <md-button>프로필 수정</md-button>
                     </md-menu-item>
 
                    
@@ -122,5 +123,7 @@
                    aria-label="Toggle quick panel" translate translate-attr-aria-label="TOOLBAR.TOGGLE_QUICK_PANEL">
             <md-icon md-font-icon="icon-format-list-bulleted" class="icon"></md-icon>
         </md-button>
+
+        
     </div>
 </div>
