@@ -62,6 +62,28 @@
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
                         });
                     },
+                    MShelter: function($http, $sessionStorage){
+                        return $http({
+                            method: 'GET',
+                            url: './api/marker?q=휴게실',
+                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+                        });
+                    },
+                    MMarket: function($http, $sessionStorage){
+                        return $http({
+                            method: 'GET',
+                            url: './api/marker?q=편의점',
+                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+                        });
+                    },
+                    MBusstop: function($http, $sessionStorage){
+                        return $http({
+                            method: 'GET',
+                            url: './api/marker?q=정류장',
+                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
+                        });
+                    },
+                    
                     /*MarkerData: function ($q, msApi, $http, $sessionStorage)
                     {
                         

@@ -9,7 +9,7 @@
 
 
     /** @ngInject */
-    function MapController(MPrinter, MCafe, MInEat, MInRest, MOutRest, MATM, CategoryTypes, $rootScope, $q, AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
+    function MapController(MBusstop, MShelter, MMarket, MPrinter, MCafe, MInEat, MInRest, MOutRest, MATM, CategoryTypes, $rootScope, $q, AreaUser, AreaAdmin, $http, $httpParamSerializerJQLike, $mdDialog, DrawingMenuData, CustomEventData, CategoryMarkerData, $scope, $interval, $timeout, peerLocation, mapLocation, $sessionStorage, $state)
     {
         var vm = this;
         
@@ -67,13 +67,15 @@
             for(var i=0; i<categoryTypes.length; i++){
                 ret[categoryTypes[i]] = [];
             }
-
+            ret = initMarkerData(MATM, ret);
             ret = initMarkerData(MPrinter, ret);
             ret = initMarkerData(MCafe, ret);
             ret = initMarkerData(MInRest, ret);
             ret = initMarkerData(MOutRest, ret);
             ret = initMarkerData(MInEat, ret);
-            ret = initMarkerData(MATM, ret);
+            ret = initMarkerData(MBusstop, ret);
+            ret = initMarkerData(MShelter, ret);
+            ret = initMarkerData(MMarket, ret);
 
             return ret;
         }
