@@ -13,7 +13,7 @@
         // Data
         var vm = this;
         // console.log($stateParams);
-        if($stateParams.auth = 'true'){
+        if($stateParams.auth == 'true'){
             alert('인증이 완료되었습니다.');
         }
         $sessionStorage.empty();
