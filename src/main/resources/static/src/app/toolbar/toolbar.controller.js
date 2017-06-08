@@ -19,17 +19,17 @@
         vm.bodyEl = angular.element('body');
         vm.userStatusOptions = [
             {
-                'title': 'User choose',
+                'title': '피어 요청 설정',
                 'icon' : 'icon-clock',
                 'color': '#FFC107'
             },
             {
-                'title': 'Always accept',
+                'title': '항상 수락',
                 'icon' : 'icon-checkbox-marked-circle',
                 'color': '#4CAF50'
             },
             {
-                'title': 'Always refuse',
+                'title': '항상 거절',
                 'icon' : 'icon-minus-circle',
                 'color': '#F44336'
             }
