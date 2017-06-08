@@ -4,6 +4,7 @@ import com.kinggowarts.marker.models.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.GET;
 import java.util.List;
 
 @RestController @RequestMapping("/api/marker")
@@ -30,6 +31,7 @@ public class MarkerController {
     public String deleteMarker(@PathVariable long id){
         return markerService.deleteMarker(id);
     }
+
     @GetMapping("/search")
     public List<Marker> searchMarker(@RequestParam String q) {
         return markerService.searchMarker(q);
