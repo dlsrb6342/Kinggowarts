@@ -1721,7 +1721,7 @@
             var shapeData = data[idx];
             var ret;
             if(categoryType == "regions"){
-                var newColor = '#00EEEE';//'#transparent';
+                var newColor = '#ffffff';//'#transparent';
                 var newstrokeWeight = 0;
             }
             else if(categoryType == "customevent"){
@@ -1773,7 +1773,7 @@
                 daum.maps.event.addListener(ret, 'mouseover', function(mouseEvent) {
                     //도형이 수정중이 아닌 경우에만 모든 listener enable.
                     if(isModifyRegionShape == false){
-                        ret.setOptions({fillColor: '#09f'});
+                        ret.setOptions({fillColor: '#ffffff'});
                         customOverlay.setContent('<div class="area">' + shapeData["name"] + '</div>');
                     
                         customOverlay.setPosition(mouseEvent.latLng); 
@@ -1795,7 +1795,7 @@
                 daum.maps.event.addListener(ret, 'mouseout', function() {
                     //도형이 수정중이 아닌 경우에만 모든 listener enable.
                     if(isModifyRegionShape == false){
-                        ret.setOptions({fillColor: '#00EEEE'});                        
+                        ret.setOptions({fillColor: '#ffffff'});                        
                     }
                     customOverlay.setMap(null);
                 }); 
@@ -2132,7 +2132,7 @@
         var timerPeerClusterOverlay;
         var isTimerPeerClusterOverlayOn = false;
 
-        function removePeerClusterOverlay(){
+        /*function removePeerClusterOverlay(){
             if(isNowUsingPeerClusterOverlay == true){   //create 도중 remove 인 경우
                 return;
             }
@@ -2163,7 +2163,7 @@
                 removePeerClusterOverlay();
                 isTimerPeerClusterOverlayOn = false;
                 }, 12000);
-        }
+        }*/
 
          function createPeerMarkerAndOverlay(){
             for (var value in peerLocation.peer.active){
@@ -2502,6 +2502,8 @@
                 }]
             });
         }
+
+        categoryStatusChangeProcess("regions", false);
 
     }
     
