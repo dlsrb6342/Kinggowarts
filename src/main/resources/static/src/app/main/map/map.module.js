@@ -131,12 +131,12 @@
                     },
                     CustomEventData: function(msApi, $http, $sessionStorage)
                     {
-                        return msApi.resolve('customEvent@get');
-                        /*return $http({
+                        //return msApi.resolve('customEvent@get');
+                        return $http({
                             method: 'GET',
                             url: './api/event',
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });*/
+                        });
                     },
                     CategoryTypes: function(msApi)
                     {
