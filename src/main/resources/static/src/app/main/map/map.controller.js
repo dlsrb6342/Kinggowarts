@@ -18,7 +18,7 @@
 
         //vm.userLat = 0;   mapLocation.userLastLat
         //vm.userLng = 0;   mapLocation.userLastLng
-        vm.curMapLevel = 3;     //현재 지도의 zoom level
+        vm.curMapLevel = 2;     //현재 지도의 zoom level
         vm.lidForEvent = -1;
         vm.eventDataId = -1;
         //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region
@@ -1437,7 +1437,7 @@
         var clusterer = new daum.maps.MarkerClusterer({
             map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
             averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
-            minLevel: 3 // 클러스터 할 최소 지도 레벨 
+            minLevel: 2 // 클러스터 할 최소 지도 레벨 
         });
 
         //categoryStatus를 바꿀 때 반드시 이 함수를 통해 교체. Watch는 sync 문제로 인해 제거.
@@ -1652,6 +1652,16 @@
                         fillOpacity: 0.8
                     });
                 }
+                if (vm.categoryStatus == "regions"){
+                    regionShapes[typeIdx].setOptions({
+                        strokeWeight: 1,
+                        strokeColor: '#ee7300',
+                        strokeOpacity: 0.2,
+                        strokeStyle: 'dashed',
+                        fillColor: '#66ccff',
+                        fillOpacity: 0.2
+                    });
+                }
             });
 
             // 마커에 mouseout 이벤트를 등록합니다
@@ -1671,6 +1681,19 @@
                         strokeOpacity: 0.8,
                         strokeStyle: 'solid',
                         fillColor: '#00EEEE',
+                        fillOpacity: 0.3
+                    });
+                    
+                    //customEventShapes[typeIdx].setMap(map);
+                }
+                if (vm.categoryStatus == "regions"){
+                    //customEventShapes[typeIdx].setMap(null);
+                    customEventShapes[typeIdx].setOptions({
+                        strokeWeight: 1,
+                        strokeColor: '#004c80',
+                        strokeOpacity: 0.8,
+                        strokeStyle: 'solid',
+                        fillColor: '#ffffff',
                         fillOpacity: 0.4
                     });
                     //customEventShapes[typeIdx].setMap(map);
@@ -1774,7 +1797,7 @@
                 daum.maps.event.addListener(ret, 'mouseover', function(mouseEvent) {
                     //도형이 수정중이 아닌 경우에만 모든 listener enable.
                     if(isModifyRegionShape == false){
-                        ret.setOptions({fillColor: '#ffffff'});
+                        //ret.setOptions({fillColor: '#0b80'});
                         customOverlay.setContent('<div class="area">' + shapeData["name"] + '</div>');
                     
                         customOverlay.setPosition(mouseEvent.latLng); 
