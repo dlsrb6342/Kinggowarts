@@ -11,7 +11,7 @@
     {
         var vm = this;
 
-        console.log(NoticeItemData);
+        //console.log(NoticeItemData);
         // data
         vm.noticeItem = NoticeItemData.data;
         vm.gotoMap = gotoMap;

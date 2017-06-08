@@ -80,7 +80,7 @@
                       $state.go('login');
                     }
                 }, function errorCallback(response) {
-                    console.log(response);
+                    //console.log(response);
                     alert('에러가 발생했습니다.\n' + response.data);
                 });
             }

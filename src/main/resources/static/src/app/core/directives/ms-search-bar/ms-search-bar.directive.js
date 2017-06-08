@@ -81,7 +81,7 @@
                         // Success
                         function (response)
                         {
-                            console.log(response);
+                            //console.log(response);
                             var resArr = [];
                             var tempArr = [];
                             for (var i = 0; i < 4; i++){
@@ -112,7 +112,7 @@
                                     resArr.push(temp);
                                 });
                             }
-                            console.log(resArr);
+                            //console.log(resArr);
                             // Populate the results
                             vm.populateResults(resArr);
                         },
