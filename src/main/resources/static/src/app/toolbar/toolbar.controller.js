@@ -161,8 +161,9 @@
                 mapLocation.lastLng = item.center.lng;
                 mapLocation.searchResult.lat = item.center.lat;
                 mapLocation.searchResult.lng = item.center.lng;
-                mapLocation.searchResult.type = 'marker';
+                mapLocation.searchResult.type = 'map';
                 mapLocation.searchResult.id = item.id;
+                mapLocation.searchResult.cnt++;
                 $state.go('app.map');
             }
             else if ("markerCategory" in item){
@@ -171,18 +172,21 @@
                 mapLocation.lastLng = item.center.lng;
                 mapLocation.searchResult.lat = item.center.lat;
                 mapLocation.searchResult.lng = item.center.lng;
-                mapLocation.searchResult.type = 'marker';
+                mapLocation.searchResult.type = item.markerCategory.name;
                 mapLocation.searchResult.id = item.id;
+                mapLocation.searchResult.cnt++;
                 $state.go('app.map');
             }
             else {
                 console.log('event!');
-                mapLocation.lastLat = item.creator.lat;
-                mapLocation.lastLng = item.creator.lng;
-                mapLocation.searchResult.lat = item.creator.lat;
-                mapLocation.searchResult.lng = item.creator.lng;
+                //mapLocation.lastLat = item.creator.lat;
+                //mapLocation.lastLng = item.creator.lng;   creator 속성이 제거되었습니다.
+                //mapLocation.searchResult.lat = item.creator.lat;
+                //mapLocation.searchResult.lng = item.creator.lng;
                 mapLocation.searchResult.type = 'event';
                 mapLocation.searchResult.id = item.id;
+                mapLocation.searchResult.l_id = item.l_id;
+                mapLocation.searchResult.cnt++;
                 $state.go('app.map');
             }
         }

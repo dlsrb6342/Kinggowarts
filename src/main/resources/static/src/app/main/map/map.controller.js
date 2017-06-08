@@ -143,12 +143,12 @@
                 var div = document.createElement('div');
 
                 div.innerHTML = '<div><img src="assets/images/tileset/tileset_'+x+'_'+y+'_'+z+'.gif"></img></div>';
-                div.style.fontSize = '36px';
+                div.style.fontSize = '0px';
                 div.style.fontWeight = 'bold';
-                div.style.lineHeight = '256px';
+                div.style.lineHeight = '0px';
                 div.style.textAlign = 'center';
                 div.style.color = '#4D4D4D';
-                div.style.border = '1px dashed #ff5050';
+                div.style.border = '0px dashed #ff5050';
                 return div;
             }
         }));
@@ -1514,11 +1514,9 @@
             
             //vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
             //vm.markerData <- regions, customEvent
-            vm.markerData["customevent"] = [];
-            vm.markerData["regions"] = [];
+            vm.markerData["customevent"] = [];      //각 커스텀 event에 해당하는 region shape
+            vm.markerData["regions"] = [];          //각 region에 해당하는 region shape
             vm.customEventDataOrderbyRegions = {};
-            //createCategoryMarkersInJson();  //처음 페이지 진입 시 카테고리 별 마커 및 도형을 미리 만듭니다.
-
 
             var regionsSetWithEvent = {};
             var markerDataCustomeventLen = 0;
@@ -1932,19 +1930,29 @@
                     categoryStatusChangeProcess("none", true);
                     if(mapLocation.searchResult["type"] == "event"){
                         categoryStatusChangeProcess("customevent", false);
-                        //search
-                        resultIdx = searchIdxWithId("customevent", mapLocation.searchResult["id"]);
-                        var tempIdx = resultIdx;
-                        resultIdx = -1;
-                        resultIdx = searchIdxWithId("regions", vm.markerData["customevent"][tempIdx]["l_id"]);
+                        
+                        vm.lidForEvent = mapLocation.searchResult["l_id"];
+                        vm.eventDataId = mapLocation.searchResult["id"];
+                        //selectedMarkerIdx = 0;
+                        var resultIdx = -1;
+                        //resultIdx = searchIdxWithId("customevent", vm.eventDataId);
+                        for(var i=0; i< vm.customEventData.length; i++){
+                            if(vm.customEventData[i]['id'] == vm.eventDataId){
+                                resultIdx = i;
+                                break;
+                            }
+                        }
                         if(resultIdx == -1){
                             alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
                             return;
                         }
-                        map.panTo(new daum.maps.LatLng(vm.markerData["regions"][resultIdx]["center"]["lat"],vm.markerData["regions"][resultIdx]["center"]["lng"]));
                         selectedMarkerIdx = resultIdx;
                         selectedMarker = printedCategoryMarkers[selectedMarkerIdx];
+
+                        map.panTo(new daum.maps.LatLng(vm.markerData["customevent"][resultIdx]["center"]["lat"],vm.markerData["customevent"][resultIdx]["center"]["lng"]));
+                        
                         //open dialog
+                        showCustomEventDialog();
 
                     }
                     else if(mapLocation.searchResult["type"] == "map"){

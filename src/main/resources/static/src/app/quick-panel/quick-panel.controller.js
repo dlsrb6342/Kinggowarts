@@ -97,7 +97,8 @@
         vm.findtimelinelocation = function (locid) {
             //구역 ID로 이동
             if(locid != 0 && locid != undefined){
-                peerLocation.eventlocation = locid;
+                peerLocation.eventlocation.l_id = locid;
+                peerLocation.eventlocation.cnt++;
             }
         };
 
