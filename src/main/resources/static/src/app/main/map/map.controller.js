@@ -142,16 +142,25 @@
             width: 256,
             height: 256,
             getTile: function(x, y, z) {
-                var div = document.createElement('div');
+                if((z == 3 && x >= 886 && x <= 892 && 1879 <= y && y <= 1883) || 
+                    (z == 2) && 1772 <= x && x <= 1785 && 3758 <= y && y <= 3768){
+                    var div = document.createElement('div');
 
-                div.innerHTML = '<div><img src="assets/images/tileset/tileset_'+x+'_'+y+'_'+z+'.gif"></img></div>';
-                div.style.fontSize = '0px';
-                div.style.fontWeight = 'bold';
-                div.style.lineHeight = '0px';
-                div.style.textAlign = 'center';
-                div.style.color = '#4D4D4D';
-                div.style.border = '0px dashed #ff5050';
-                return div;
+                    div.innerHTML = '<div><img src="assets/images/tileset/tileset_'+x+'_'+y+'_'+z+'.gif"></img></div>';
+                    div.style.fontSize = '0px';
+                    div.style.fontWeight = 'bold';
+                    div.style.lineHeight = '0px';
+                    div.style.textAlign = 'center';
+                    div.style.color = '#4D4D4D';
+                    div.style.border = '0px dashed #ff5050';
+                    return div;
+                }
+                else{
+                    var div = document.createElement('div');
+                    div.innerHTML = '<div></div>';
+                    return div;
+                }
+                
             }
         }));
 
@@ -259,6 +268,7 @@
                     }
                     else if(response.data == "noLocation"){
                         alert('수정하려는 지역이 존재하지 않습니다.');
+                        refreshRegionData(tempStatus);
                     }
                     //console.log("asdf");
                 },
@@ -446,6 +456,8 @@
                     }
                     else if(response.data == "noLocation"){
                         alert('수정하려는 지역이 존재하지 않습니다.');
+                        refreshRegionData("regions");
+
                     }
                     //console.log("asdf");
                 },
@@ -464,6 +476,7 @@
                 function successFunc(response){
                     if(response.data == "noLocation"){
                         alert('수정하려는 지역이 존재하지 않습니다.');
+                        refreshRegionData("regions");
                     }
                     else if(response.data == "notAllowed"){
                         alert('notAllowed');
@@ -701,6 +714,7 @@
                     }
                     else if(response.data == "noEvent"){
                         alert('수정하려는 이벤트가 존재하지 않습니다.');
+                        refreshCustomEventData("customevent");
                     }
                     else if(response.data == "success"){
                         refreshCustomEventData("customevent");   //refresh region & goto state
@@ -721,6 +735,7 @@
                 function successFunc(response){
                     if(response.data == "noEvent"){
                         alert('수정하려는 이벤트가 존재하지 않습니다.');
+                        refreshCustomEventData("customevent");
                     }
                     else if(response.data == "success"){
                         refreshCustomEventData("customevent");   //refresh region & goto state
@@ -965,12 +980,14 @@
                 function successFunc(response){
                     if(response.data == "noCategory"){
                         alert('해당 카테고리가 존재하지 않습니다.');
+                        categoryStatusChangeProcess("none", true);
                     }
                     else if(response.data == "duplicatedName"){
                         alert('중복된 이름입니다. 다른 이름으로 시도하세요.');
                     }
                     else if(response.data == "notAllowed"){
                         alert('허용되지 않은 요청');
+                        refreshCustomMarkerData(inData["markerCategory"]["name"], false);
                     }
                     else if(response.data == "success"){
                         refreshCustomMarkerData(inData["markerCategory"]["name"], false);   //refresh region & goto state
@@ -1003,12 +1020,14 @@
                 function successFunc(response){
                     if(response.data == "noCategory"){
                         alert('해당 카테고리가 존재하지 않습니다.');
+                        categoryStatusChangeProcess("none", true);
                     }
                     else if(response.data == "duplicatedName"){
                         alert('중복된 이름입니다. 다른 이름으로 시도하세요.');
                     }
                     else if(response.data == "notAllowed"){
                         alert('허용되지 않은 요청');
+                        refreshCustomMarkerData(inData["markerCategory"]["name"], false);
                     }
                     else if(response.data == "success"){
                         //categoryStatusChangeProcess("none", true);
@@ -1016,6 +1035,7 @@
                     }
                     else if(response.data == "noMarker"){
                         alert('수정하고자 하는 마커가 없습니다.');
+                        refreshCustomMarkerData(inData["markerCategory"]["name"], false);
                     }
                     enableAllMarkerListener();
                 },
@@ -1036,6 +1056,7 @@
                     }
                     else if(response.data == "noMarker"){
                         alert('수정하고자 하는 마커가 없습니다.');
+                        refreshCustomMarkerData(inData["markerCategory"]["name"], false);
                     }
                 },
                  function failFunc(response){
@@ -1814,7 +1835,7 @@
         // Zoom change Listener(zoom 범위 벗어났을대 재조정)
         //zoom_start listener 있음.
         daum.maps.event.addListener(map, 'zoom_changed', function() {        
-            var MAX_MAP_LEVEL = 5;
+            var MAX_MAP_LEVEL = 3;
             // 지도의 현재 레벨을 얻어옵니다
             var level = map.getLevel();
 
