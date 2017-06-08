@@ -142,8 +142,9 @@
             width: 256,
             height: 256,
             getTile: function(x, y, z) {
-                if((z == 3 && x >= 886 && x <= 892 && 1879 <= y && y <= 1883) || 
-                    (z == 2) && 1772 <= x && x <= 1785 && 3758 <= y && y <= 3768){
+                if( (z== 1 && 3545 <= x && x <= 3567 && 7519 <= y && y <= 7536)||
+                    (z == 3 && x >= 886 && x <= 892 && 1879 <= y && y <= 1883) || 
+                    (z == 2 && 1772 <= x && x <= 1785 && 3758 <= y && y <= 3768)){
                     var div = document.createElement('div');
 
                     div.innerHTML = '<div><img src="assets/images/tileset/tileset_'+x+'_'+y+'_'+z+'.gif"></img></div>';
