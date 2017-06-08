@@ -18,7 +18,7 @@
 
         //vm.userLat = 0;   mapLocation.userLastLat
         //vm.userLng = 0;   mapLocation.userLastLng
-        vm.curMapLevel = 3;     //현재 지도의 zoom level
+        vm.curMapLevel = 2;     //현재 지도의 zoom level
         vm.lidForEvent = -1;
         vm.eventDataId = -1;
         //category status type : {bank, toilet, print, busstop, vendingmachine}, {insideRestaurant, outsideRestaurant}, {standard, engineer, comm, soft}, group, region
@@ -142,8 +142,9 @@
             width: 256,
             height: 256,
             getTile: function(x, y, z) {
-                if((z == 3 && x >= 886 && x <= 892 && 1879 <= y && y <= 1883) || 
-                    (z == 2) && 1772 <= x && x <= 1785 && 3758 <= y && y <= 3768){
+                if( (z== 1 && 3545 <= x && x <= 3567 && 7519 <= y && y <= 7536)||
+                    (z == 3 && x >= 886 && x <= 892 && 1879 <= y && y <= 1883) || 
+                    (z == 2 && 1772 <= x && x <= 1785 && 3758 <= y && y <= 3768)){
                     var div = document.createElement('div');
 
                     div.innerHTML = '<div><img src="assets/images/tileset/tileset_'+x+'_'+y+'_'+z+'.gif"></img></div>';
@@ -1658,6 +1659,16 @@
                         fillOpacity: 0.8
                     });
                 }
+                if (vm.categoryStatus == "regions"){
+                    regionShapes[typeIdx].setOptions({
+                        strokeWeight: 1,
+                        strokeColor: '#ee7300',
+                        strokeOpacity: 0.2,
+                        strokeStyle: 'dashed',
+                        fillColor: '#66ccff',
+                        fillOpacity: 0.2
+                    });
+                }
             });
 
             // 마커에 mouseout 이벤트를 등록합니다
@@ -1677,7 +1688,20 @@
                         strokeOpacity: 0.8,
                         strokeStyle: 'solid',
                         fillColor: '#00EEEE',
-                        fillOpacity: 0.4
+                        fillOpacity: 0.3
+                    });
+
+                    //customEventShapes[typeIdx].setMap(map);
+                }
+                if (vm.categoryStatus == "regions"){
+                    //customEventShapes[typeIdx].setMap(null);
+                    regionShapes[typeIdx].setOptions({
+                        strokeWeight: 0,
+                        strokeColor: '#004c80',
+                        strokeOpacity: 0.8,
+                        strokeStyle: 'solid',
+                        fillColor: '#ffffff',
+                        fillOpacity: 0.2
                     });
                     //customEventShapes[typeIdx].setMap(map);
                 }
@@ -1782,7 +1806,7 @@
                 daum.maps.event.addListener(ret, 'mouseover', function(mouseEvent) {
                     //도형이 수정중이 아닌 경우에만 모든 listener enable.
                     if(isModifyRegionShape == false){
-                        ret.setOptions({fillColor: '#ffffff'});
+                        //ret.setOptions({fillColor: '#0b80'});
                         customOverlay.setContent('<div class="area">' + shapeData["name"] + '</div>');
                     
                         customOverlay.setPosition(mouseEvent.latLng); 
