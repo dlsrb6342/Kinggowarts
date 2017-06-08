@@ -141,7 +141,8 @@
             height: 256,
             getTile: function(x, y, z) {
                 var div = document.createElement('div');
-                div.innerHTML = x + ', ' + y + ', ' + z;//'<div><img src="assets/images/backgrounds/full_image.png"></img></div>';//x + ', ' + y + ', ' + z;    //<div><img src="assets/images/backgrounds/full_image.png"></img></div>
+
+                div.innerHTML = '<div><img src="assets/images/tileset/tileset_'+x+'_'+y+'_'+z+'.gif"></img></div>';
                 div.style.fontSize = '36px';
                 div.style.fontWeight = 'bold';
                 div.style.lineHeight = '256px';
@@ -203,7 +204,12 @@
         };      
         // 위에 작성한 옵션으로 Drawing Manager를 생성합니다
         drawingManager = new daum.maps.Drawing.DrawingManager(drawCustomEvnetOptions);
-
+        drawingManager.addListener('select', function(data) {
+            disableAllMarkerListener();
+        });
+        drawingManager.addListener('cancel', function(data) {
+            enableAllMarkerListener();
+        });
 
         var customEventShapes = []; //customEvent region 도형들을 담는다.
         var regionShapes = [];
@@ -528,13 +534,12 @@
                 $scope.currentUserNickname = $sessionStorage.get('nickname');
                 $scope.retData = 
                 {
-                    "name": "",
+                    "title": "",
                     "l_id" : inLid,
-                    "creator" : {"memberSeq" : ""},
                     "fromDate" : "",
                     "toDate" : "",
-                    "detail" : "",
-                    "tag" : []
+                    "about" : "",
+                    "tags" : []
                 };
             }
             
@@ -545,7 +550,7 @@
                 $mdDialog.cancel();
             };
             $scope.answer = function() {
-                $scope.retData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
+                //$scope.retData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
                 $scope.retData["fromDate"] = Date.parse($scope.fromDateD);
                 $scope.retData["toDate"] = Date.parse($scope.toDateD);
                 $scope.retData["l_id"] = inLid;
@@ -580,6 +585,7 @@
                 }
                 else{
                     //이벤트리스트 중 한 이벤트를 선택한 경우 answer값은 event의 id
+                    vm.lidForEvent = vm.markerData["customevent"][selectedMarkerIdx]["id"];
                     vm.eventDataId = answer;
                     showCustomEventDialog();
                     //answer == event id (customEvent.json의 id)
@@ -1508,10 +1514,11 @@
             
             //vm.markerData = createMarkerData(MarkerData.data, markerDataSkeleton);
             //vm.markerData <- regions, customEvent
-            //vm.markerData["customevent"] = [];
-            //vm.markerData["regions"] = [];
+            vm.markerData["customevent"] = [];
+            vm.markerData["regions"] = [];
             vm.customEventDataOrderbyRegions = {};
             //createCategoryMarkersInJson();  //처음 페이지 진입 시 카테고리 별 마커 및 도형을 미리 만듭니다.
+
 
             var regionsSetWithEvent = {};
             var markerDataCustomeventLen = 0;
@@ -1886,7 +1893,9 @@
             }
         };
 
-        //퀵패널 timeline에서 위치 클릭할 경우 그 위치로 지도가 이동합니다. 구역 중심 좌표가 나중에 생기면 그 좌표로 이동하면 될 것 같습니다.
+        
+
+//퀵패널 timeline에서 위치 클릭할 경우 그 위치로 지도가 이동합니다. 구역 중심 좌표가 나중에 생기면 그 좌표로 이동하면 될 것 같습니다.
 
         $scope.$watch(
             function watchEvent(){
@@ -1894,42 +1903,52 @@
             },
             function handleEvent(newValue, oldValue){
                 console.log(peerLocation.eventlocation);
-                for (var value in areas){
-                    if (peerLocation.eventlocation == areas[value].name){
-                        var moveEventLocation = areas[value].path[0];
-                        map.panTo(moveEventLocation);
-                    }
-                }
-            }, true);
-
-
-        //Search watch
-        /*
-        $scope.$watch(
-            function watchEvent(scope){
-                return(mapLocation.searchResult);
-            },
-            function handleEvent(newValue, oldValue){
-                if(map != null){
+                if(peerLocation.eventlocation.cnt != 0){
                     var resultIdx = -1;
-                    map.panTo(new daum.maps.LatLng(mapLocation.searchResult["lat"], mapLocation.searchResult["lng"]);
-                    map.setLevel(1);    //zoon max
-                    //chage state
-                    categoryStatusChangeProcess("none", true);
-                    if(mapLocation.searchResult == "event"){
-                        categoryStatusChangeProcess("customevent", false);
-                        //search
-                        resultIdx = searchIdxWithId("customevent", mapLocation.searchResult["id"]);
+                    resultIdx = searchIdxWithId("regions", peerLocation.eventlocation.l_id);
                         if(resultIdx == -1){
                             alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
                             return;
                         }
+                    map.setLevel(1);
+                    map.panTo(new daum.maps.LatLng(vm.markerData["regions"][resultIdx]["center"]["lat"], vm.markerData["regions"][resultIdx]["center"]["lng"]));
+                }
+                
+            }, true);
+
+        //Search watch
+        
+        $scope.$watch(
+            function (){
+                return(mapLocation.searchResult);
+            },
+            function (newValue, oldValue){
+                console.log(mapLocation.searchResult);
+                if(map != null && mapLocation.searchResult["type"] != ""){
+                    var resultIdx = -1;
+                    
+                    map.setLevel(1);    //zoon max
+                    //chage state
+                    categoryStatusChangeProcess("none", true);
+                    if(mapLocation.searchResult["type"] == "event"){
+                        categoryStatusChangeProcess("customevent", false);
+                        //search
+                        resultIdx = searchIdxWithId("customevent", mapLocation.searchResult["id"]);
+                        var tempIdx = resultIdx;
+                        resultIdx = -1;
+                        resultIdx = searchIdxWithId("regions", vm.markerData["customevent"][tempIdx]["l_id"]);
+                        if(resultIdx == -1){
+                            alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
+                            return;
+                        }
+                        map.panTo(new daum.maps.LatLng(vm.markerData["regions"][resultIdx]["center"]["lat"],vm.markerData["regions"][resultIdx]["center"]["lng"]));
                         selectedMarkerIdx = resultIdx;
                         selectedMarker = printedCategoryMarkers[selectedMarkerIdx];
                         //open dialog
 
                     }
-                    else if(mapLocation.searchResult == "map"){
+                    else if(mapLocation.searchResult["type"] == "map"){
+                        map.panTo(new daum.maps.LatLng(mapLocation.searchResult["lat"], mapLocation.searchResult["lng"]));
                         categoryStatusChangeProcess("regions", false);
                         //search
                         resultIdx = searchIdxWithId("regions", mapLocation.searchResult["id"]);
@@ -1938,15 +1957,20 @@
                             return;
                         }
                         selectedMarkerIdx = resultIdx;
-                        vm.clickName = shapeData[mapLocation.searchResult["name"]];
+                        vm.clickName = vm.markerData["regions"][resultIdx]["name"];
                         vm.clickUrl =  '../xwiki/bin/view/XWiki/' + mapLocation.searchResult["name"];
+                        vm.tags = vm.markerData["regions"][resultIdx]["tags"];
+                        vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.markerData["regions"][resultIdx]["name"];
                         selectedMarker = printedCategoryMarkers[selectedMarkerIdx];
+
+                        vm.openMapDialog();
                         //open dialog
                     }
                     else{
                         categoryStatusChangeProcess(mapLocation.searchResult["type"], false);
+                        map.panTo(new daum.maps.LatLng(mapLocation.searchResult["lat"], mapLocation.searchResult["lng"]));
                         //search
-                        resultIdx = searchIdxWithId("type", mapLocation.searchResult["id"]);
+                        resultIdx = searchIdxWithId(mapLocation.searchResult["type"], mapLocation.searchResult["id"]);
                         if(resultIdx == -1){
                             alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
                             return;
@@ -1954,12 +1978,17 @@
                         selectedMarkerIdx = resultIdx;
                         selectedMarker = printedCategoryMarkers[selectedMarkerIdx];
                         //open dialog
+                        //showCreateCustomMarkerDialog();
+                        showMarkerDialog();
                     }
 
                 }
                 
             }, true);
-            */
+        
+
+
+
         //id와 status로 마커 정보가 담긴 vm.markerData에서의 위치(idx)를 검색한다. idx = selectedMarkerIdx
         function searchIdxWithId(status, id){
             for(var i=0; i<vm.markerData[status].length; i++){
@@ -2324,6 +2353,11 @@
         }
 
         function PostCustomEventData(inData){
+            console.log(inData);
+            if(inData["l_id"] < 1){
+                console.log("l_id error");
+                return;
+            }
             return $http({
                 method: 'POST',
                 url: './api/event',
@@ -2339,17 +2373,24 @@
         }
 
         function PutCustomEventData(inData){
+            
+            if(inData["l_id"] < 1){
+                console.log("l_id error");
+                return;
+            }
             //$scope.retData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
             var putid = inData["id"];
-            delete inData["id"];
-            delete inData["creator"];
-            inData["creator"] = {};
-            inData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
+            var putData = angular.copy(inData);
+            delete putData["id"];
+            delete putData["creator"];
+            console.log(putData);
+            //inData["creator"] = {};
+            //inData["creator"]["memberSeq"] = $sessionStorage.get('memberSeq');
 
             return $http({
                 method: 'PUT',
                 url: './api/event' + '/' + putid,
-                data : JSON.stringify(inData),
+                data : JSON.stringify(putData),
                 headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
                         },
                 transformResponse: [function (data) {
