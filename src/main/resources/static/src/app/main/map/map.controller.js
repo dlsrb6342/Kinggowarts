@@ -1721,7 +1721,7 @@
             var shapeData = data[idx];
             var ret;
             if(categoryType == "regions"){
-                var newColor = '#00EEEE';//'#transparent';
+                var newColor = '#ffffff';//'#transparent';
                 var newstrokeWeight = 0;
             }
             else if(categoryType == "customevent"){
@@ -1773,7 +1773,7 @@
                 daum.maps.event.addListener(ret, 'mouseover', function(mouseEvent) {
                     //도형이 수정중이 아닌 경우에만 모든 listener enable.
                     if(isModifyRegionShape == false){
-                        ret.setOptions({fillColor: '#09f'});
+                        ret.setOptions({fillColor: '#ffffff'});
                         customOverlay.setContent('<div class="area">' + shapeData["name"] + '</div>');
                     
                         customOverlay.setPosition(mouseEvent.latLng); 
@@ -1795,7 +1795,7 @@
                 daum.maps.event.addListener(ret, 'mouseout', function() {
                     //도형이 수정중이 아닌 경우에만 모든 listener enable.
                     if(isModifyRegionShape == false){
-                        ret.setOptions({fillColor: '#00EEEE'});                        
+                        ret.setOptions({fillColor: '#ffffff'});                        
                     }
                     customOverlay.setMap(null);
                 }); 
@@ -1850,7 +1850,7 @@
             var dragendListenerLng = dragendListenerLatlng.getLng();
             
             // 좌표 재설정
-            var dragendMoveLatLon = getLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
+            var dragendMoveLatLon = getLatlngInSkkuMap(dragendListenerLat, dragendListenerLng, map.getLevel());
             
             // 재설정된 좌표로 부드러운 이동
             map.panTo(dragendMoveLatLon);
@@ -1864,7 +1864,7 @@
             var dragendListenerLng = dragendListenerLatlng.getLng();
             
             // 좌표 재설정
-            var dragendMoveLatLon = getLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
+            var dragendMoveLatLon = getLatlngInSkkuMap(dragendListenerLat, dragendListenerLng, map.getLevel());
             
             // 재설정된 좌표로 부드러운 이동
             map.panTo(dragendMoveLatLon);
@@ -2132,7 +2132,7 @@
         var timerPeerClusterOverlay;
         var isTimerPeerClusterOverlayOn = false;
 
-        function removePeerClusterOverlay(){
+        /*function removePeerClusterOverlay(){
             if(isNowUsingPeerClusterOverlay == true){   //create 도중 remove 인 경우
                 return;
             }
@@ -2163,16 +2163,45 @@
                 removePeerClusterOverlay();
                 isTimerPeerClusterOverlayOn = false;
                 }, 12000);
+        }*/
+
+         function createPeerMarkerAndOverlay(){
+            for (var value in peerLocation.peer.active){
+                var tempUser = peerLocation.peer.active[value];
+                //lat, lng, name, nickname,profileImgPath, memSeq, checked exists
+
+                if(tempUser.checked == true){
+                    var peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
+                    var peerPosition = new daum.maps.LatLng(tempUser.lat, tempUser.lng);
+                    var peerCustomOverlay = new daum.maps.CustomOverlay({
+                        position: peerPosition,
+                        content: peerContent,
+                        xAnchor: 0.5,
+                        yAnchor: 0.5
+                    });        
+                
+                    var peerTransparentMarker = new daum.maps.Marker({
+                            position: peerPosition, 
+                            image: peerTransparentMarkerImage, // 마커이미지 설정 
+                            title: tempUser.nickname
+                        });
+
+                    peerCustomOverlay.setMap(map);
+                    peerOnMapCustomOverlays[arrIdx] = peerCustomOverlay;
+                    peerTransparentMarker.setMap(map);
+                    peerOnMapTransparnetMarkers[arrIdx] = peerTransparentMarker;
+                }
+            }
         }
 
-
         vm.peerOnMapFunciton = function(){
-            //console.log(peerLocation.peer);
+            console.log(peerLocation.peer);
             //remove all peers on map
+            console.log(peerLocation.peer.active);
             for(var value = 0; value < arrIdx; ++value){
                 peerOnMapCustomOverlays[value].setMap(null);
                 peerOnMapTransparnetMarkers[value].setMap(null);
-            }
+            }//
             arrIdx = 0;
 
             //on off isPeerOnMap
@@ -2180,69 +2209,12 @@
                 isPeerOnMap = false;
             }
             else{
-                isPeerOnMap = true;
-                //peer type == Studnet
-                for (var value in peerLocation.peer.location["ST"]){
-                    if(peerLocation.peer.location["ST"][value].checked == true){
-                        var peerContent = '<div><img class="avatar" src="'+
-                        peerLocation.peer.location["ST"][value].avatar+
-                        '"></img></div>';
-                        var peerPosition = new daum.maps.LatLng(peerLocation.peer.location["ST"][value].locationx, peerLocation.peer.location["ST"][value].locationy);
-                        var peerCustomOverlay = new daum.maps.CustomOverlay({
-                            position: peerPosition,
-                            content: peerContent,
-                            xAnchor: 0.5,
-                            yAnchor: 0.5
-                        });
-                        
-                        var peerTransparentMarker = new daum.maps.Marker({
-                            position: peerPosition, 
-                            image: peerTransparentMarkerImage, // 마커이미지 설정 
-                            title: peerLocation.peer.location["ST"][value].name
-                        });
-
-                        peerCustomOverlay.setMap(map);
-                        peerOnMapCustomOverlays[arrIdx] = peerCustomOverlay;
-                        peerTransparentMarker.setMap(map);
-                        peerOnMapTransparnetMarkers[arrIdx] = peerTransparentMarker;
-
-                                    // 마커에 click 이벤트를 등록합니다
-                        daum.maps.event.addListener(peerTransparentMarker, 'click', function () {
-
-                            // 클릭된 마커가 없거나 click 마커가 클릭된 마커가 아니면
-                            if(peerTransparentMarker == null){
-                                return;
-                            }
-                            else{
-                                //search peer nearby & overlay
-                            }
-                            
-                        });
-
-                        arrIdx++;
-
-                    }
-                }
-                //peer type == Professor
-                for (var value in peerLocation.peer.location["PF"]){
-                    if(peerLocation.peer.location["PF"][value].checked == true){
-                        var peerContent = '<div><img class="avatar" src="'+
-                        peerLocation.peer.location["PF"][value].avatar+
-                        '"></img></div>';
-                        var peerPosition = new daum.maps.LatLng(peerLocation.peer.location["PF"][value].locationx, peerLocation.peer.location["PF"][value].locationy);
-                        var peerCustomOverlay = new daum.maps.CustomOverlay({
-                            position: peerPosition,
-                            content: peerContent,
-                            xAnchor: 0.5,
-                            yAnchor: 0.5
-                        });
-
-                        peerCustomOverlay.setMap(map);
-                        peerOnMapCustomOverlays[arrIdx++] = peerCustomOverlay;
-                    }
-                }
-            }
+                    isPeerOnMap = true;
+                    createPeerMarkerAndOverlay();
+            }    
         };
+
+        
 
         // peer 변경 감시(watch)하고 맵에 올라가는 사진을 갱신한다
         $scope.$watch(function() { return peerLocation.peer}, function(newVal) {
@@ -2531,6 +2503,8 @@
             });
         }
 
+        categoryStatusChangeProcess("regions", false);
+
     }
     
 //------controller scope 밖 function
@@ -2577,9 +2551,16 @@
     }
 
     //주어진 좌표를 맵에서 벗어나지 않도록 재조정된 값을 return.
-    function getLatlngInSkkuMap(lat, lng){
+    function getLatlngInSkkuMap(lat, lng, level){
+        var dat = 0;
+        if(level == 2){
+            dat = 0.0004;
+        }
+        else if(level == 3){
+            dat = 0.0024;
+        }
         // 범위 최대 최소 좌표
-        var MAX_LAT = 37.3, MIN_LAT = 37.29, MAX_LNG = 126.979, MIN_LNG = 126.965;
+        var MAX_LAT = 37.2980-dat, MIN_LAT = 37.2907+dat, MAX_LNG = 126.9783-dat, MIN_LNG = 126.97+dat;
 
         // 지도 중심좌표 
         var dragendListenerLat = lat;
