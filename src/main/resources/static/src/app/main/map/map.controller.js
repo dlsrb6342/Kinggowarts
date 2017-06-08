@@ -1109,7 +1109,6 @@
                 $mdDialog.hide(answer);
             };
             $scope.movewiki = function(){
-                $rootScope.wikipath = '../xwiki/bin/view/XWiki/공대 식당';
                 $scope.cancel();
                 $state.go('app.wiki');
             };
@@ -1713,6 +1712,9 @@
                     vm.openMapDialog();
                 }
                 else{
+                    vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.markerData[vm.categoryStatus][selectedMarkerIdx]["name"];
+                    console.log(vm.clickUrl);
+                    $rootScope.wikipath = '../xwiki/bin/view/XWiki/' + vm.markerData[vm.categoryStatus][selectedMarkerIdx]["name"];
                     showMarkerDialog();
                 }
             });
