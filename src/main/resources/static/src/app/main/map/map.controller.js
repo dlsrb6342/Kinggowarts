@@ -1108,6 +1108,11 @@
             $scope.answer = function(answer) {
                 $mdDialog.hide(answer);
             };
+            $scope.movewiki = function(){
+                $rootScope.wikipath = '../xwiki/bin/view/XWiki/공대 식당';
+                $scope.cancel();
+                $state.go('app.wiki');
+            };
         }
 
 
