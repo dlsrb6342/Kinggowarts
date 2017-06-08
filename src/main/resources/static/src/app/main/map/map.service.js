@@ -37,7 +37,11 @@
         //사용자 위치 정보로 interval마다 위치정보를 갱신합니다. 초기 정보는 바꿔도 상관 없습니다.
         service.userLastLat = 0.0;
         service.userLastLng = 0.0;
-        service.userCord = [service.userLastLat, service.userLastLng];
+        service.userCord = {
+            lat : service.userLastLat,
+            lng : service.userLastLng,
+            cnt : 0
+        };
 
 	   //Get User Location every 1 min. 1sec == 1000
         
@@ -48,7 +52,9 @@
                     //현재 user의 위치를 얻는다.
                     service.userLastLng = position.coords.longitude;
                     service.userLastLat = position.coords.latitude;
-                    service.userCord = [service.userLastLat, service.userLastLng];
+                    service.userCord.lat = service.userLastLat;
+                    service.userCord.lng = service.userLastLng;
+                    service.userCord.cnt++;
                 }, function(error) {
                     console.error(error);
                 }, {

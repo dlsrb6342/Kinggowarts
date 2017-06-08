@@ -23,18 +23,18 @@ public class MapController {
     }
 
     @GetMapping("/search")
-    public List<Location> searchLocation(@RequestParam(value="q") String q) {
+    public List<Location> searchLocation(@RequestParam String q) {
         return mapService.searchLocation(q);
     }
 
-    @DeleteMapping(value="/{id}")
-    public String deleteLocation(@PathVariable("id")long id){
+    @DeleteMapping("/{id}")
+    public String deleteLocation(@PathVariable("id") long id) {
         return mapService.deleteLocation(id);
     }
 
-    @PutMapping(value="/{id}")
+    @PutMapping("/{id}")
     public String editLocation(@PathVariable("id") long id,
-                               @RequestBody Location location){
+                               @RequestBody Location location) {
         return mapService.editLocation(location, id);
     }
 }

@@ -17,19 +17,10 @@
                     {"name":"카페", "type":"카페", "icon" : "icon-food"}
                 ]
             },
-            {"name":"학과", "type":"Major", "icon" : "icon-book-open", "inner" : 
-                [
-                    {"name":"학부", "type":"none", "icon" : ""},
-                    {"name":"공과", "type":"none", "icon" : ""},
-                    {"name":"소프트", "type":"none", "icon" : ""},
-                    {"name":"정보통신", "type":"none", "icon" : ""}
-                ]
-            },
-            {"name":"동아리", "type":"none", "icon" : "icon-radio-tower"},
-            {"name":"지역/구역", "type":"Region", "icon" : "icon-vector-square", "inner" :  
-            	[
-                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"}
-                ]
-            }
+            
+            
+                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"},
+                    {"name":"event", "type":"customevent", "icon" : "icon-vector-square"}
+           
         ]
 }
