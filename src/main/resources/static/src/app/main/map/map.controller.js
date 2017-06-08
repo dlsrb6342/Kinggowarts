@@ -1683,18 +1683,18 @@
                         fillColor: '#00EEEE',
                         fillOpacity: 0.3
                     });
-                    
+
                     //customEventShapes[typeIdx].setMap(map);
                 }
                 if (vm.categoryStatus == "regions"){
                     //customEventShapes[typeIdx].setMap(null);
-                    customEventShapes[typeIdx].setOptions({
-                        strokeWeight: 1,
+                    regionShapes[typeIdx].setOptions({
+                        strokeWeight: 0,
                         strokeColor: '#004c80',
                         strokeOpacity: 0.8,
                         strokeStyle: 'solid',
                         fillColor: '#ffffff',
-                        fillOpacity: 0.4
+                        fillOpacity: 0.2
                     });
                     //customEventShapes[typeIdx].setMap(map);
                 }
