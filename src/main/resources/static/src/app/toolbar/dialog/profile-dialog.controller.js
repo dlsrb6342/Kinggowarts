@@ -16,7 +16,7 @@
         vm.profile = {};
         vm.profile.nickname = $sessionStorage.get('nickname');
         vm.profile.profileImg = profileImageFactory;
-        console.log(profileImageFactory);
+        //console.log(profileImageFactory);
 
         // Methods
         vm.init = init();
@@ -71,11 +71,11 @@
                     alert('비밀번호가 일치하지 않습니다.');
                   }
                   else{
-                    console.log(response.data);
+                    //console.log(response.data);
                     closeDialog();
                   }
               }, function errorCallback(response) {
-                  console.log(response);
+                  //console.log(response);
               });
             }
         }
@@ -118,7 +118,7 @@
          */
         function fileSuccess(file, message)
         {
-            console.log(message);
+            //console.log(message);
             if(message != 'error'){
               $sessionStorage.put('profileImgPath', message, 50);
               profileImageFactory.image_path = message;
