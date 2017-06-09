@@ -2205,14 +2205,7 @@
                 //lat, lng, name, nickname,profileImgPath, memSeq, checked exists
                 var peerContent;
                 if(tempUser.checked == true){
-                    var imagefilecheck = new Image;
-                    imagefilecheck.src = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
-                    if(!imagefilecheck.complete){
-                        peerContent = '<div><img class="avatar" src="assets/images/avatars/profile.jpg"</img></div>';
-                    }
-                    else{
-                        peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
-                    }
+                    var peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '" ' + 'onerror="this.src=\'assets/images/avatars/profile.jpg\'"></img></div>';
                     var peerPosition = new daum.maps.LatLng(tempUser.lat, tempUser.lng);
                     var peerCustomOverlay = new daum.maps.CustomOverlay({
                         position: peerPosition,
