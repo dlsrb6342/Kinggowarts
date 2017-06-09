@@ -40,10 +40,10 @@
       </md-button>
       <span flex></span>
       
-      <md-button ng-if="canMakeEvent == true" ng-click="answer('makeEvent')">
+      <md-button hide show-gt-sm ng-if="canMakeEvent == true" ng-click="answer('makeEvent')">
         이벤트생성
       </md-button>
-      <md-button ng-click="answer('markerInfo')">
+      <md-button hide show-gt-sm ng-click="answer('markerInfo')">
         마커정보
       </md-button>
       <md-button ng-click="cancel()">
