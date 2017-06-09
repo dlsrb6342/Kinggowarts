@@ -81,7 +81,7 @@
                         // Success
                         function (response)
                         {
-                            console.log(response);
+                            //console.log(response);
                             var resArr = [];
                             var tempArr = [];
                             for (var i = 0; i < 4; i++){
@@ -90,16 +90,18 @@
                             }
                             var index = 0;
                             for (var i = 0; i < 4; i++){
-                               for (var j = 0; j < 4; j++){
-                                   for (var k = index; k < (j+1) * 3; k++){
-                                       if(response[j].data[k]){
-                                           tempArr[j].push(response[j].data[k]);
-                                           index++;
-                                       }
-                                   }
-                               } 
+                                
                             }
 
+                            for (var j = 0; j < 4; j++){
+                                //console.log((j+1) * 3 - Math.floor(index / 3));
+                                for (var k = 0; k < (j+1) * 3 - Math.floor(index / 3); k++){
+                                    if(response[j].data[k]){
+                                        tempArr[j].push(response[j].data[k]);
+                                        index++;
+                                    }
+                                }
+                            }
                             var categoryArr = ["지도", "마커", "이벤트", "공지사항"];
                             for (var i = 0; i < 4; i++){
                                 if(tempArr[i].length > 0){ // 해당 카테고리에 검색 결과가 있을 경우
@@ -112,7 +114,7 @@
                                     resArr.push(temp);
                                 });
                             }
-                            console.log(resArr);
+                            //console.log(resArr);
                             // Populate the results
                             vm.populateResults(resArr);
                         },

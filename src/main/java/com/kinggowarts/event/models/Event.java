@@ -1,5 +1,6 @@
 package com.kinggowarts.event.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kinggowarts.map.models.Tag;
 import com.kinggowarts.member.models.Member;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class Event {
     @Field(type=FieldType.String, analyzer="korean")
     private String about;
     @ManyToOne(targetEntity=Member.class)
-    @JoinColumn(name="creator_id")
+    @JsonIgnore @JoinColumn(name="creator_id")
     private Member creator;
     @Field(type=FieldType.Nested)
     @OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)

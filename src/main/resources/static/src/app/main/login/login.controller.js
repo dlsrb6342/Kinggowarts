@@ -12,7 +12,10 @@
     {
         // Data
         var vm = this;
-        console.log($stateParams);
+        // console.log($stateParams);
+        if($stateParams.auth == 'true'){
+            alert('인증이 완료되었습니다.');
+        }
         $sessionStorage.empty();
         $http({
                     method : 'GET',
@@ -34,7 +37,7 @@
                     }),
                     headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
                 }).then(function successCallback(response){
-                    console.log(response);
+                    //console.log(response);
                     
                     $sessionStorage.put('nickname', response.data.nickname, 50);
                     $sessionStorage.put('memberSeq', response.data.memberSeq, 50);
@@ -47,7 +50,7 @@
 
                     $http({
                         method : 'GET',
-                        url : location.protocol+"//"+location.host+"/xwiki/bin/login/",
+                        url : './xwiki/bin/login/',
                         withCredentials: true,
                         headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
                     }).then(function successCallback(response){

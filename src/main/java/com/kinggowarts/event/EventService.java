@@ -1,10 +1,12 @@
 package com.kinggowarts.event;
 
+import com.kinggowarts.authentication.UserAuth;
 import com.kinggowarts.event.models.Event;
 import com.kinggowarts.map.TagRepository;
 import com.kinggowarts.member.MemberRepository;
 import com.kinggowarts.member.models.Member;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,12 +24,13 @@ public class EventService {
     @Autowired
     private EventSearchRepository eventSearchDao;
 
-    public List<Event> findAll(){
-        return eventDao.findAll();
+    public List<OnlyCreatorName> findAll(){
+        return eventDao.findAllByCustom();
     }
 
     public String saveEvent(Event event){
-        Member member = memberDao.findOne(event.getCreator().getMemberSeq());
+        UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Member member = memberDao.findOne(user.getMemSeq());
         if(member == null){
             return "noMember";
         } else {
@@ -58,7 +61,8 @@ public class EventService {
         } else {
             tagDao.delete(event.getTags());
             newEvent.setId(id);
-            Member member = memberDao.findOne(newEvent.getCreator().getMemberSeq());
+            UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Member member = memberDao.findOne(user.getMemSeq());
             if (member == null) {
                 return "noMember";
             }

@@ -1097,7 +1097,7 @@
             });
         };
 
-        function MarkerDialogController($scope, $mdDialog) {
+        function MarkerDialogController($scope, $mdDialog, $sce) {
             //$scope.data = selectedMarker.getTitle();
             $scope.data = vm.markerData[vm.categoryStatus][selectedMarkerIdx];
             $scope.hide = function() {
@@ -1108,6 +1108,13 @@
             };
             $scope.answer = function(answer) {
                 $mdDialog.hide(answer);
+            };
+            $scope.movewiki = function(){
+                $scope.cancel();
+                $state.go('app.wiki');
+            };
+            $scope.getUrl = function () {
+                return $sce.trustAsResourceUrl($rootScope.wikipath);
             };
         }
 
@@ -1732,6 +1739,8 @@
                     vm.openMapDialog();
                 }
                 else{
+                    vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.markerData[vm.categoryStatus][selectedMarkerIdx]["name"];
+                    $rootScope.wikipath = vm.clickUrl;
                     showMarkerDialog();
                 }
             });
