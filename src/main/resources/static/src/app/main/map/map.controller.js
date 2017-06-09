@@ -857,7 +857,7 @@
         var isModifyCustomCategoryMarker = false;
 
         vm.customCategoryMenu = [
-            {"name":"NEW", "type":"MARKER", "icon" : "icon-map-marker"},  
+            {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"},  
             {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"},
             {"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
