@@ -857,7 +857,7 @@
         var isModifyCustomCategoryMarker = false;
 
         vm.customCategoryMenu = [
-            {"name":"NEW", "type":"MARKER", "icon" : "icon-map-marker"},  
+            {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"},  
             {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"},
             {"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
@@ -1110,8 +1110,8 @@
                 $mdDialog.hide(answer);
             };
             $scope.movewiki = function(){
-                $scope.cancel();
-                $state.go('app.wiki');
+                  $scope.cancel();
+                  $state.go('app.wiki');
             };
             $scope.getUrl = function () {
                 return $sce.trustAsResourceUrl($rootScope.wikipath);
@@ -2152,8 +2152,9 @@
     //----------------------------------친구 위치 맵에 올리기-----------------------------------------
     
         var arrIdx = 0;                         //peerCustomOverlay[]의 index
-        var peerTransparentImageSrc = 'assets/images/marker/marker_avatar_transparent.png', // 마커이미지의 주소입니다    
-            peerTransparentImageSize = new daum.maps.Size(35, 35), // 마커이미지의 크기입니다
+
+        var peerTransparentImageSrc = 'assets/images/marker/marker_avatar_transparent.png'; // 마커이미지의 주소입니다  
+        var peerTransparentImageSize = new daum.maps.Size(35, 35), // 마커이미지의 크기입니다
             peerTransparentImageOption = {offset: new daum.maps.Point(21, 18)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
         // 투명 avatar 마커 이미지 생성
         var peerTransparentMarkerImage = new daum.maps.MarkerImage(peerTransparentImageSrc, peerTransparentImageSize, peerTransparentImageOption);
@@ -2202,9 +2203,16 @@
             for (var value in peerLocation.peer.active){
                 var tempUser = peerLocation.peer.active[value];
                 //lat, lng, name, nickname,profileImgPath, memSeq, checked exists
-
+                var peerContent;
                 if(tempUser.checked == true){
-                    var peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
+                    var imagefilecheck = new Image;
+                    imagefilecheck.src = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
+                    if(!imagefilecheck.complete){
+                        peerContent = '<div><img class="avatar" src="assets/images/avatars/profile.jpg"</img></div>';
+                    }
+                    else{
+                        peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
+                    }
                     var peerPosition = new daum.maps.LatLng(tempUser.lat, tempUser.lng);
                     var peerCustomOverlay = new daum.maps.CustomOverlay({
                         position: peerPosition,
