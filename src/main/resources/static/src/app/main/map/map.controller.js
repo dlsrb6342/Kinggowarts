@@ -1097,7 +1097,7 @@
             });
         };
 
-        function MarkerDialogController($scope, $mdDialog, $sce) {
+        function MarkerDialogController($scope, $mdDialog) {
             //$scope.data = selectedMarker.getTitle();
             $scope.data = vm.markerData[vm.categoryStatus][selectedMarkerIdx];
             $scope.hide = function() {
@@ -1108,13 +1108,6 @@
             };
             $scope.answer = function(answer) {
                 $mdDialog.hide(answer);
-            };
-            $scope.movewiki = function(){
-                $scope.cancel();
-                $state.go('app.wiki');
-            };
-            $scope.getUrl = function () {
-                return $sce.trustAsResourceUrl($rootScope.wikipath);
             };
         }
 
@@ -1739,8 +1732,6 @@
                     vm.openMapDialog();
                 }
                 else{
-                    vm.clickUrl =  '../xwiki/bin/view/XWiki/' + vm.markerData[vm.categoryStatus][selectedMarkerIdx]["name"];
-                    $rootScope.wikipath = vm.clickUrl;
                     showMarkerDialog();
                 }
             });
@@ -2152,8 +2143,9 @@
     //----------------------------------친구 위치 맵에 올리기-----------------------------------------
     
         var arrIdx = 0;                         //peerCustomOverlay[]의 index
-        var peerTransparentImageSrc = 'assets/images/marker/marker_avatar_transparent.png', // 마커이미지의 주소입니다    
-            peerTransparentImageSize = new daum.maps.Size(35, 35), // 마커이미지의 크기입니다
+
+        var peerTransparentImageSrc = 'assets/images/marker/marker_avatar_transparent.png'; // 마커이미지의 주소입니다  
+        var peerTransparentImageSize = new daum.maps.Size(35, 35), // 마커이미지의 크기입니다
             peerTransparentImageOption = {offset: new daum.maps.Point(21, 18)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
         // 투명 avatar 마커 이미지 생성
         var peerTransparentMarkerImage = new daum.maps.MarkerImage(peerTransparentImageSrc, peerTransparentImageSize, peerTransparentImageOption);
@@ -2202,9 +2194,16 @@
             for (var value in peerLocation.peer.active){
                 var tempUser = peerLocation.peer.active[value];
                 //lat, lng, name, nickname,profileImgPath, memSeq, checked exists
-
+                var peerContent;
                 if(tempUser.checked == true){
-                    var peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
+                    var imagefilecheck = new Image;
+                    imagefilecheck.src = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
+                    if(!imagefilecheck.complete){
+                        peerContent = '<div><img class="avatar" src="assets/images/avatars/profile.jpg"</img></div>';
+                    }
+                    else{
+                        peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '"' + '</img></div>';
+                    }
                     var peerPosition = new daum.maps.LatLng(tempUser.lat, tempUser.lng);
                     var peerCustomOverlay = new daum.maps.CustomOverlay({
                         position: peerPosition,
