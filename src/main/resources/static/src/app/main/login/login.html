@@ -27,15 +27,6 @@
                     </div>
                 </md-input-container>
 
-                <div class="remember-forgot-password" layout="row" layout-xs="column"
-                     layout-align="space-between center">
-                    <md-checkbox class="remember-me" ng-model="data.cb1" aria-label="Remember Me">
-                        <span>Remember Me</span>
-                    </md-checkbox>
-
-                    <a ui-sref="app.pages_auth_forgot-password" class="forgot-password md-accent-color">비밀번호 찾기</a>
-                </div>
-
                 <md-button type="submit" class="md-raised md-accent submit-button" aria-label="LOG IN"
                            ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="vm.loginfun(loginForm.email.$viewValue,loginForm.password.$viewValue)">
                     LOG IN
