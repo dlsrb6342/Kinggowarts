@@ -11,27 +11,14 @@
             // Core
             'app.core',
 
-            // Toolbar
-            'app.toolbar',
-
-            // Quick Panel
-            'app.quick-panel',
-
-            //daum map module
-            'app.map',
-
-            //wiki module
-            'app.wiki',
-
-            //notice module
-            'app.notice',
+            // main module
+            'app.main',
 
             //login module
             'app.login',
 
             //register module
             'app.register',
-
 
             // Common 3rd-party engine
             'swxSessionStorage'

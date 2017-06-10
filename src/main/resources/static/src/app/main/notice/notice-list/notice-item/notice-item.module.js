@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.notice.list.item',
+        .module('app.main.notice.list.item',
             [
                 // 3rd Party Dependencies
                 'datatables'
@@ -16,10 +16,10 @@
     {
         // State
         $stateProvider
-            .state('app.notice.list.item', {
+            .state('app.main.notice.list.item', {
                 url    : '/:id',
                 views  : {
-                    'notice-item@app.notice.list': {
+                    'notice-item@app.main.notice.list': {
                         templateUrl: 'app/main/notice/notice-list/notice-item/notice-item.html',
                         controller : 'NoticeItemController as vm'
                     }

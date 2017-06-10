@@ -3,18 +3,16 @@
     'use strict';
 
     angular
-        .module('app.notice.list')
+        .module('app.main.notice.list')
         .controller('NoticeListController', NoticeListController);
 
     /** @ngInject */
-    function NoticeListController(NoticeListData, $mdSidenav, $state, $stateParams, $window)
+    function NoticeListController(NoticeListData, NoticeCategoryData, $mdSidenav, $state, $stateParams, $window)
     {
         var vm = this;
 
         // data
-        vm.title = $stateParams.title;
         vm.noticeList = NoticeListData.data;
-
 
         var oLanguage = {
             sSearch: '검색 : ',
@@ -31,19 +29,13 @@
                 sPrevious: '이전'
             }                   
         };
-        switch($stateParams.title){
-            case 'skku' :
-                vm.title = '성균관대학교';
+
+        // 제목 카테고리 데이터에서 읽어서 한글 이름으로 설정.
+        for (var i in NoticeCategoryData.data){
+            if(NoticeCategoryData.data[i].name == $stateParams.category){
+                vm.title = NoticeCategoryData.data[i].korean_name;
                 break;
-            case 'facebook' :
-                vm.title = 'Facebook';
-                break;
-            case 'computer-science' :
-                vm.title = '소프트웨어대학';
-                break;
-            default :
-                vm.title = '성균관대학교';
-                break;
+            }
         }
 
         if($window.innerWidth > 450){

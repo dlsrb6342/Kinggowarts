@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.notice.navigation')
+        .module('app.main.notice.navigation')
         .controller('NoticeNavigationController', NoticeNavigationController);
 
     /** @ngInject */

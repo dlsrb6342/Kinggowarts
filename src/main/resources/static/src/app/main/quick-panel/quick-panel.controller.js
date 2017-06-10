@@ -3,31 +3,38 @@
     'use strict';
 
     angular
-        .module('app.quick-panel')
+        .module('app.main.quick-panel')
         .controller('QuickPanelController', QuickPanelController);
 
     /** @ngInject */
-    function QuickPanelController(peerLocation, PeerData, RequestData, RecentwikiData, $http, $rootScope, $state, $sessionStorage, $httpParamSerializerJQLike, SkkuData, CsData, FbData, mapLocation, $scope)
+    function QuickPanelController(
+        // 데이터
+        TimelineData, 
+        PeerData, 
+        RequestData, 
+        RecentwikiData, 
+        NoticeCategoryData,
+
+        // 모듈
+        $http,     
+        $httpParamSerializerJQLike, 
+        $rootScope, 
+        $scope,
+        $state, 
+        $sessionStorage, 
+
+        // 서비스
+        mapLocation, 
+        peerLocation
+        )
     {
         var vm = this;
 
         vm.peer = PeerData.data;
         vm.request = RequestData.data;
         vm.recentwiki = RecentwikiData.data.searchResults;
-
-        vm.timeline = {
-            currenttimeline : "skku",
-            range : {
-                skku : "학교",
-                cs : "소프트웨어대학",
-                fb : "페이스북"
-            },
-            notitime : {
-                skku : SkkuData.data,
-                cs : CsData.data,
-                fb : FbData.data
-            }
-        };
+        vm.timelineList = TimelineData;
+        vm.notice_category = NoticeCategoryData.data;
 
         vm.peerlist = {
             checklist : [],
@@ -64,8 +71,6 @@
 
         vm.defaultimg = "./assets/images/avatars/profile.jpg";
 
-        var today = new Date();
-
         $scope.$watch(
             function watchEvent(scope){
                 return(mapLocation.userCord);
@@ -93,21 +98,36 @@
                 }
             }, true);
 
-        
-        vm.findtimelinelocation = function (locid) {
-            //구역 ID로 이동
-            if(locid != 0 && locid != undefined){
-                peerLocation.eventlocation.l_id = locid;
-                peerLocation.eventlocation.cnt++;
+
+        vm.gotoTimelineNotice = function (timelineId, timelineCategory) {
+            //해당 글로 이동
+            if(timelineId != 0 && timelineId != undefined){
+                $state.go('app.main.notice.list.item', { category : timelineCategory, id : timelineId});
             }
+        };
+        
+        vm.gotoTimelineLocation = function (location) {
+            console.log(location);
+            //구역 ID로 이동
+            if(location.id != 0 && location.id != undefined){
+                mapLocation.lastLat = location.center.lat;
+                mapLocation.lastLng = location.center.lng;
+                mapLocation.searchResult.lat = location.center.lat;
+                mapLocation.searchResult.lng = location.center.lng;
+                mapLocation.searchResult.type = 'map';
+                mapLocation.searchResult.id = location.id;
+                mapLocation.searchResult.cnt++;
+                $state.go('app.main.map');
+            }
+            $state.go('app.main.map');
         };
 
         function init()
         {
             vm.peerinit();
             vm.getWikiLink();
-            getnotice();
         };
+
         
         //최근 wiki 수정항목의 주소를 가져오는 함수
         vm.getWikiLink = function () 
@@ -118,22 +138,6 @@
                 obj.Title = vm.recentwiki[i].title;
                 obj.Link = '../xwiki/bin/view/XWiki/' + obj.Title;
                 vm.wikihistory.Link.push(obj);
-            }
-        };
-
-        //notice의 시간을 계산하는 함수
-        function getnotice()
-        {
-            var curt = today.getTime();
-
-            for (var category in vm.timeline.notitime){
-
-                for (var value in vm.timeline.notitime[category].content){
-
-                    vm.timeline.notitime[category].content[value].time = (curt - vm.timeline.notitime[category].content[value].time) / 86400000;
-                    if(vm.timeline.notitime[category].content[value].time < 1) vm.timeline.notitime[category].content[value].time = "오늘";
-                    else vm.timeline.notitime[category].content[value].time = parseInt(vm.timeline.notitime[category].content[value].time) + "일전";
-                }
             }
         };
 
@@ -168,13 +172,13 @@
 
             $rootScope.wikipath=wikilink;
 
-            if($state.includes('app.wiki') == true)
+            if($state.includes('app.main.wiki') == true)
             {
                 $state.reload();
             }
             else
             {
-                $state.go('app.wiki');
+                $state.go('app.main.wiki');
             }
             
         };
@@ -245,12 +249,11 @@
         //유저들에 대한 정보를 가져와서 보여주는 함수
         vm.finduser = function(){
 
-            var nickname = document.getElementById("nickname").value;
             var showsearch = document.getElementById("showsearchresult");
 
             $http({
                 method : 'GET',
-                url : './api/member/search?q='+nickname,
+                url : './api/member/search?q='+vm.searchNickname,
                 headers: {'x-auth-token' : $sessionStorage.get('AuthToken')}
             }).then(function successCallback(response){
 

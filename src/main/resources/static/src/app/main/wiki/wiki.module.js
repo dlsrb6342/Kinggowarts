@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.wiki', [])
+        .module('app.main.wiki', [])
         .config(config);
 
     /** @ngInject */
@@ -11,10 +11,10 @@
     {
         // State
         $stateProvider
-            .state('app.wiki', {
+            .state('app.main.wiki', {
                 url    : '/wiki',
                 views  : {
-                    'content@app': {
+                    'content@app.main': {
                         templateUrl: 'app/main/wiki/wiki.html',
                         controller : 'WikiController as vm'
                     }

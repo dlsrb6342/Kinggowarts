@@ -63,7 +63,7 @@
                                 <tr ng-repeat="item in ::vm.noticeList">
                                     <td>{{ $index + 1 }}</td>
                                     <!-- <td ng-click="vm.openNoticeItem(item.id)">{{ item.title }}</td> -->
-                                    <td><a class="md-primary" ui-sref="app.notice.list.item({id : {{item.id}}})" ui-sref-active="md-accent">{{ item.title }}</a></td>
+                                    <td><a class="md-primary" ui-sref="app.main.notice.list.item({id : {{item.id}}})" ui-sref-active="md-accent">{{ item.title }}</a></td>
                                     <td hide-xs>{{ item.time | date:'yyyy-MM-dd' }}</td>
                                     <td hide-xs>
                                         <div ng-if="item.location.id != 0">{{ item.location.name }}</div>

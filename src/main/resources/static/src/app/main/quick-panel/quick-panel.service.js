@@ -11,7 +11,6 @@
     {
         var service = this;
         service.peer = '';
-        service.eventlocation = {'l_id' : 1, 'cnt' : 0};
     }
 
 })();

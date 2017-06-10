@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.map', ['ngMaterial', 'ngMessages'])
+        .module('app.main.map', ['ngMaterial', 'ngMessages'])
         .config(config);
 
     /** @ngInject */
@@ -11,10 +11,10 @@
     {
         // State
         $stateProvider
-            .state('app.map', {
+            .state('app.main.map', {
                 url    : '/map',
                 views  : {
-                    'content@app': {
+                    'content@app.main': {
                         templateUrl: 'app/main/map/map.html',
                         controller : 'MapController as vm'
                     }

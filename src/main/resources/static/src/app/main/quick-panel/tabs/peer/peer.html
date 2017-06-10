@@ -22,7 +22,7 @@
 <div id = "showpeerlistcontainer">
     <md-list-item class="contact" ng-repeat="contact in vm.peerlist.peer[vm.peerlist.currentlocation]">
 
-            <img ng-src="{{contact.profileImgPath}}" class="md-avatar"/>
+            <img ng-src="{{contact.profileImgPath}}" onerror="this.src='assets/images/avatars/profile.jpg'" class="md-avatar"/>
 
             <div class="md-list-item-text" style="margin-bottom: 10px;">
                 <h3>{{contact.nickname}}</h3>

@@ -3,13 +3,13 @@
     'use strict';
 
     angular
-        .module('app.notice', [
+        .module('app.main.notice', [
 
             // Navigation
-            'app.notice.navigation',
+            'app.main.notice.navigation',
 
             // Content
-            'app.notice.list'
+            'app.main.notice.list'
 
             ])
         .config(config);
@@ -19,15 +19,15 @@
     {
         // State
         $stateProvider
-            .state('app.notice', {
+            .state('app.main.notice', {
                 abstract: true,
                 url    : '/notice',
                 views  : {
-                    'content@app': {
+                    'content@app.main': {
                         templateUrl: 'app/main/notice/notice.html',
                         controller : 'NoticeController as vm'
                     },
-                    'notice-navigation@app.notice': {
+                    'notice-navigation@app.main.notice': {
                         templateUrl: 'app/main/notice/notice-navigation/notice-navigation.html',
                         controller : 'NoticeNavigationController as vm'
                     }
