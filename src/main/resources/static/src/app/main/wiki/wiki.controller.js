@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.wiki')
+        .module('app.main.wiki')
         .controller('WikiController', WikiController);
 
     /** @ngInject */

@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.toolbar')
+        .module('app.main.toolbar')
         .controller('ToolbarController', ToolbarController);
 
     /** @ngInject */
@@ -164,7 +164,7 @@
                 mapLocation.searchResult.type = 'map';
                 mapLocation.searchResult.id = item.id;
                 mapLocation.searchResult.cnt++;
-                $state.go('app.map');
+                $state.go('app.main.map');
             }
             else if ("markerCategory" in item){
                 //console.log('marker!');
@@ -175,19 +175,15 @@
                 mapLocation.searchResult.type = item.markerCategory.name;
                 mapLocation.searchResult.id = item.id;
                 mapLocation.searchResult.cnt++;
-                $state.go('app.map');
+                $state.go('app.main.map');
             }
             else {
                 //console.log('event!');
-                //mapLocation.lastLat = item.creator.lat;
-                //mapLocation.lastLng = item.creator.lng;   creator 속성이 제거되었습니다.
-                //mapLocation.searchResult.lat = item.creator.lat;
-                //mapLocation.searchResult.lng = item.creator.lng;
                 mapLocation.searchResult.type = 'event';
                 mapLocation.searchResult.id = item.id;
                 mapLocation.searchResult.l_id = item.l_id;
                 mapLocation.searchResult.cnt++;
-                $state.go('app.map');
+                $state.go('app.main.map');
             }
         }
 
@@ -196,7 +192,7 @@
             $mdDialog.show({
                 controller         : 'ProfileDialogController',
                 controllerAs       : 'vm',
-                templateUrl        : 'app/toolbar/dialog/profile-dialog.html',
+                templateUrl        : 'app/main/toolbar/dialog/profile-dialog.html',
                 parent             : angular.element($document.find('#content-container')),
                 targetEvent        : ev,
                 clickOutsideToClose: true

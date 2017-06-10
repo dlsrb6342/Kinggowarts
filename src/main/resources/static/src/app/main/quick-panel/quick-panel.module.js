@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.quick-panel', [])
+        .module('app.main.quick-panel', [])
         .config(config);
 
     /** @ngInject */

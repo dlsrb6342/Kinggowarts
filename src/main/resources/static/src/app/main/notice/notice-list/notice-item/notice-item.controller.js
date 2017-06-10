@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.notice.list.item')
+        .module('app.main.notice.list.item')
         .controller('NoticeItemController', NoticeItemController);
 
     /** @ngInject */
@@ -31,7 +31,7 @@
             mapLocation.searchResult.lng = vm.noticeItem.location.center.lng;
             mapLocation.searchResult.type = 'map';
             mapLocation.searchResult.id = vm.noticeItem.location.id;
-            $state.go('app.map');
+            $state.go('app.main.map');
         } 
 
         init();

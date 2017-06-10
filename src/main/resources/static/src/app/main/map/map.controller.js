@@ -4,7 +4,7 @@
 
 
     angular
-        .module('app.map')
+        .module('app.main.map')
         .controller('MapController', MapController);
 
 
@@ -129,7 +129,7 @@
             var userval = $sessionStorage.get('useremail');
             if(userval == undefined){
                 alert('로그인 되어 있지 않거나 세션 유효기간이 끝나 로그아웃 되었습니다.');
-                $state.go('login');
+                $state.go('app.login');
             }
         };
         usercheck();
@@ -1111,7 +1111,7 @@
             };
             $scope.movewiki = function(){
                   $scope.cancel();
-                  $state.go('app.wiki');
+                  $state.go('app.main.wiki');
             };
             $scope.getUrl = function () {
                 return $sce.trustAsResourceUrl($rootScope.wikipath);
@@ -1947,29 +1947,6 @@
             }
         };
 
-        
-
-//퀵패널 timeline에서 위치 클릭할 경우 그 위치로 지도가 이동합니다. 구역 중심 좌표가 나중에 생기면 그 좌표로 이동하면 될 것 같습니다.
-
-        $scope.$watch(
-            function watchEvent(){
-                return(peerLocation.eventlocation);
-            },
-            function handleEvent(newValue, oldValue){
-                console.log(peerLocation.eventlocation);
-                if(peerLocation.eventlocation.cnt != 0){
-                    var resultIdx = -1;
-                    resultIdx = searchIdxWithId("regions", peerLocation.eventlocation.l_id);
-                        if(resultIdx == -1){
-                            alert('맵상에서 검색 결과와 일치하는 결과물을 찾을 수 없습니다.');
-                            return;
-                        }
-                    map.setLevel(1);
-                    map.panTo(new daum.maps.LatLng(vm.markerData["regions"][resultIdx]["center"]["lat"], vm.markerData["regions"][resultIdx]["center"]["lng"]));
-                }
-                
-            }, true);
-
         //Search watch
         
         $scope.$watch(
@@ -1977,7 +1954,7 @@
                 return(mapLocation.searchResult);
             },
             function (newValue, oldValue){
-                console.log(mapLocation.searchResult);
+                // console.log(mapLocation.searchResult);
                 if(map != null && mapLocation.searchResult["type"] != ""){
                     var resultIdx = -1;
                     
@@ -2122,13 +2099,13 @@
                 $mdDialog.cancel();
                 $rootScope.wikipath = vm.clickUrl;
  
-                if($state.includes('app.wiki') == true)
+                if($state.includes('app.main.wiki') == true)
                 {
                     $state.reload();
                 }
                 else
                 {
-                    $state.go('app.wiki');
+                    $state.go('app.main.wiki');
                 }
             };
             $scope.cancel = function() {
@@ -2203,9 +2180,10 @@
             for (var value in peerLocation.peer.active){
                 var tempUser = peerLocation.peer.active[value];
                 //lat, lng, name, nickname,profileImgPath, memSeq, checked exists
+                //console.log(peerLocation.peer);
                 var peerContent;
                 if(tempUser.checked == true){
-                    peerContent = '<div><img class="avatar" src="' + tempUser["profileImgPath"] + '" ' + 'onerror="this.src=\'assets/images/avatars/profile.jpg\'"></img></div>';
+                    var peerContent = '<div><img class="avatar mh-0" src="' + tempUser["profileImgPath"] + '" ' + 'onerror="this.src=\'assets/images/avatars/profile.jpg\'"></img>' +'<p style="text-align: center" class="mv-0">'+ tempUser["name"] +'</p></div>';
                     var peerPosition = new daum.maps.LatLng(tempUser.lat, tempUser.lng);
                     var peerCustomOverlay = new daum.maps.CustomOverlay({
                         position: peerPosition,
@@ -2229,9 +2207,9 @@
         }
 
         vm.peerOnMapFunciton = function(){
-            console.log(peerLocation.peer);
+            // console.log(peerLocation.peer);
             //remove all peers on map
-            console.log(peerLocation.peer.active);
+            // console.log(peerLocation.peer.active);
             for(var value = 0; value < arrIdx; ++value){
                 peerOnMapCustomOverlays[value].setMap(null);
                 peerOnMapTransparnetMarkers[value].setMap(null);
@@ -2390,7 +2368,7 @@
         }
 
         function PostCustomEventData(inData){
-            console.log(inData);
+            // console.log(inData);
             if(inData["l_id"] < 1){
                 console.log("l_id error");
                 return;

@@ -11,11 +11,11 @@
     {
         // State
         $stateProvider
-            .state('login', {
+            .state('app.login', {
                 url      : '/login?auth',
                 views    : {
                     'main@' : {
-                        templateUrl: 'app/main/login/login.html',
+                        templateUrl: 'app/login/login.html',
                         controller : 'LoginController as vm'
                     }
                 }

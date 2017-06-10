@@ -16,11 +16,11 @@
         if($stateParams.auth == 'true'){
             alert('인증이 완료되었습니다.');
         }
-        $sessionStorage.empty();
-        $http({
-                    method : 'GET',
-                    url : '../xwiki/bin/logout/XWiki/XWikiLogout'
-                })
+        //$sessionStorage.empty();
+        // $http({
+        //             method : 'GET',
+        //             url : '../xwiki/bin/logout/XWiki/XWikiLogout'
+        //         })
 
         vm.isdisabled = false;
 
@@ -55,7 +55,7 @@
                         headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
                     }).then(function successCallback(response){
 
-                        $state.go('app.map');
+                        $state.go('app.main.map');
 
                     }, function errorCallback(response) {
                         vm.isdisabled = false;

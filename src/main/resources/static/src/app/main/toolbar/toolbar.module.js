@@ -3,7 +3,7 @@
     'use strict';
 
     angular
-        .module('app.toolbar', [
+        .module('app.main.toolbar', [
         	'flow'
         	])
         .config(config);

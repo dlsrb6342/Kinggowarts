@@ -13,12 +13,12 @@
         // State
         
         $stateProvider
-            .state('register', {
+            .state('app.register', {
                 url: '/register',
                 views: {
                     
                     'main@' : {
-                        templateUrl: 'app/main/register/register.html',
+                        templateUrl: 'app/register/register.html',
                         controller: 'RegisterController as vm'
                     }
                     
