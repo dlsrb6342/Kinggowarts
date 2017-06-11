@@ -28,10 +28,10 @@ public class NoticeService {
     }
 
     Page<Notice> findAllByCategory(String category, Pageable pageable){
-        return noticeDao.findAllByCategory_Name(category, pageable);
+        return noticeDao.findAllByCategory_NameOrderByTimeDesc(category, pageable);
     }
     List<Notice> findAllByCategory(String category){
-        return noticeDao.findAllByCategory_Name(category);
+        return noticeDao.findAllByCategory_NameOrderByTimeDesc(category);
     }
 
     List<Notice> searchNotice(String q){
