@@ -77,7 +77,7 @@
                           .ok('확인')
                           .targetEvent(ev)
                       );
-                      $state.go('login');
+                      $state.go('app.login');
                     }
                 }, function errorCallback(response) {
                     //console.log(response);

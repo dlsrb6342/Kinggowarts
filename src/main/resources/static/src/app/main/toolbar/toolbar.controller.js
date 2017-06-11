@@ -89,7 +89,12 @@
          */
         function logout()
         {
-            $state.go('login');
+            $sessionStorage.empty();
+            $http({
+                method : 'GET',
+                url : '../xwiki/bin/logout/XWiki/XWikiLogout'
+            })
+            $state.go('app.login');
         }
 
         /**
@@ -153,7 +158,7 @@
             if ("contents" in item)
             {
                 //console.log('notice!');
-                $state.go('app.notice.list.item', { title : item.category.name, id : item.id});
+                $state.go('app.main.notice.list.item', { title : item.category.name, id : item.id});
             }
             else if ("shape" in item){
                 //console.log('map!');

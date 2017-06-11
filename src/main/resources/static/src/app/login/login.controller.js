@@ -50,7 +50,7 @@
 
                     $http({
                         method : 'GET',
-                        url : './xwiki/bin/login/',
+                        url : '../xwiki/bin/login/',
                         withCredentials: true,
                         headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
                     }).then(function successCallback(response){
