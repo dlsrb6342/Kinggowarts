@@ -1,4 +1,4 @@
-<div id="map" style="width:100%;height:100%;"></div>
+<div id="nmap" style="width:100%;height:100%;"></div>
 
 <!-- new hover category select icon -->
 
@@ -13,7 +13,7 @@
   <md-fab-actions>
     <div ng-repeat="item in vm.currentCategoryData | limitTo:vm.limitNum track by $index">
       <md-button class="md-fab md-raised md-mini" ng-click="vm.categorySelect(item.type)">
-        <md-tooltip md-direction="left" md-visible="vm.tooltipVisible" md-autohide="true">
+        <md-tooltip md-direction="left">
           {{item.name}}
         </md-tooltip>
 
@@ -22,7 +22,7 @@
     </div>
     <div>
       <md-button ng-if="vm.nextCat == true" class="md-fab md-raised md-mini" ng-click="vm.categorySelect('NEXT')">
-        <md-tooltip md-direction="left" md-visible="vm.tooltipVisible" md-autohide="true">
+        <md-tooltip md-direction="left">
           Next
         </md-tooltip>
         <md-icon md-font-icon="icon-skip-next"></md-icon>

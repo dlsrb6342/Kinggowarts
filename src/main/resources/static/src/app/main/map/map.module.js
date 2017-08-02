@@ -18,8 +18,13 @@
                         templateUrl: 'app/main/map/map.html',
                         controller : 'MapController as vm'
                     }
-                },
+                },                
                 resolve: {
+                    MarkerData: function (msApi)
+                    {
+                        return msApi.resolve('marker@get');
+                    },
+                    /*
                     MPrinter: function($http, $sessionStorage){
                         return $http({
                             method: 'GET',
@@ -82,7 +87,7 @@
                             url: './api/marker?q=정류장',
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
                         });
-                    },
+                    },*/
                     
                     /*MarkerData: function ($q, msApi, $http, $sessionStorage)
                     {
@@ -127,10 +132,11 @@
                         return $q.all([prom[0], prom[1], prom[2], prom[3], prom[4], prom[5], prom[6]]);
                         
                     },*/
-                    CategoryMarkerData: function(msApi)
+                    CategoryMenuData: function(msApi)
                     {
-                        return msApi.resolve('categoryMarker@get');
+                        return msApi.resolve('categoryMenu@get');
                     },
+                    /*
                     AreaAdmin: function(msApi, $http, $sessionStorage)
                     {
                         return $http({
@@ -146,11 +152,12 @@
                             url: './api/map?type=user',
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
                         });
-                    },
+                    },*/
                     DrawingMenuData: function(msApi)
                     {
                         return msApi.resolve('drawingMenu@get');
                     },
+                    /*
                     CustomEventData: function(msApi, $http, $sessionStorage)
                     {
                         //return msApi.resolve('customEvent@get');
@@ -159,7 +166,7 @@
                             url: './api/event',
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
                         });
-                    },
+                    },*/
                     CategoryTypes: function(msApi)
                     {
                         return msApi.resolve('categoryTypes@get');
@@ -169,10 +176,11 @@
             });
 
         // Api
+
         msApiProvider.register('customEvent', ['app/data/map/customEvent.json']);
         msApiProvider.register('marker', ['app/data/map/marker.json']);
         msApiProvider.register('categoryTypes', ['app/data/map/categoryTypes.json']);
-        msApiProvider.register('categoryMarker', ['app/data/map/categoryMarker.json']);
+        msApiProvider.register('categoryMenu', ['app/data/map/categoryMenu.json']);
         msApiProvider.register('drawingMenu', ['app/data/map/drawingMenu.json']);
         
     }
