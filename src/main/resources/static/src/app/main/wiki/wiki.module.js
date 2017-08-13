@@ -1,3 +1,15 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/main/wiki/wiki.module.js
+*  Author     : underkoo
+*  Description: wiki 모듈 정의
+*******************************************************/
+
 (function ()
 {
     'use strict';
@@ -7,9 +19,12 @@
         .config(config);
 
     /** @ngInject */
-    function config($stateProvider, $translatePartialLoaderProvider, msApiProvider, msNavigationServiceProvider)
+    function config(
+        /* 모듈 */
+        $stateProvider, 
+        $translatePartialLoaderProvider)
     {
-        // State
+        /* state 정의 */
         $stateProvider
             .state('app.main.wiki', {
                 url    : '/wiki',

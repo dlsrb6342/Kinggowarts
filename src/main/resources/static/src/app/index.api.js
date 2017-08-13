@@ -1,9 +1,22 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/index.api.js
+*  Author     : underkoo
+*  Description: 공용 api service
+*******************************************************/
+
+
 (function ()
 {
     'use strict';
 
     angular
-        .module('fuse')
+        .module('kinggowarts')
         .factory('api', apiService);
 
     /** @ngInject */

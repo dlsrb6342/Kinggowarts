@@ -1,3 +1,15 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/main/main.module.js
+*  Author     : underkoo
+*  Description: main 모듈 정의
+*******************************************************/
+
 (function ()
 {
     'use strict';
@@ -5,27 +17,25 @@
     angular
         .module('app.main', [
 
-            // Toolbar
-            'app.main.toolbar',
+            'app.main.toolbar', // Toolbar
 
-            // Quick Panel
-            'app.main.quick-panel',
+            'app.main.quick-panel', // Quick Panel
+            
+            'app.main.map', // map module
 
-            //daum map module
-            'app.main.map',
-
-            //wiki module
-            'app.main.wiki',
-
-            //notice module
-            'app.main.notice',
+            'app.main.wiki', //wiki module
+        
+            'app.main.notice', //notice module
 
             ])
         .config(config);
 
     /** @ngInject */
-    function config($stateProvider)
+    function config(
+        /* 모듈 */
+        $stateProvider)
     {
+        /* state 정의 */
         $stateProvider
             .state('app.main', {
                 abstract: true,
