@@ -17,10 +17,10 @@ public class NoticeService {
     private NoticeSearchRepository noticeSearchDao;
 
     Page<Notice> findAll(Pageable pageable){
-        return noticeDao.findAll(pageable);
+        return noticeDao.findAllByOrderByTimeAsc(pageable);
     }
     List<Notice> findAll() {
-        return noticeDao.findAllByOrderByIdDesc();
+        return noticeDao.findAllByOrderByTimeAsc();
     }
 
     Notice findById(long id) {
@@ -28,13 +28,13 @@ public class NoticeService {
     }
 
     Page<Notice> findAllByCategory(String category, Pageable pageable){
-        return noticeDao.findAllByCategory_Name(category, pageable);
+        return noticeDao.findAllByCategory_NameOrderByTimeDesc(category, pageable);
     }
     List<Notice> findAllByCategory(String category){
-        return noticeDao.findAllByCategory_Name(category);
+        return noticeDao.findAllByCategory_NameOrderByTimeAsc(category);
     }
 
     List<Notice> searchNotice(String q){
-        return noticeSearchDao.findAllByContentsContainsOrTitleContainsOrderByTimeDesc(q, q);
+        return noticeSearchDao.findAllByContentsContainsOrTitleContainsOrderByTimeAsc(q, q);
     }
 }
