@@ -1,3 +1,15 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/main/toolbar/dialog/profile-dialog.controller.js
+*  Author     : underkoo
+*  Description: 툴바의 profile 관리 dialog 모듈 컨트롤러
+*******************************************************/
+
 (function ()
 {
     'use strict';
@@ -7,25 +19,25 @@
         .controller('ProfileDialogController', ProfileDialogController);
 
     /** @ngInject */
-    function ProfileDialogController($http, $httpParamSerializerJQLike, $mdDialog, $sessionStorage, profileImageFactory)
+    function ProfileDialogController(
+      /* 모듈 */
+      $http, 
+      $httpParamSerializerJQLike, 
+      $mdDialog, 
+      $sessionStorage, 
+
+      /* 서비스 */
+      profileImageFactory)
     {
+        /* Data */
         var vm = this;
 
-        // Data
+        /* 초기화 */
         vm.allFields = false;
         vm.profile = {};
         vm.profile.nickname = $sessionStorage.get('nickname');
         vm.profile.profileImg = profileImageFactory;
-        //console.log(profileImageFactory);
-
-        // Methods
-        vm.init = init();
-        vm.saveProfile = saveProfile;
-        vm.closeDialog = closeDialog;
-        vm.fileAdded = fileAdded;
-        vm.upload = upload;
-        vm.fileSuccess = fileSuccess;
-
+        
         function init(){
 
             vm.ngFlowOptions = {
@@ -43,10 +55,12 @@
             vm.dropping = false;
         }
 
-        /**
-         * Save contact
-         */
-        function saveProfile()
+        init();
+
+        /* Methods */
+        /**********************************************************************//**
+        입력된 프로필 저장. */
+        vm.saveProfile = function ()
         {
             if(vm.profile.newPassword != vm.profile.newPasswordConfirm){
               alert('비밀번호 확인이 일치하지 않습니다.');
@@ -80,24 +94,24 @@
             }
         }
 
-        /**
-         * Close dialog
-         */
-        function closeDialog()
+        /**********************************************************************//**
+        dialog 종료. */
+        vm.closeDialog = function ()
         {
             $mdDialog.hide();
         }
 
-        function fileAdded(file)
+        /**********************************************************************//**
+        파일 추가됨. */
+        vm.fileAdded = function (
+          file) // 추가된 파일
         {
             //console.log(file);
         }
 
-        /**
-         * Upload
-         * Automatically triggers when files added to the uploader
-         */
-        function upload()
+        /**********************************************************************//**
+        파일 자동 업로드 */
+        vm.upload = function ()
         {
             // Set headers
             vm.ngFlow.flow.opts.headers = {
@@ -109,14 +123,11 @@
             vm.ngFlow.flow.upload();
         }
 
-        /**
-         * File upload success callback
-         * Triggers when single upload completed
-         *
-         * @param file
-         * @param message
-         */
-        function fileSuccess(file, message)
+        /**********************************************************************//**
+        파일 업로드 성공시 콜백 */
+        vm.fileSuccess = function (
+          file, // 업로드한 파일
+          message) // return 메세지
         {
             //console.log(message);
             if(message != 'error'){

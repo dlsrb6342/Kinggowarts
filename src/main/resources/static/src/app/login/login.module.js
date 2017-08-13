@@ -1,3 +1,16 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/login/login.module.js
+*  Author     : underkoo
+*  Description: login 모듈 정의
+*******************************************************/
+
+
 (function ()
 {
     'use strict';
@@ -7,9 +20,11 @@
         .config(config);
 
     /** @ngInject */
-    function config($stateProvider, $translatePartialLoaderProvider, msNavigationServiceProvider)
+    function config(
+        /* 모듈 */
+        $stateProvider)
     {
-        // State
+        /* state 정의 */
         $stateProvider
             .state('app.login', {
                 url      : '/login?auth',

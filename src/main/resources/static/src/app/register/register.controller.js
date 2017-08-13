@@ -1,3 +1,16 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/register/register.controller.js
+*  Author     : underkoo
+*  Description: register 컨트롤러
+*******************************************************/
+
+
 (function ()
 {
     'use strict';
@@ -7,25 +20,36 @@
         .controller('RegisterController', RegisterController);
 
     /** @ngInject */
-    function RegisterController($document, $state, $http, $httpParamSerializerJQLike, $mdDialog, $rootScope)
+    function RegisterController(
+      /* 모듈 */
+      $document, 
+      $http, 
+      $httpParamSerializerJQLike, 
+      $mdDialog, 
+      $rootScope, 
+      $state)
     {
-        // Data
         var vm = this;
      
+        /* Data */
         vm.form = {};
+
+        /* 초기화 */
+        $rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
         
-        // Methods
-       
-        vm.submitForm = submitForm;
-        
-        $rootScope.$broadcast('msSplashScreen::remove');
-        
-        //register function
-	    function submitForm (ev) {
-            if(vm.form.passWd != vm.form.passWdConfirm){
+        /* Methods */
+        /**********************************************************************//**
+        회원가입 버튼을 클릭했을 때 폼의 내용을 전송. */
+	      vm.submitForm = function (
+          ev) // 현재 이벤트
+        {
+            /* 비밀번호 확인 일치하지 않을 때 */
+            if(vm.form.passWd != vm.form.passWdConfirm)
+            {
                 alert('비밀번호 확인이 일치하지 않습니다.');
             }
-            else {
+            else 
+            {
                 $http({
                     method : 'POST',
                     url : './api/member/signup',
@@ -38,11 +62,15 @@
                     headers: {
                       'Content-Type' : 'application/x-www-form-urlencoded'
                     },
-                    transformResponse: [function (data) {
+                    transformResponse: [function (data) 
+                    {
                         return data;
                     }]
-                }).then(function successCallback(response){
-                    if(response.data == "duplicateId"){
+                }).then(function successCallback(response)
+                {
+                    /* ID가 중복된 경우 */
+                    if (response.data == "duplicateId")
+                    {
                       $mdDialog.show(
                         $mdDialog.alert()
                           .parent(angular.element($document.find('#content-container')))
@@ -54,7 +82,9 @@
                           .targetEvent(ev)
                       );
                     }
-                    else if (response.data == "duplicateNickName"){
+                    /* 닉네임이 중복된 경우 */
+                    else if (response.data == "duplicateNickName")
+                    {
                       $mdDialog.show(
                         $mdDialog.alert()
                           .parent(angular.element($document.find('#content-container')))
@@ -66,7 +96,8 @@
                           .targetEvent(ev)
                       );
                     }
-                    else{  
+                    else
+                    {  
                       $mdDialog.show(
                         $mdDialog.alert()
                           .parent(angular.element($document.find('#content-container')))
@@ -77,10 +108,10 @@
                           .ok('확인')
                           .targetEvent(ev)
                       );
-                      $state.go('login');
+                      $state.go('app.login');
                     }
-                }, function errorCallback(response) {
-                    //console.log(response);
+                }, function errorCallback(response) 
+                {
                     alert('에러가 발생했습니다.\n' + response.data);
                 });
             }

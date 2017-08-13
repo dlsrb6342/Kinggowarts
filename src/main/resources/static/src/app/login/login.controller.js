@@ -1,3 +1,15 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/login/login.controller.js
+*  Author     : underkoo
+*  Description: login 컨트롤러
+*******************************************************/
+
 (function ()
 {
     'use strict';
@@ -8,26 +20,37 @@
 
     /** @ngInject */
 
-    function LoginController($state, $stateParams, $rootScope, $sessionStorage, $http, $httpParamSerializerJQLike)
+    function LoginController(
+        /* 모듈 */
+        $http, 
+        $httpParamSerializerJQLike,
+        $rootScope,
+        $state, 
+        $stateParams, 
+        $sessionStorage)
     {
-        // Data
+        /* Data */
         var vm = this;
-        // console.log($stateParams);
-        if($stateParams.auth == 'true'){
-            alert('인증이 완료되었습니다.');
-        }
-        //$sessionStorage.empty();
-        // $http({
-        //             method : 'GET',
-        //             url : '../xwiki/bin/logout/XWiki/XWikiLogout'
-        //         })
 
         vm.isdisabled = false;
 
-        // Methods
-        vm.loginfun = function (email,password) {
+
+        /* 초기화 */
+        $rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
+
+        if($stateParams.auth == 'true'){ // 인증토큰을 통한 접근이 성공했을 경우 alert 띄움
+            alert('인증이 완료되었습니다.');
+        }
+
+        /* Methods */
+        /**********************************************************************//**
+        로그인 버튼 클릭했을 때 정보 전송하고 세션스토리지에 등록. */
+        vm.loginfun = function (email,password) 
+        {
             if (vm.isdisabled == false){
                 vm.isdisabled = true;
+                
+                /* 클라이언트 로그인 */
                 $http({
                     method : 'POST',
                     url : './api/auth/login',
@@ -36,9 +59,10 @@
                         password : password
                     }),
                     headers: {'Content-Type' : 'application/x-www-form-urlencoded'}
-                }).then(function successCallback(response){
-                    //console.log(response);
-                    
+                }).then(function successCallback(
+                    response)
+                {
+                    /* 클라이언트 로그인 성공 이후 세션스토리지에 관련 정보 등록 */
                     $sessionStorage.put('nickname', response.data.nickname, 50);
                     $sessionStorage.put('memberSeq', response.data.memberSeq, 50);
                     $sessionStorage.put('useremail', response.data.userId, 50);
@@ -48,16 +72,18 @@
 
                     var nickname = response.data.nickname;
 
+                    /* xwiki 로그인 */
                     $http({
                         method : 'GET',
-                        url : './xwiki/bin/login/',
+                        url : '../xwiki/bin/login/',
                         withCredentials: true,
                         headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
-                    }).then(function successCallback(response){
-
+                    }).then(function successCallback(response)
+                    {
                         $state.go('app.main.map');
 
-                    }, function errorCallback(response) {
+                    }, function errorCallback(response) 
+                    {
                         vm.isdisabled = false;
                         alert('위키 로그인에 실패하였습니다.');
                     });
@@ -70,8 +96,5 @@
             
         };
 
-        $rootScope.$broadcast('msSplashScreen::remove');
-
-        //////////
     }
 })();
