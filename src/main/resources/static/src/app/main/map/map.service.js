@@ -38,7 +38,7 @@
             cnt : 0
         };
 
-	   //Get User Location every 1 min. 1sec == 1000
+	    //Get User Location every 1 min. 1sec == 1000
         
         service.getLocation = function() {
             if (navigator.geolocation) { // GPS를 지원하는 경우

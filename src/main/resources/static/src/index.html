@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="fuse">
+<html ng-app="kinggowarts">
     <head>
         <base href="/kinggowarts/">
         <meta charset="utf-8">
@@ -31,7 +31,9 @@
         your browser</a> to improve your experience.</p>
     <![endif]-->
     <!-- Daum map api -->
-    <script type="text/javascript" src="//apis.daum.net/maps/maps3.js?apikey=9fd512da64793dd87dc793f65327e388&libraries=services,clusterer,drawing"></script>
+    <!-- <script type="text/javascript" src="//apis.daum.net/maps/maps3.js?apikey=9fd512da64793dd87dc793f65327e388&libraries=services,clusterer,drawing"></script>-->
+    <script type="text/javascript" src="//openapi.map.naver.com/openapi/v3/maps.js?clientId=Dj8epeHWc1SWPjh9EVoI"></script>
+    
     <body md-theme="{{vm.themes.active.name}}" md-theme-watch ng-controller="IndexController as vm"
           class="{{state.current.bodyClass || ''}}">
 
@@ -40,7 +42,9 @@
         <!-- SPLASH SCREEN -->
         <ms-splash-screen id="splash-screen">
             <div class="center">
-                <div class="logo"></div>
+                <div class="logo">
+                    <span>K</span>
+                </div>
                 <!-- Material Design Spinner -->
                 <div class="spinner-wrapper">
                     <div class="spinner">

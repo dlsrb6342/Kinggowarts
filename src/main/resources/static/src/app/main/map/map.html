@@ -1,35 +1,37 @@
-<div id="map" style="width:100%;height:100%;"></div>
+<div id="nmap" style="width:100%;height:100%;"></div>
 
 <!-- new hover category select icon -->
 
-<md-fab-speed-dial style="position:absolute; z-index:99990;bottom:40px;right:20px;height:40px;width:40px;" md-direction="up" md-open="vm.categoryIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.categoryFabClicked()">
-  <md-fab-trigger>
-    <md-button aria-label="menu" class="md-fab md-warn">
-      <md-tooltip md-direction="up" md-visible="false">카테고리</md-tooltip>
-      <md-icon md-font-icon="icon-map-marker-radius" aria-label="menu"></md-icon>
-    </md-button>
-  </md-fab-trigger>
-
-  <md-fab-actions>
-    <div ng-repeat="item in vm.currentCategoryData | limitTo:vm.limitNum track by $index">
-      <md-button class="md-fab md-raised md-mini" ng-click="vm.categorySelect(item.type)">
-        <md-tooltip md-direction="left" md-visible="vm.tooltipVisible" md-autohide="true">
-          {{item.name}}
-        </md-tooltip>
-
-        <md-icon md-font-icon="{{item.icon}}"></md-icon>
+<div ng-if="vm.bCategoryButtonIsEnable == true">
+  <md-fab-speed-dial style="position:absolute; z-index:99990;bottom:40px;right:20px;height:40px;width:40px;" md-direction="up" md-open="vm.categoryIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.categoryFabClicked()">
+    <md-fab-trigger>
+      <md-button aria-label="menu" class="md-fab md-warn">
+        <md-tooltip md-direction="up" md-visible="false">카테고리</md-tooltip>
+        <md-icon md-font-icon="icon-map-marker-radius" aria-label="menu"></md-icon>
       </md-button>
-    </div>
-    <div>
-      <md-button ng-if="vm.nextCat == true" class="md-fab md-raised md-mini" ng-click="vm.categorySelect('NEXT')">
-        <md-tooltip md-direction="left" md-visible="vm.tooltipVisible" md-autohide="true">
-          Next
-        </md-tooltip>
-        <md-icon md-font-icon="icon-skip-next"></md-icon>
-      </md-button>
-    </div>
-  </md-fab-actions>
-</md-fab-speed-dial>
+    </md-fab-trigger>
+
+    <md-fab-actions>
+      <div ng-repeat="item in vm.currentCategoryData | limitTo:vm.limitNum track by $index">
+        <md-button class="md-fab md-raised md-mini" ng-click="vm.categorySelect(item.type)">
+          <md-tooltip md-direction="left">
+            {{item.name}}
+          </md-tooltip>
+
+          <md-icon md-font-icon="{{item.icon}}"></md-icon>
+        </md-button>
+      </div>
+      <div>
+        <md-button ng-if="vm.nextCat == true" class="md-fab md-raised md-mini" ng-click="vm.categorySelect('NEXT')">
+          <md-tooltip md-direction="left">
+            Next
+          </md-tooltip>
+          <md-icon md-font-icon="icon-skip-next"></md-icon>
+        </md-button>
+      </div>
+    </md-fab-actions>
+  </md-fab-speed-dial>
+</div>
                                               
 <!-- User 위치이동 아이콘 -->
 
@@ -49,6 +51,7 @@
 
 
 <!-- drawing Event 아이콘 -->
+<!--
 <md-fab-speed-dial ng-if="vm.categoryStatus == 'regions'" style="position:absolute; z-index:99990;bottom:40px;left:40px;height:40px;width:40px;" md-direction="up" md-open="vm.customEventIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.customEventIsOpen = !vm.customEventIsOpen">
   <md-fab-trigger>
     <md-button aria-label="menu" class="md-fab md-warn">
@@ -69,9 +72,11 @@
     </div>
   </md-fab-actions>
 </md-fab-speed-dial>
+-->
 
-<!-- 카테고리 마커 생성 버튼-->
-<md-fab-speed-dial ng-if="vm.categoryStatus!='customevent' && vm.categoryStatus!='none' && vm.categoryStatus!='regions'" style="position:absolute; z-index:99990;bottom:40px;left:40px;height:40px;width:40px;" md-direction="up" md-open="vm.customEventIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.customEventIsOpen = !vm.customEventIsOpen">
+<!-- 카테고리 마커 Create 도구모음 버튼-->
+<!-- md-open="vm.customEventIsOpen"  ng-click="vm.customEventIsOpen = !vm.customEventIsOpen"-->
+<md-fab-speed-dial ng-if="vm.drawingMenuCreate" style="position:absolute; z-index:99990;bottom:40px;left:40px;height:40px;width:40px;" md-direction="up" class="md-scale" ng-class="{ 'md-hover-full': 'false' }">
       <md-fab-trigger>
         <md-button aria-label="menu" class="md-fab md-warn">
           <md-tooltip md-direction="up" md-visible="false">도구모음</md-tooltip>
@@ -80,8 +85,8 @@
       </md-fab-trigger>
 
       <md-fab-actions>
-        <div ng-repeat="item in vm.customCategoryMenu">
-          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.selectCustomCategoryMenu(item.type)">
+        <div ng-repeat="item in vm.drawingMenu">
+          <md-button aria-label="{{item.name}}" class="md-fab md-raised md-mini" ng-click="vm.selectDrawingMenu(item.type)">
             <md-tooltip md-direction="right" md-visible="vm.customEvnetTooltipVisible" md-autohide="true">
               {{item.name}}
             </md-tooltip>
