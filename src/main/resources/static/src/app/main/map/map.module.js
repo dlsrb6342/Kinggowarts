@@ -17,6 +17,10 @@
                     'content@app.main': {
                         templateUrl: 'app/main/map/map.html',
                         controller : 'MapController as vm'
+                    },
+                    'map-side@app.main.map': {
+                        templateUrl: 'app/main/map/map-side/map-side.html',
+                        controller : 'MapSideController as vm'
                     }
                 },                
                 resolve: {

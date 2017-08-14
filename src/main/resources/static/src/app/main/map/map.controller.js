@@ -1,3 +1,4 @@
+
 (function ()
 {
     'use strict';
@@ -28,6 +29,7 @@
         DrawingMenuData,
         //CustomEventData,
         CategoryMenuData,
+
         //module
         $mdDialog,
         $rootScope,
@@ -39,9 +41,11 @@
         $timeout,
         $sessionStorage,
         $state,
+
         //service
         peerLocation,
-        mapLocation
+        mapLocation,
+        sideMapCommService
     )
     {
 //object
@@ -729,6 +733,13 @@
         vm.moveToUserLocation = moveToUserLocation;
         vm.categorySelect = categorySelect;
         vm.selectDrawingMenu = selectDrawingMenu;
+//rootscope on
+        $rootScope.$on('ToMain', function (event, args) {
+                if(args.type == "modifyShape"){
+                    //start modify Shape
+                }
+            }
+        );
 
 //regitster function
     //permission
@@ -747,6 +758,8 @@
             }
 
             overlapCoverMarker = list[0].marker;
+            console.log(list);
+            startSideBarWithNMarkersArr(list);
             //여러개의 list 처리.
 
             naver.maps.Event.once(overlapCoverMarker, 'mouseout', function() {
@@ -800,8 +813,31 @@
             //alert(m.title);
             //get kMarker with title
             var tempKMarker = vm.nMarkerTitleToKMarkerMappingObj[m.title];
-            showDialogMainDialog(tempKMarker);
+            startSideBarWithKMarker(tempKMarker);
 
+        };
+
+    //nMarkersArr로 side open
+        function startSideBarWithNMarkersArr(list){
+            var tempKMarkerArr = [];
+            for(var i = 0, ii = list.length; i<ii; i++){
+                tempKMarkerArr.push(vm.nMarkerTitleToKMarkerMappingObj[list[i].marker.title]);
+            }
+            sideMapCommService.startSideBar(tempKMarkerArr);
+            $rootScope.$broadcast('ToSide', {
+                type : 'bOpen',
+                bOpen : true
+            });
+
+        };
+        function startSideBarWithKMarker(inKMarker){
+            var tempKMarkerArr = [];
+            tempKMarkerArr.push(inKMarker);
+            sideMapCommService.startSideBar(tempKMarkerArr);
+            $rootScope.$broadcast('ToSide', {
+                type : 'bOpen',
+                bOpen : true
+            });
         };
 
     //dialog 실행 function : showDialog-
@@ -1117,6 +1153,7 @@
     //user location button function
         //user 위치
         function moveToUserLocation(){
+            //$state.go('app.main.map.side');
             if(userLocationMarker != null){
                 userLocationMarker.setMap(null);
                 userLocationMarker = null;    
