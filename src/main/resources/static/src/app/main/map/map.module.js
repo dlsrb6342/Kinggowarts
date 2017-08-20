@@ -157,10 +157,10 @@
                             headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
                         });
                     },*/
-                    DrawingMenuData: function(msApi)
+                    /*DrawingMenuData: function(msApi)
                     {
                         return msApi.resolve('drawingMenu@get');
-                    },
+                    },*/
                     /*
                     CustomEventData: function(msApi, $http, $sessionStorage)
                     {
@@ -185,7 +185,7 @@
         msApiProvider.register('marker', ['app/data/map/marker.json']);
         msApiProvider.register('categoryTypes', ['app/data/map/categoryTypes.json']);
         msApiProvider.register('categoryMenu', ['app/data/map/categoryMenu.json']);
-        msApiProvider.register('drawingMenu', ['app/data/map/drawingMenu.json']);
+        //msApiProvider.register('drawingMenu', ['app/data/map/drawingMenu.json']);
         
     }
 })();
