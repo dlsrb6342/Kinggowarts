@@ -1,3 +1,15 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/main/notice/notice-list/notice-list.module.js
+*  Author     : underkoo
+*  Description: notice-list 모듈 정의 
+*******************************************************/
+
 (function ()
 {
     'use strict';
@@ -5,17 +17,22 @@
     angular
         .module('app.main.notice.list',
             [
-                // 3rd Party Dependencies
-                'datatables',
-                'app.main.notice.list.item'
+                'app.main.notice.list.item', // notice-item 모듈
+
+                'datatables' // 데이터 테이블 모듈
             ]
         )
         .config(config);
 
     /** @ngInject */
-    function config($stateProvider, msNavigationServiceProvider)
+    function config(
+        /* 모듈 */
+        $stateProvider, 
+
+        /* 서비스 */
+        msNavigationServiceProvider)
     {
-        // State
+        /* state 정의 */
         $stateProvider
             .state('app.main.notice.list', {
                 url    : '/:category',

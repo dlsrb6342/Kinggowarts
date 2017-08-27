@@ -1,26 +1,33 @@
+/*****************************************************************************
+
+Copyright (c) 2017, kinggowarts team. All Rights Reserved.
+
+*****************************************************************************/
+
+/******************************************************
+*  Document   : src/app/index.module.js
+*  Author     : underkoo
+*  Description: 메인 모듈 정의
+*******************************************************/
+
 (function ()
 {
     'use strict';
 
     /**
-     * Main module of the Fuse
+     * Main module of the kinggowarts
      */
     angular
-        .module('fuse', [
+        .module('kinggowarts', [
 
-            // Core
-            'app.core',
+            'app.core', // Core - 디렉티브나 서비스 등 정의.
 
-            // main module
-            'app.main',
+            'app.main', // main module
 
-            //login module
-            'app.login',
+            'app.login', // login module
 
-            //register module
-            'app.register',
-
-            // Common 3rd-party engine
-            'swxSessionStorage'
+            'app.register', // register module
+            
+            'swxSessionStorage' // 세션 스토리지 모듈
         ]);
 })();
