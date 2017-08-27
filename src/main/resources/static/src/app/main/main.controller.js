@@ -21,12 +21,16 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
     /** @ngInject */
     function MainController($scope, $rootScope)
     {
-        /* 초기화 */
-        $scope.$on('$viewContentAnimationEnded', function (event) 
+        // Data
+
+        //////////
+
+        // Remove the splash screen
+        $scope.$on('$viewContentAnimationEnded', function (event)
         {
             if ( event.targetScope.$id === $scope.$id )
-            {   
-                $rootScope.$broadcast('msSplashScreen::remove'); // Remove the splash screen
+            {
+                $rootScope.$broadcast('msSplashScreen::remove');
             }
         });
     }

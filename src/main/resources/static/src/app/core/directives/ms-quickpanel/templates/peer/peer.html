@@ -1,0 +1,35 @@
+<div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
+    <div class="h3">피어 목록</div>
+    
+    <div class="pv-16">
+        <md-select class="simplified" ng-model="vm.peerlist.currentlocation" aria-label="Change range">
+            <md-option ng-repeat="(key, range) in vm.peerlist.peerrange" value="{{key}}">
+                {{range}}
+            </md-option>
+        </md-select>
+    </div>
+</div>
+
+<p align="right" ng-if="vm.peerlist.currentlocation == 'active'">
+    <md-checkbox aria-label="Reverse Select" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()">
+        선택 반전
+    </md-checkbox>
+    <md-checkbox aria-label="UnSelect All" ng-checked="vm.isChecked()"  md-indeterminate="vm.isIndeterminate()" ng-click="vm.untoggleAll()" style="margin-right: 20px;">
+        전부 선택 해제
+    </md-checkbox>
+</p>
+
+<div id = "showpeerlistcontainer">
+    <md-list-item class="contact" ng-repeat="contact in vm.peerlist.peer[vm.peerlist.currentlocation]">
+
+            <img ng-src="{{contact.profileImgPath}}" onerror="this.src='assets/images/avatars/profile.jpg'" class="md-avatar"/>
+
+            <div class="md-list-item-text" style="margin-bottom: 10px;">
+                <h3>{{contact.nickname}}</h3>
+            </div>
+            <md-checkbox aria-label="Peer Select" ng-checked="vm.exists(contact.weight, vm.selected[vm.peerlist.currentlocation])" ng-click="vm.toggle(contact, vm.selected[vm.peerlist.currentlocation])" style="position: absolute;right:40px;top:7px;" ng-if="vm.peerlist.currentlocation == 'active'"></md-checkbox>
+            <md-button class="edit-button md-icon-button" ng-click="vm.deletePeer(contact)" aria-label="Delete peer" style="position: absolute;right:10px;top:0px;z-index:99990;">
+                <md-icon class="md-secondary" md-font-icon="icon-cancel red-500-fg" aria-label="remove"></md-icon> 
+            </md-button>    
+    </md-list-item>
+</div>

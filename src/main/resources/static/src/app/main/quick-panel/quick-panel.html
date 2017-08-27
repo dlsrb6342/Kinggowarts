@@ -2,41 +2,41 @@
     <md-tabs>
         <md-tab>
             <md-tab-label>
-                <span>타임라인</span>
+                <span ng-click = "vm.timelineListDataResolver()">타임라인</span>
             </md-tab-label>
             <md-tab-body>
-                <md-content class="today-tab scrollable" ms-scroll
-                            ng-include="'app/main/quick-panel/tabs/timeline/timeline.html'">
+                <md-content class="today-tab scrollable" ng-if="vm.loadingFlagT == true" ms-scroll>
+                    <ms-qptimeline timeline-data="vm.timelineList" category-data="vm.notice_category"></ms-qptimeline>
                 </md-content>
             </md-tab-body>
         </md-tab>
         <md-tab>
             <md-tab-label>
-                <span>피어 목록</span>
+                <span ng-click = "vm.peerDataResolver()">피어 목록</span>
             </md-tab-label>
             <md-tab-body>
-                <md-content class="chat-tab scrollable" ms-scroll
-                            ng-include="'app/main/quick-panel/tabs/peer/peer.html'">
+                <md-content class="chat-tab scrollable" ng-if="vm.loadingFlagP == true" ms-scroll>
+                    <ms-qppeer peer-data="vm.peer"></ms-qppeer>
                 </md-content>
             </md-tab-body>
         </md-tab>
         <md-tab>
             <md-tab-label>
-                <span>피어 요청</span>
+                <span ng-click = "vm.requestDataResolver()">피어 요청</span>
             </md-tab-label>
             <md-tab-body>
-                <md-content class="activity-tab scrollable" ms-scroll
-                            ng-include="'app/main/quick-panel/tabs/request/request.html'">
+                <md-content class="activity-tab scrollable" ng-if="vm.loadingFlagR == true" ms-scroll>
+                    <ms-qprequest request-data="vm.request"></ms-qprequest>
                 </md-content>
             </md-tab-body>
         </md-tab>
         <md-tab>
             <md-tab-label>
-                <span>최근 수정 위키</span>
+                <span ng-click = "vm.recentwikiDataResolver()">최근 수정 위키</span>
             </md-tab-label>
             <md-tab-body>
-                <md-content class="activity-tab scrollable" ms-scroll
-                            ng-include="'app/main/quick-panel/tabs/recentwiki/recentwiki.html'">
+                <md-content class="activity-tab scrollable" ng-if="vm.loadingFlagW == true" ms-scroll>
+                    <ms-qprecentwiki recentwiki-data="vm.recentwiki"></ms-qprecentwiki>
                 </md-content>
             </md-tab-body>
         </md-tab>
