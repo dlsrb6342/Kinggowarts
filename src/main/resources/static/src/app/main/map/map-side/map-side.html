@@ -19,7 +19,7 @@
 	<!-- middle content-->
 
 	<!-- IFrame-->
-	<div ng-hide="vm.bCreateMode != false || vm.bModifyMode != false">
+	<div ng-hide="vm.bModifyMode != false || vm.bCreateMode != false">
 		<iframe id="myIFrame"  frameborder=" 0" src="" width="100%" height = "100px" scrolling="auto";></iframe>
 	</div>
      
@@ -40,12 +40,12 @@
 		      <div ng-if="cat1.hasOwnProperty('inner')">
 		        <md-optgroup label="{{cat1.name}}">
 		          <!-- one more -->
-		          <md-option ng-value="cat2.name" ng-repeat="cat2 in cat1.inner">{{cat2.name}}</md-option>
+		          <md-option ng-value="cat2.type" ng-repeat="cat2 in cat1.inner">{{cat2.name}}</md-option>
 		        </md-optgroup>
 		      </div>
 		      <div ng-if="!cat1.hasOwnProperty('inner')">
 		        <md-optgroup label="{{cat1.name}}">
-		          <md-option ng-value="cat1.name">{{cat1.name}}</md-option>
+		          <md-option ng-value="cat1.type">{{cat1.name}}</md-option>
 		        </md-optgroup>
 		      </div>
 		    </div>
@@ -90,12 +90,12 @@
 		      <div ng-if="cat1.hasOwnProperty('inner')">
 		        <md-optgroup label="{{cat1.name}}">
 		          <!-- one more -->
-		          <md-option ng-value="cat2.name" ng-repeat="cat2 in cat1.inner">{{cat2.name}}</md-option>
+		          <md-option ng-value="cat2.type" ng-repeat="cat2 in cat1.inner">{{cat2.name}}</md-option>
 		        </md-optgroup>
 		      </div>
 		      <div ng-if="!cat1.hasOwnProperty('inner')">
 		        <md-optgroup label="{{cat1.name}}">
-		          <md-option ng-value="cat1.name">{{cat1.name}}</md-option>
+		          <md-option ng-value="cat1.type">{{cat1.name}}</md-option>
 		        </md-optgroup>
 		      </div>
 		    </div>

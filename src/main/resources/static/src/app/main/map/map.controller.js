@@ -24,7 +24,7 @@
         MOutRest,
         MATM,
         */
-        CategoryTypes,
+        //CategoryTypes,
         //AreaAdmin,
         //DrawingMenuData,
         //CustomEventData,
@@ -664,7 +664,7 @@
 
         vm.markerDataArr = MarkerData.data;
         var categoryMenu = CategoryMenuData.data;
-        var categoryTypes = CategoryTypes.data;
+        //var categoryTypes = CategoryTypes.data;
 
         //vm.categories = MarkerData.data;
         vm.kMarkerStorageArr = [];    //kMarkerStorageArr
@@ -1027,7 +1027,16 @@
                 //nMarker가 없다. 즉 kMarker도 없다. 생성 필요.
                 if(!vm.nMarkerTitleToKMarkerMappingObj.hasOwnProperty(vm.markerDataArr[i].title)){
                     //tempMarkerData와 tempCategories[j]가 comm data와 연관.
-                    
+                    //console.log(tempMarkerData);
+
+                    var tempRegion = null;
+                    //path가 있는 경우
+                    if(tempMarkerData.path.length != 0){
+                        tempRegion = [];
+                        for(var j=0, jj = tempMarkerData.path.length; j<jj; j++){
+                            tempRegion.push(new naver.maps.LatLng(tempMarkerData.path[j].lat, tempMarkerData.path[j].lng));
+                        }
+                    }
                     var newKMarker = new kMarker(null, 
                             tempMarkerData.id,
                             tempMarkerData.name,        //to title
@@ -1036,20 +1045,15 @@
                             [], //new kMarkerCategoryObj(,),  //to categories
                             tempMarkerData.floor,
                             tempMarkerData.timeStamp,
-                            tempMarkerData.region
+                            tempRegion
                         );
+
                     //create nPolygon
-                    if(newKMarker.getRegion() != null){
-                        var tempRegion = newKMarker.getRegion();
-                        var tempPaths = [];
-                        var tempInnerPaths = [];
-                        for(var j=0, jj = tempRegion.path.length; j<jj; j++){
-                            tempInnerPaths.push(new naver.maps.LatLng(tempRegion.path[j].lat, tempRegion.path[j].lng));
-                        }
-                        tempPaths.push(tempInnerPaths);
+                    //path가 있는 경우
+                    if(tempMarkerData.path.length != 0){
                         var tempNPolygon = new naver.maps.Polygon({
                             //map: map,
-                            paths: tempInnerPaths,
+                            paths: tempRegion,
                             fillColor: '#ff0000',
                             fillOpacity: 0.3,
                             strokeColor: '#ff0000',
@@ -1148,7 +1152,7 @@
             }
         };
 
-        //inCategoryTitleArr 해당하는 nMarkers를 map상에 올림. bSetMapNullNMarkersOnMap인 경우 현재 map상에 표시되는 모든 nMarker를 내림.
+        //inCategoryTitleArr(표시할 카테고리들)에 해당하는 nMarkers를 map상에 올림. bSetMapNullNMarkersOnMap인 경우 현재 map상에 표시되는 모든 nMarker를 내림.
         //inCategoryTitleArr는 array만 받으며 ALL을 전달 할 때 ["ALL"]을 전달.
         function setMapToNMarkersWithCategoryKMarkersArr(inCategoryTitleArr, bSetMapNullNMarkersOnMap){
             //현재 map상에 있는 nMarker 해제
