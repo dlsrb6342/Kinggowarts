@@ -1,0 +1,33 @@
+
+<!-- new hover category select icon -->
+
+<div ng-if="vm.bCategoryButtonIsEnable == true">
+  <md-fab-speed-dial style="position:absolute; z-index:99990;bottom:40px;right:20px;height:40px;width:40px;" md-direction="up" md-open="vm.categoryIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.categoryFabClicked()">
+    <md-fab-trigger>
+      <md-button aria-label="menu" class="md-fab md-warn">
+        <md-tooltip md-direction="up" md-visible="false">카테고리</md-tooltip>
+        <md-icon md-font-icon="icon-map-marker-radius" aria-label="menu"></md-icon>
+      </md-button>
+    </md-fab-trigger>
+
+    <md-fab-actions>
+      <div ng-repeat="item in vm.currentCategoryData | limitTo:vm.limitNum track by $index">
+        <md-button class="md-fab md-raised md-mini" ng-click="vm.categorySelect(item.type)">
+          <md-tooltip md-direction="left">
+            {{item.name}}
+          </md-tooltip>
+
+          <md-icon md-font-icon="{{item.icon}}"></md-icon>
+        </md-button>
+      </div>
+      <div>
+        <md-button ng-if="vm.nextCat == true" class="md-fab md-raised md-mini" ng-click="vm.categorySelect('NEXT')">
+          <md-tooltip md-direction="left">
+            Next
+          </md-tooltip>
+          <md-icon md-font-icon="icon-skip-next"></md-icon>
+        </md-button>
+      </div>
+    </md-fab-actions>
+  </md-fab-speed-dial>
+</div>

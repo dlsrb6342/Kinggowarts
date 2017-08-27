@@ -1,3 +1,4 @@
+
 (function ()
 {
     'use strict';
@@ -25,9 +26,10 @@
         */
         CategoryTypes,
         //AreaAdmin,
-        DrawingMenuData,
+        //DrawingMenuData,
         //CustomEventData,
         CategoryMenuData,
+
         //module
         $mdDialog,
         $rootScope,
@@ -39,9 +41,11 @@
         $timeout,
         $sessionStorage,
         $state,
+
         //service
         peerLocation,
-        mapLocation
+        mapLocation,
+        sideMapCommService
     )
     {
 //object
@@ -643,14 +647,14 @@
         var drawingMenuModify = [
             {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"}, 
             {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
-            {"name":"수정완료", "type":"CREATE", "icon" : "icon-play-box-outline"},
-            {"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
+            {"name":"수정완료", "type":"CREATE", "icon" : "icon-play-box-outline"}
+            //{"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
         var drawingMenuCreate = [
             {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"}, 
             {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
-            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"},
-            {"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
+            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"}
+            //{"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
 
 
@@ -714,8 +718,39 @@
         vm.bCategoryButtonIsEnable = true;  //카테고리 버튼 활성화
 
     //drawing
+        vm.bDrawingButtonIsOpen = false;
         vm.bIsModifyMode = false;
-        vm.drawingMenu = drawingMenuCreate;
+        vm.bIsCreateMode = false;
+        vm.drawingMenu = drawingMenuCreate; //drawingMenuModify
+        var drawingOption = {
+            map: map,
+            drawingMode : 0, //HAND
+            polygonOptions: {
+                strokeColor: '#ffd100',
+                fillColor: '#ffff00',
+                fillOpacity: 0.5,
+                strokeWeight: 3
+            },
+            controlPointOptions: {
+                anchorPointOptions: {
+                    radius: 10,
+                    fillColor: '#ff0000',
+                    strokeColor: '#0000ff',
+                    strokeWeight: 2
+                },
+                midPointOptions: {
+                    radius: 10,
+                    fillColor: '#ff0000',
+                    strokeColor: '#0000ff',
+                    strokeWeight: 2,
+                    fillOpacity: 0.5
+                }
+            },
+            drawingControl: [
+                //must empty array
+            ]
+        };
+        var drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);
         
 
 //methods
@@ -729,6 +764,36 @@
         vm.moveToUserLocation = moveToUserLocation;
         vm.categorySelect = categorySelect;
         vm.selectDrawingMenu = selectDrawingMenu;
+        vm.drwingButtonClicked = drwingButtonClicked;
+//rootscope on
+        $rootScope.$on('ToMain', function (event, args) {
+                if(args.type == "modifyShape"){
+                    //start modify Shape
+                }
+                else if(args.type == "bOpen"){
+                    //map size up/down
+                    if(args.bOpen == true){
+                        document.getElementById("nmap").style.width = "70%";
+                        document.getElementById("nmap").style.left = "30%";
+                        document.getElementById("drawingButton").style.left = "calc(30% + 40px)";
+                        
+                    }
+                    else{
+                        document.getElementById("nmap").style.width = "100%";
+                        document.getElementById("nmap").style.left = "0%";
+                        document.getElementById("drawingButton").style.left = "40px";
+                    }
+                }
+                else if(args.type == "cancelCreate"){
+                    //remote all drawing
+                    drawingManager.setOptions('drawingMode', 0);
+                    drawingManager.destroy();
+                    drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);
+                    endCreateMode();
+
+                }
+            }
+        );
 
 //regitster function
     //permission
@@ -747,6 +812,7 @@
             }
 
             overlapCoverMarker = list[0].marker;
+            startSideBarWithNMarkersArr(list);
             //여러개의 list 처리.
 
             naver.maps.Event.once(overlapCoverMarker, 'mouseout', function() {
@@ -796,16 +862,40 @@
         };
         function nMarkerListenerClick(e){
             var m = e.overlay;
-            console.log(e.overlay);
+            //console.log(e.overlay);
             //alert(m.title);
             //get kMarker with title
             var tempKMarker = vm.nMarkerTitleToKMarkerMappingObj[m.title];
-            showDialogMainDialog(tempKMarker);
+            startSideBarWithKMarker(tempKMarker);
 
+        };
+
+    //nMarkersArr로 side open
+        function startSideBarWithNMarkersArr(list){
+            var tempKMarkerArr = [];
+            for(var i = 0, ii = list.length; i<ii; i++){
+                tempKMarkerArr.push(vm.nMarkerTitleToKMarkerMappingObj[list[i].marker.title]);
+            }
+            sideMapCommService.startSideBar(tempKMarkerArr);
+            $rootScope.$broadcast('ToSide', {
+                type : 'bOpen',
+                bOpen : true
+            });
+
+        };
+        function startSideBarWithKMarker(inKMarker){
+            var tempKMarkerArr = [];
+            tempKMarkerArr.push(inKMarker);
+            sideMapCommService.startSideBar(tempKMarkerArr);
+            $rootScope.$broadcast('ToSide', {
+                type : 'bOpen',
+                bOpen : true
+            });
         };
 
     //dialog 실행 function : showDialog-
         //main dialog
+        /*
         function showDialogMainDialog(inKMarker) {
             $mdDialog.show({
                 controller          : 'MainDialogController',
@@ -845,6 +935,7 @@
                 
             });
         };
+        */
 
     //data comm functions
         //server에서 데이터를 가져 옵니다. arr에 해당하는 catetory로 query 생성/요청합니다.
@@ -929,12 +1020,9 @@
             
             //TODO : get Data From server
             commGetDataFromServerFunc(inCategoryTitleArr); // --> vm.markerDataArr
-            console.log(vm.markerDataArr.length);
 
             for(var i=0, ii=vm.markerDataArr.length; i<ii; i++){
-                console.log("+");
                 var tempMarkerData = vm.markerDataArr[i];
-                //console.log(tempMarkerData);
                 
                 //nMarker가 없다. 즉 kMarker도 없다. 생성 필요.
                 if(!vm.nMarkerTitleToKMarkerMappingObj.hasOwnProperty(vm.markerDataArr[i].title)){
@@ -990,8 +1078,6 @@
                 }
                 
             }
-            //console.log(newKMarkerArr);
-
             return newKMarkerArr;   //새로 추가된 kMarkers
                     
         };
@@ -1117,6 +1203,7 @@
     //user location button function
         //user 위치
         function moveToUserLocation(){
+            //$state.go('app.main.map.side');
             if(userLocationMarker != null){
                 userLocationMarker.setMap(null);
                 userLocationMarker = null;    
@@ -1306,10 +1393,79 @@
             //TODO : enable peer marker clickable
         };
 
+        function startCreateMode(){
+            //all marker click disable(peer, category marker, category button)
+            vm.bIsCreateMode = true;            //modify mode
+            $rootScope.$broadcast('ToSide', {
+                    type : 'create',
+                });
+            vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
+            //vm.bCategoryButtonIsEnable = false;
+            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+                var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(false);
+                }
+            }
+            //TODO : disable peer marker clickable
+        };
+
+        function endCreateMode(){
+            //all marker click disable(peer, category marker, category button)
+            vm.bIsCreateMode = false;           //create mode
+            vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
+            //vm.bCategoryButtonIsEnable = true;
+            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+                var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(true);
+                }
+            }
+            //TODO : enable peer marker clickable
+        };
+
         function selectDrawingMenu(input){
             //input  = MARKER, POLYGON, CREATE, CANCEL
             //vm.bIsModifyMode -> create or modify
+            if(input == "MARKER"){
+                var tempdrawingOverlays = drawingManager.getDrawings();
+
+                for(var key in tempdrawingOverlays){
+                    if(tempdrawingOverlays[key].name == "marker"){
+                        tempdrawingOverlays[key].setMap(null);
+                        delete tempdrawingOverlays[key];
+                    }
+                }
+                
+                drawingManager.setOptions('drawingMode', 6);
+            }
+            else if(input == "POLYGON"){
+                var tempdrawingOverlays = drawingManager.getDrawings();
+                for(var key in tempdrawingOverlays){
+                    if(tempdrawingOverlays[key].name == "polygon"){
+                        tempdrawingOverlays[key].setMap(null);
+                        delete tempdrawingOverlays[key];
+                    }
+                }
+                drawingManager.setOptions('drawingMode', 5);
+            }
+            else if(input == "CREATE"){
+                console.log(drawingManager.getDrawings());
+            }
+            else if(input == "CANCEL"){
+                /*drawingManager.setOptions('drawingMode', 0);
+                drawingManager.destroy();
+                drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);
+                */
+            }
         };
+
+        function drwingButtonClicked(){
+            if(vm.bIsCreateMode == false){
+                vm.bIsCreateMode = true;
+                startCreateMode();
+            }
+        }
 
     //etc
         function updateMapLocationService() {

@@ -1,0 +1,174 @@
+<!--<iframe frameborder=" 0" id="domainframe" src="../xwiki/bin/view/XWiki/공대식당" width="30%" marginheight="100" height = "90%" scrolling="auto";></iframe>
+-->
+
+
+
+<div ng-hide="vm.bSideOpen != true">
+	<!-- 상단 tab 버튼들 -->
+	<div ng-hide="vm.bModifyMode != false">
+		<md-content>
+	    <md-tabs md-border-bottom md-selected="vm.tabIndex">
+	        <md-tab ng-repeat="title in vm.resolvedKMarkerDataArrTitles"
+	        label="{{title}}"
+	        >
+	        </md-tab>
+	        </md-tabs>
+	        </md-content>
+	</div>
+
+	<!-- middle content-->
+
+	<!-- IFrame-->
+	<div ng-hide="vm.bModifyMode != false">
+		<iframe id="myIFrame"  frameborder=" 0" src="" width="100%" height = "100px" scrolling="auto";></iframe>
+	</div>
+     
+    <!-- modify -->
+	<div ng-hide="vm.bModifyMode != true">
+		<!--title-->
+		<div layout-gt-sm="row">
+		  <md-input-container class="md-block">
+		    <label>제목</label>
+		    <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="vm.kMarkerTitle">
+		  </md-input-container>
+		</div>
+		<!-- category -->
+		<md-input-container>
+		  <label>카테고리</label>
+		  <md-select ng-model="vm.selectedCategories" multiple>
+		    <div ng-repeat="cat1 in vm.categoryMenuData">
+		      <div ng-if="cat1.hasOwnProperty('inner')">
+		        <md-optgroup label="{{cat1.name}}">
+		          <!-- one more -->
+		          <md-option ng-value="cat2.name" ng-repeat="cat2 in cat1.inner">{{cat2.name}}</md-option>
+		        </md-optgroup>
+		      </div>
+		      <div ng-if="!cat1.hasOwnProperty('inner')">
+		        <md-optgroup label="{{cat1.name}}">
+		          <md-option ng-value="cat1.name">{{cat1.name}}</md-option>
+		        </md-optgroup>
+		      </div>
+		    </div>
+		  </md-select>
+		</md-input-container>
+
+		<div ng-if="vm.selectedCategories.length == 0">
+		  <p>최소 하나 이상의 카테고리를 선택해야 합니다.</p>
+		</div>
+		<div ng-if="vm.selectedCategories.length > 0">
+		  <p>{{vm.printSelectedCategories()}} 카테고리를 선택하였습니다.</p>
+		</div>
+
+
+
+		<div layout-gt-sm="row" class="tags">
+		  <md-chips ng-model= "retData['tags']" md-transform-chip="newTag($chip)" placeholder="Enter a tag" >
+		    <md-chip-template>
+		      <!--<span ng-if="$chip.color" class="color" ng-style="{'background-color':$chip.color}"></span>-->
+		      <span>{{$chip.name}}</span>
+		    </md-chip-template>
+		  </md-chips>
+		</div>
+	</div>
+
+
+
+	<!-- create -->
+	<div ng-hide="vm.bCreateMode != true">
+		<!--title-->
+		<div layout-gt-sm="row">
+		  <md-input-container class="md-block">
+		    <label>제목</label>
+		    <input md-maxlength="30" required="" md-no-asterisk="" name="description" ng-model="vm.kMarkerTitle">
+		  </md-input-container>
+		</div>
+		<!-- category -->
+		<md-input-container>
+		  <label>카테고리</label>
+		  <md-select ng-model="vm.selectedCategories" multiple>
+		    <div ng-repeat="cat1 in vm.categoryMenuData">
+		      <div ng-if="cat1.hasOwnProperty('inner')">
+		        <md-optgroup label="{{cat1.name}}">
+		          <!-- one more -->
+		          <md-option ng-value="cat2.name" ng-repeat="cat2 in cat1.inner">{{cat2.name}}</md-option>
+		        </md-optgroup>
+		      </div>
+		      <div ng-if="!cat1.hasOwnProperty('inner')">
+		        <md-optgroup label="{{cat1.name}}">
+		          <md-option ng-value="cat1.name">{{cat1.name}}</md-option>
+		        </md-optgroup>
+		      </div>
+		    </div>
+		  </md-select>
+		</md-input-container>
+
+		<div ng-if="vm.selectedCategories.length == 0">
+		  <p>최소 하나 이상의 카테고리를 선택해야 합니다.</p>
+		</div>
+		<div ng-if="vm.selectedCategories.length > 0">
+		  <p>{{vm.printSelectedCategories()}} 카테고리를 선택하였습니다.</p>
+		</div>
+
+
+
+		<div layout-gt-sm="row" class="tags">
+		  <md-chips ng-model= "retData['tags']" md-transform-chip="newTag($chip)" placeholder="Enter a tag" >
+		    <md-chip-template>
+		      <!--<span ng-if="$chip.color" class="color" ng-style="{'background-color':$chip.color}"></span>-->
+		      <span>{{$chip.name}}</span>
+		    </md-chip-template>
+		  </md-chips>
+		</div>
+	</div>
+
+
+	<!-- 하단 버튼 : modify -->
+	<div ng-if="vm.bModifyMode == true">
+	  <md-dialog-actions layout="row">
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('delete')">
+	      전체삭제
+	    </md-button>
+	    <span flex></span>
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('save')">
+	      저장
+	    </md-button>
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('return')">
+	      취소
+	    </md-button>
+	  </md-dialog-actions>
+	</div>
+
+	<!-- 하단 버튼 : create -->
+	<div ng-if="vm.bCreateMode == true">
+	  <md-dialog-actions layout="row">
+	    <span flex></span>
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('save')">
+	      저장
+	    </md-button>
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('return')">
+	      취소
+	    </md-button>
+	  </md-dialog-actions>
+	</div>
+
+
+	<!-- 하단 버튼 : info -->
+	<div ng-if="vm.bModifyMode != true && vm.bCreateMode != true">
+	  <md-dialog-actions layout="row">
+	    <md-button ng-click= "vm.movewiki()">
+	      More on Wikipedia
+	    </md-button>
+	    <span flex></span>
+	    
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('modifyInfo')">
+	      정보수정
+	    </md-button>
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('modifyShape')">
+	      위치수정
+	    </md-button>
+	    <md-button ng-click="vm.answer('cancel')">
+	      Cancel
+	    </md-button>
+	  </md-dialog-actions>
+	</div>
+</div>
