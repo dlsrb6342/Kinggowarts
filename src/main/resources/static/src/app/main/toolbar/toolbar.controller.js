@@ -77,12 +77,12 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         init();
 
 
-        vm.setUserStatus = setUserStatus;
-        vm.toggleHorizontalMobileMenu = toggleHorizontalMobileMenu;
-        vm.toggleMsNavigationFolded = toggleMsNavigationFolded;
-        vm.search = search;
-        vm.searchResultClick = searchResultClick;
-        vm.openProfileDialog = openProfileDialog;
+        //vm.setUserStatus = setUserStatus;
+        //vm.toggleHorizontalMobileMenu = toggleHorizontalMobileMenu;
+        //vm.toggleMsNavigationFolded = toggleMsNavigationFolded;
+        //vm.search = search;
+        //vm.searchResultClick = searchResultClick;
+        //vm.openProfileDialog = openProfileDialog;
 
         /* Methods */
         /**********************************************************************//**

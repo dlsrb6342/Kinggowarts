@@ -1,0 +1,48 @@
+<div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
+    <div class="h3">피어 요청</div>
+
+    <div class="pv-16">
+        <md-select class="simplified" ng-model="vm.prequest.currentrequest" aria-label="Change range">
+            <md-option ng-repeat="(key, range) in vm.prequest.range" value="{{key}}" ng-selected="$first">
+                {{range}}
+            </md-option>
+        </md-select>
+    </div>
+
+</div>
+
+
+<md-list class="checklist" ng-if="vm.request.length > 0 && vm.prequest.currentrequest == 'recv'">
+
+    <md-list-item ng-repeat="item in vm.request">
+        <p>{{item.nickname}}</p>
+        <md-icon ng-click="vm.requestaccept(item)"
+            class="md-secondary"
+            md-font-icon="icon-checkbox-marked-circle green-500-fg" aria-label="remove">
+        </md-icon>
+        <md-icon ng-click="vm.requestdenied(item)"
+            class="md-secondary"
+            md-font-icon="icon-cancel red-500-fg" aria-label="remove">
+        </md-icon>
+    </md-list-item>
+</md-list>
+
+<div id = "showsearchresult" ng-if="vm.prequest.currentrequest == 'send'">
+    <div layout="row" layout-align="space-around center">
+        <md-input-container class="pt-8"  md-no-float>
+            <input ng-model="vm.searchNickname" name="nickname" placeholder="닉네임 입력" ng-keydown="$event.keyCode === 13 && vm.finduser()">
+        </md-input-container>
+        <md-button type="submit" class="md-raised md-accent submit-button" aria-label="FIND" ng-click="vm.finduser()">
+            찾기
+        </md-button>
+    </div>
+    
+    <md-list class="checklist" ng-if="vm.searchresult.length > 0 ">
+
+        <md-list-item class="contact" ng-repeat="item in vm.searchresult" ng-click="vm.sendrequest(item.memberSeq)" aria-label="RESULT">
+            <img ng-src="{{item.profileImgPath}}" onerror="this.src='assets/images/avatars/profile.jpg'" class="md-avatar"/>{{item.nickname}}
+        </md-list-item>    
+
+    </md-list>
+    
+</div>
