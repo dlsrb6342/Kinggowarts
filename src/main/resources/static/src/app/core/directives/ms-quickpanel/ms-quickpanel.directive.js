@@ -25,10 +25,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         //peer
         .directive('msQppeer', msQpPeerDirective)
         .controller('QuickPanelPeerController', QuickPanelPeerController)
-        
-        //request
-        .directive('msQprequest', msQpRequestDirective)
-        .controller('QuickPanelRequestController', QuickPanelRequestController)
+        .controller('QuickPanelRequestDialogController', QuickPanelRequestDialogController)
 
         //wiki
         .directive('msQprecentwiki', msQpRecentwikiDirective)
@@ -88,6 +85,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         $http, 
         $scope,
         $sessionStorage,
+        $httpParamSerializerJQLike,
+        $mdDialog,
 
         // 서비스
         mapLocation, 
@@ -98,6 +97,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         
         var vm = this;
 
+        //peer
         vm.peer = $scope.peerData;
 
         vm.peerlist = {
@@ -119,6 +119,12 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
         vm.defaultimg = "./assets/images/avatars/profile.jpg";
 
+        //request
+        vm.request = $scope.requestData;
+
+        vm.searchresult;
+
+        //peer fun
         $scope.$watch(
             function watchEvent(scope){
                 return(mapLocation.userCord);
@@ -165,10 +171,12 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                     vm.peerlist.peer.active[vm.peerlist.peer.active.length-1].weight = [vm.peerlist.peer.active.length-1];
                 }
             }
+            for(var per in vm.request){
+                if(vm.request[per].profileImgPath == "") vm.request[per].profileImgPath = vm.defaultimg;
+                else vm.request[per].profileImgPath = "./profileimg/"+ vm.request[per].profileImgPath;
+            }
             peerLocation.peer = vm.peerlist.peer;     
         }
-
-        vm.peerInit();
 
         //아래는 checklist 구현하는 함수들
         vm.toggle = function (peer, list) {
@@ -236,83 +244,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         {
             angular.element('#new-checklist-item-input').focus();
         }
-        
-    }
 
-    /** @ngInject */
-    function QuickPanelRequestController(
-        // 데이터
-
-        // 모듈
-        $http,     
-        $httpParamSerializerJQLike, 
-        $sessionStorage,
-        $scope
-
-        // 서비스
-        )
-    {
-        var vm = this;
-
-        vm.request = $scope.requestData;
-
-        vm.prequest = {
-            currentrequest : "recv",
-            range : {
-                send : "보내기",
-                recv : "받기"
-            }
-        };
-
-        vm.searchresult;
-
-        vm.defaultimg = "./assets/images/avatars/profile.jpg";
-
-        //유저들에 대한 정보를 가져와서 보여주는 함수
-        vm.finduser = function(){
-
-            var showsearch = document.getElementById("showsearchresult");
-
-            $http({
-                method : 'GET',
-                url : './api/member/search?q='+vm.searchNickname,
-                headers: {'x-auth-token' : $sessionStorage.get('AuthToken')}
-            }).then(function successCallback(response){
-
-                vm.searchresult = response.data;
-
-                for (var value in vm.searchresult){
-                    if(vm.searchresult[value].profileImgPath == "") vm.searchresult[value].profileImgPath = vm.defaultimg;
-                    else vm.searchresult[value].profileImgPath = "./profileimg/"+vm.searchresult[value].profileImgPath;
-                }
-                showsearch.focus();
-            });
-        }
-
-        //피어 요청을 보내는 함수
-        vm.sendrequest = function(seq){
-
-            //if(vm.peerlist.checklist.indexOf(seq) == -1){
-                var con = confirm("피어 요청을 보내시겠습니까?");
-                if(con == true){
-                    $http({
-                        method : 'POST',
-                        url : './api/member/reqPeerFromMe',
-                        data : $httpParamSerializerJQLike({
-                            toSeq : seq
-                        }),
-                        headers: {
-                            'Content-Type' : 'application/x-www-form-urlencoded',
-                            'x-auth-token' : $sessionStorage.get('AuthToken')
-                        }
-                    }).then(function successCallback(response){
-                        alert("요청을 보냈습니다.");
-                    });
-                }
-            //}
-            //else alert("이미 피어인 사용자입니다.");
-        }
-
+        //request fun
         //피어 요청을 수락하는 함수
         vm.requestaccept = function(user) {
 
@@ -358,11 +291,90 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             focusChecklistInput();
         }
 
-        function focusChecklistInput()
+        vm.showRequestDialog = function ()
         {
-            angular.element('#new-checklist-item-input').focus();
+            $mdDialog.show({
+                controller          : 'QuickPanelRequestDialogController',
+                controllerAs        : 'vm',
+                templateUrl         : 'app/core/directives/ms-quickpanel/templates/peer/requestDialog.html',
+                parent              : angular.element(document.body),
+                clickOutsideToClose : true,
+                fullscreen          : false, // Only for -xs, -sm breakpoints.
+                resolve:{
+                    PeerData : function(){
+                        return vm.peer;
+                    }                  
+                }
+            });
+        }
+        
+    }
+
+    /** @ngInject */
+    function QuickPanelRequestDialogController(
+        // 데이터
+        PeerData,
+
+        // 모듈 
+        $http, 
+        $sessionStorage,
+        $httpParamSerializerJQLike
+    )
+    {
+        var vm = this;
+        vm.searchresult;
+        vm.defaultimg = "./assets/images/avatars/profile.jpg";
+        vm.peercheck = [];
+        vm.userseq = $sessionStorage.get('memberSeq');
+
+        for (var pitem in PeerData){
+            vm.peercheck.push(PeerData[pitem].memberSeq);
+        }
+        
+        //유저들에 대한 정보를 가져와서 보여주는 함수
+        vm.finduser = function(){
+
+            var showsearch = document.getElementById("showsearchresult");
+
+            $http({
+                method : 'GET',
+                url : './api/member/search?q='+vm.searchNickname,
+                headers: {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            }).then(function successCallback(response){
+
+                vm.searchresult = response.data;
+
+                for (var value in vm.searchresult){
+                    if(vm.searchresult[value].profileImgPath == "") vm.searchresult[value].profileImgPath = vm.defaultimg;
+                    else vm.searchresult[value].profileImgPath = "./profileimg/"+vm.searchresult[value].profileImgPath;
+                }
+                showsearch.focus();
+            });
         }
 
+        //피어 요청을 보내는 함수
+        vm.sendrequest = function(seq){
+
+            if(vm.peercheck.indexOf(seq) == -1 && seq != vm.userseq){
+                var con = confirm("피어 요청을 보내시겠습니까?");
+                if(con == true){
+                    $http({
+                        method : 'POST',
+                        url : './api/member/reqPeerFromMe',
+                        data : $httpParamSerializerJQLike({
+                            toSeq : seq
+                        }),
+                        headers: {
+                            'Content-Type' : 'application/x-www-form-urlencoded',
+                            'x-auth-token' : $sessionStorage.get('AuthToken')
+                        }
+                    }).then(function successCallback(response){
+                        alert("요청을 보냈습니다.");
+                    });
+                }
+            }
+            else alert("요청을 보낸 대상이 이미 피어인 사용자, 혹은 자기 자신입니다.");
+        }
     }
 
     /** @ngInject */
@@ -441,24 +453,11 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         return {
             restrict: 'E',
             scope   : {
-                peerData : '=peerData'
+                peerData : '=peerData',
+                requestData : '=requestData'
             },
             templateUrl : 'app/core/directives/ms-quickpanel/templates/peer/peer.html',
             controller      : 'QuickPanelPeerController as vm'
-            
-        };
-    }
-
-    /** @ngInject */
-    function msQpRequestDirective()
-    {
-        return {
-            restrict: 'E',
-            scope   : {
-                requestData : '=requestData'
-            },
-            templateUrl : 'app/core/directives/ms-quickpanel/templates/request/request.html',
-            controller      : 'QuickPanelRequestController as vm'
             
         };
     }
