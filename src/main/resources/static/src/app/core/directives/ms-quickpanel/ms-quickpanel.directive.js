@@ -262,6 +262,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 }
             }).then(function (response){
                 vm.deleteCheckItem(user);
+                var showpeer = document.getElementById("showpeerlistcontainer");
+                showpeer.focus();
             });
 
         }

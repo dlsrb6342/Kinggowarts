@@ -36,7 +36,7 @@
     </div>
 </div>
 
-<p align="right" ng-if="vm.peerlist.currentlocation == 'active'">
+<p align="right" ng-if="vm.peerlist.currentlocation == 'active' && vm.peer.length > 0">
     <md-checkbox aria-label="Reverse Select" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()">
         선택 반전
     </md-checkbox>
