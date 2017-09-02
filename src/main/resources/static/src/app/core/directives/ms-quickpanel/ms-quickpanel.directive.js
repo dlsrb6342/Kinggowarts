@@ -177,6 +177,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             }
             peerLocation.peer = vm.peerlist.peer;     
         }
+        
+        vm.peerInit();
 
         //아래는 checklist 구현하는 함수들
         vm.toggle = function (peer, list) {
