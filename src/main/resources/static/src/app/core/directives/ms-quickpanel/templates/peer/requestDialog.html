@@ -1,0 +1,19 @@
+<md-dialog flex="30" style="max-height: 500px">
+    <div id = "showsearchresult">
+    <div layout="row" layout-align="space-around center">
+        <md-input-container class="pt-8"  md-no-float>
+            <input ng-model="vm.searchNickname" name="nickname" placeholder="닉네임 입력" ng-keydown="$event.keyCode === 13 && vm.finduser()">
+        </md-input-container>
+        <span style="cursor: pointer;" ng-click = "vm.finduser()" cursor: pointer>찾기</span>
+    </div>
+    
+    <md-list class="checklist" ng-if="vm.searchresult.length > 0 ">
+
+        <md-list-item class="contact" ng-repeat="item in vm.searchresult" ng-click="vm.sendrequest(item.memberSeq)" aria-label="RESULT">
+            <img ng-src="{{item.profileImgPath}}" onerror="this.src='assets/images/avatars/profile.jpg'" class="md-avatar"/>{{item.nickname}}
+        </md-list-item>    
+
+    </md-list>
+    
+    </div>
+</md-dialog>

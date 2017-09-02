@@ -1,4 +1,30 @@
 <div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
+    <div class="h3">받은 피어 요청</div>
+
+    <div class="pv-16">
+        <span style="margin-right: 40px;cursor: pointer;" ng-click = "vm.showRequestDialog()" cursor: pointer>보내기</span>
+    </div>
+
+</div>
+
+
+<md-list class="checklist" ng-if="vm.request.length > 0">
+
+    <md-list-item ng-repeat="item in vm.request">
+        <img ng-src="{{item.profileImgPath}}" onerror="this.src='assets/images/avatars/profile.jpg'" class="md-avatar"/>
+        <p>{{item.nickname}}</p>
+        <md-icon ng-click="vm.requestaccept(item)"
+            class="md-secondary"
+            md-font-icon="icon-checkbox-marked-circle green-500-fg" aria-label="remove">
+        </md-icon>
+        <md-icon ng-click="vm.requestdenied(item)"
+            class="md-secondary"
+            md-font-icon="icon-cancel red-500-fg" aria-label="remove">
+        </md-icon>
+    </md-list-item>
+</md-list>
+
+<div class="ph-16 border-bottom" layout="row" layout-align="space-between center">
     <div class="h3">피어 목록</div>
     
     <div class="pv-16">
@@ -10,7 +36,7 @@
     </div>
 </div>
 
-<p align="right" ng-if="vm.peerlist.currentlocation == 'active'">
+<p align="right" ng-if="vm.peerlist.currentlocation == 'active' && vm.peer.length > 0">
     <md-checkbox aria-label="Reverse Select" ng-checked="vm.isChecked()" md-indeterminate="vm.isIndeterminate()" ng-click="vm.toggleAll()">
         선택 반전
     </md-checkbox>

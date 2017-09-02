@@ -29,7 +29,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         $http,
         $httpParamSerializerJQLike, 
         $sessionStorage,
-        $q
+        $q,
+        $scope
 
         // 서비스
         )
@@ -48,7 +49,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         vm.loadingFlagR = false;
         vm.loadingFlagW = false;
 
-        vm.timelineListDataResolver = function(){
+        //timeline
+        $scope.timelineEvent = function(){
 
             vm.loadingFlagT = false;
             vm.loadingFlagP = false;
@@ -73,47 +75,40 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                     vm.loadingFlagT = true;
                 }
             );
-            
         }
 
-        vm.timelineListDataResolver();
-
-        vm.peerDataResolver = function(){
+        //peer
+        $scope.peerEvent = function(){
 
             vm.loadingFlagT = false;
             vm.loadingFlagP = false;
             vm.loadingFlagR = false;
             vm.loadingFlagW = false;
-            var obj = $http.get('./api/member/peer', {
+            var objP = $http.get('./api/member/peer', {
                 headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
             });
 
-            obj.then(
+            var objR = $http.get('./api/member/reqPeerToMe', {
+                headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
+            });
+
+            objP.then(
                 function(data){
                     vm.peer = data.data;
                     vm.loadingFlagP = true;
                 }
             );
 
-        }
-        vm.requestDataResolver = function(){
-            
-            vm.loadingFlagT = false;
-            vm.loadingFlagP = false;
-            vm.loadingFlagR = false;
-            vm.loadingFlagW = false;
-            var obj = $http.get('./api/member/reqPeerToMe', {
-                headers : {'x-auth-token' : $sessionStorage.get('AuthToken')}
-            });
-            
-            obj.then(
+            objR.then(
                 function(data){
                     vm.request = data.data;
                     vm.loadingFlagR = true;
                 }
             );
         }
-        vm.recentwikiDataResolver = function(){
+
+        //wiki
+        $scope.wikiEvent = function(){
 
             vm.loadingFlagT = false;
             vm.loadingFlagP = false;
@@ -128,8 +123,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 }
             );
         }
-
-        
+            
     }
 
 })();
