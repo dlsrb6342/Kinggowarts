@@ -1,6 +1,6 @@
 <!-- drawing 버튼 -->
 
-<md-fab-speed-dial id="drawingButton" style="position:absolute; z-index:99990;bottom:40px;left:40px;height:40px;width:40px;" md-direction="up" md-open="vm.bDrawingButtonIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.drwingButtonClicked()">
+<md-fab-speed-dial id="drawingButton" ng-show="vm.ngShowDrawingButton" style="position:absolute; z-index:99990;bottom:40px;left:40px;height:40px;width:40px;" md-direction="up" md-open="vm.bDrawingButtonIsOpen" class="md-scale" ng-class="{ 'md-hover-full': 'false' }" ng-click="vm.drwingButtonClicked()">
   <md-fab-trigger>
     <md-button aria-label="menu" class="md-fab md-warn">
       <md-tooltip md-direction="up" md-visible="false">도구모음</md-tooltip>
