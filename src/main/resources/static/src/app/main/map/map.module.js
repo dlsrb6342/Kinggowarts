@@ -17,6 +17,10 @@
                     'content@app.main': {
                         templateUrl: 'app/main/map/map.html',
                         controller : 'MapController as vm'
+                    },
+                    'map-side@app.main.map': {
+                        templateUrl: 'app/main/map/map-side/map-side.html',
+                        controller : 'MapSideController as vm'
                     }
                 },                
                 resolve: {
@@ -25,62 +29,6 @@
                         return msApi.resolve('marker@get');
                     },
                     /*
-                    MPrinter: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=프린터',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    MCafe: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=카페',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    MInRest: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=교내식당',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    MOutRest: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=교외식당',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    MInEat: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=교내매점',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    MATM: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=ATM',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    MShelter: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=휴게실',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    MMarket: function($http, $sessionStorage){
-                        return $http({
-                            method: 'GET',
-                            url: './api/marker?q=편의점',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
                     MBusstop: function($http, $sessionStorage){
                         return $http({
                             method: 'GET',
@@ -135,53 +83,16 @@
                     CategoryMenuData: function(msApi)
                     {
                         return msApi.resolve('categoryMenu@get');
-                    },
-                    /*
-                    AreaAdmin: function(msApi, $http, $sessionStorage)
-                    {
-                        return $http({
-                            method: 'GET',
-                            url: './api/map?type=admin',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },
-                    AreaUser: function(msApi, $http, $sessionStorage)
-                    {
-                        return $http({
-                            method: 'GET',
-                            url: './api/map?type=user',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },*/
-                    DrawingMenuData: function(msApi)
-                    {
-                        return msApi.resolve('drawingMenu@get');
-                    },
-                    /*
-                    CustomEventData: function(msApi, $http, $sessionStorage)
-                    {
-                        //return msApi.resolve('customEvent@get');
-                        return $http({
-                            method: 'GET',
-                            url: './api/event',
-                            headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                        });
-                    },*/
-                    CategoryTypes: function(msApi)
-                    {
-                        return msApi.resolve('categoryTypes@get');
                     }
-                    
                 }
             });
 
         // Api
 
-        msApiProvider.register('customEvent', ['app/data/map/customEvent.json']);
-        msApiProvider.register('marker', ['app/data/map/marker.json']);
-        msApiProvider.register('categoryTypes', ['app/data/map/categoryTypes.json']);
+        
+        msApiProvider.register('marker', ['app/data/map/marker.json']);  
         msApiProvider.register('categoryMenu', ['app/data/map/categoryMenu.json']);
-        msApiProvider.register('drawingMenu', ['app/data/map/drawingMenu.json']);
+        
         
     }
 })();

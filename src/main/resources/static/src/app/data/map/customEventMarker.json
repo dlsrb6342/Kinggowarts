@@ -1,9 +1,0 @@
-{
-	"data":[
-            {"name":"마커", "type":"MARKER", "icon" : "icon-emoticon-happy"},
-            {"name":"원", "type":"CIRCLE", "icon" : "icon-emoticon-happy"},   
-            {"name":"사각형", "type":"RECTANGLE", "icon" : "icon-emoticon-happy"},   
-            {"name":"다각형", "type":"POLYGON", "icon" : "icon-emoticon-happy"},   
-            {"name":"생성", "type":"CREATE", "icon" : "icon-emoticon-happy"}   
-        ]
-}

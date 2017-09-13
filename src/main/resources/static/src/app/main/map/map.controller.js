@@ -1,3 +1,4 @@
+
 (function ()
 {
     'use strict';
@@ -23,11 +24,12 @@
         MOutRest,
         MATM,
         */
-        CategoryTypes,
+        //CategoryTypes,
         //AreaAdmin,
-        DrawingMenuData,
+        //DrawingMenuData,
         //CustomEventData,
         CategoryMenuData,
+
         //module
         $mdDialog,
         $rootScope,
@@ -39,9 +41,11 @@
         $timeout,
         $sessionStorage,
         $state,
+
         //service
         peerLocation,
-        mapLocation
+        mapLocation,
+        sideMapCommService
     )
     {
 //object
@@ -643,24 +647,25 @@
         var drawingMenuModify = [
             {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"}, 
             {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
-            {"name":"수정완료", "type":"CREATE", "icon" : "icon-play-box-outline"},
-            {"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
+            {"name":"수정완료", "type":"CREATE", "icon" : "icon-play-box-outline"}
+            //{"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
         var drawingMenuCreate = [
             {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"}, 
             {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
-            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"},
-            {"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
+            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"}
+            //{"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
 
 
 //data
         var vm = this;
         var marker;
+        vm.isMobile = false;    //mobile
 
         vm.markerDataArr = MarkerData.data;
         var categoryMenu = CategoryMenuData.data;
-        var categoryTypes = CategoryTypes.data;
+        //var categoryTypes = CategoryTypes.data;
 
         //vm.categories = MarkerData.data;
         vm.kMarkerStorageArr = [];    //kMarkerStorageArr
@@ -714,9 +719,46 @@
         vm.bCategoryButtonIsEnable = true;  //카테고리 버튼 활성화
 
     //drawing
+        vm.bDrawingButtonIsOpen = false;
         vm.bIsModifyMode = false;
-        vm.drawingMenu = drawingMenuCreate;
-        
+        vm.bIsCreateMode = false;
+        vm.drawingMenu = drawingMenuCreate; //drawingMenuModify
+        var drawingOption = {
+            map: map,
+            drawingMode : 0, //HAND
+            polygonOptions: {
+                strokeColor: '#ffd100',
+                fillColor: '#ffff00',
+                fillOpacity: 0.5,
+                strokeWeight: 3
+            },
+            controlPointOptions: {
+                anchorPointOptions: {
+                    radius: 10,
+                    fillColor: '#ff0000',
+                    strokeColor: '#0000ff',
+                    strokeWeight: 2
+                },
+                midPointOptions: {
+                    radius: 10,
+                    fillColor: '#ff0000',
+                    strokeColor: '#0000ff',
+                    strokeWeight: 2,
+                    fillOpacity: 0.5
+                }
+            },
+            drawingControl: [
+                //must empty array
+            ]
+        };
+        var drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);
+
+
+    //버튼 show vm
+        vm.ngShowCategoryButton = true;
+        vm.ngShowPeerLocationButton = true;
+        vm.ngShowUserLocationButton = true;
+        vm.ngShowDrawingButton = true;
 
 //methods
         vm.userCheckFunc = userCheckFunc;
@@ -729,6 +771,30 @@
         vm.moveToUserLocation = moveToUserLocation;
         vm.categorySelect = categorySelect;
         vm.selectDrawingMenu = selectDrawingMenu;
+        vm.drwingButtonClicked = drwingButtonClicked;
+//rootscope on
+        $rootScope.$on('ToMain', function (event, args) {
+                if(args.type == "modifyShape"){
+                    //start modify Shape
+                }
+                else if(args.type == "bOpen"){
+                    var sideWitdh = args.arg;
+                    updateDocumentElementSize(sideWitdh, args.bOpen);
+                }
+                else if(args.type == "cancelCreate"){
+                    //remote all drawing
+                    drawingManager.setOptions('drawingMode', 0);
+                    drawingManager.destroy();
+                    drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);
+                    endCreateMode();
+                }
+                else if(args.type == "windowResize"){
+                    var sideWitdh = args.arg;
+                    updateDocumentElementSize(sideWitdh, args.bOpen);
+                }
+            }
+        );
+        
 
 //regitster function
     //permission
@@ -747,6 +813,7 @@
             }
 
             overlapCoverMarker = list[0].marker;
+            startSideBarWithNMarkersArr(list);
             //여러개의 list 처리.
 
             naver.maps.Event.once(overlapCoverMarker, 'mouseout', function() {
@@ -796,16 +863,40 @@
         };
         function nMarkerListenerClick(e){
             var m = e.overlay;
-            console.log(e.overlay);
+            //console.log(e.overlay);
             //alert(m.title);
             //get kMarker with title
             var tempKMarker = vm.nMarkerTitleToKMarkerMappingObj[m.title];
-            showDialogMainDialog(tempKMarker);
+            startSideBarWithKMarker(tempKMarker);
 
+        };
+
+    //nMarkersArr로 side open
+        function startSideBarWithNMarkersArr(list){
+            var tempKMarkerArr = [];
+            for(var i = 0, ii = list.length; i<ii; i++){
+                tempKMarkerArr.push(vm.nMarkerTitleToKMarkerMappingObj[list[i].marker.title]);
+            }
+            sideMapCommService.startSideBar(tempKMarkerArr);
+            $rootScope.$broadcast('ToSide', {
+                type : 'bOpen',
+                bOpen : true
+            });
+
+        };
+        function startSideBarWithKMarker(inKMarker){
+            var tempKMarkerArr = [];
+            tempKMarkerArr.push(inKMarker);
+            sideMapCommService.startSideBar(tempKMarkerArr);
+            $rootScope.$broadcast('ToSide', {
+                type : 'bOpen',
+                bOpen : true
+            });
         };
 
     //dialog 실행 function : showDialog-
         //main dialog
+        /*
         function showDialogMainDialog(inKMarker) {
             $mdDialog.show({
                 controller          : 'MainDialogController',
@@ -845,6 +936,7 @@
                 
             });
         };
+        */
 
     //data comm functions
         //server에서 데이터를 가져 옵니다. arr에 해당하는 catetory로 query 생성/요청합니다.
@@ -929,17 +1021,23 @@
             
             //TODO : get Data From server
             commGetDataFromServerFunc(inCategoryTitleArr); // --> vm.markerDataArr
-            console.log(vm.markerDataArr.length);
 
             for(var i=0, ii=vm.markerDataArr.length; i<ii; i++){
-                console.log("+");
                 var tempMarkerData = vm.markerDataArr[i];
-                //console.log(tempMarkerData);
                 
                 //nMarker가 없다. 즉 kMarker도 없다. 생성 필요.
                 if(!vm.nMarkerTitleToKMarkerMappingObj.hasOwnProperty(vm.markerDataArr[i].title)){
                     //tempMarkerData와 tempCategories[j]가 comm data와 연관.
-                    
+                    //console.log(tempMarkerData);
+
+                    var tempRegion = null;
+                    //path가 있는 경우
+                    if(tempMarkerData.path.length != 0){
+                        tempRegion = [];
+                        for(var j=0, jj = tempMarkerData.path.length; j<jj; j++){
+                            tempRegion.push(new naver.maps.LatLng(tempMarkerData.path[j].lat, tempMarkerData.path[j].lng));
+                        }
+                    }
                     var newKMarker = new kMarker(null, 
                             tempMarkerData.id,
                             tempMarkerData.name,        //to title
@@ -948,20 +1046,15 @@
                             [], //new kMarkerCategoryObj(,),  //to categories
                             tempMarkerData.floor,
                             tempMarkerData.timeStamp,
-                            tempMarkerData.region
+                            tempRegion
                         );
+
                     //create nPolygon
-                    if(newKMarker.getRegion() != null){
-                        var tempRegion = newKMarker.getRegion();
-                        var tempPaths = [];
-                        var tempInnerPaths = [];
-                        for(var j=0, jj = tempRegion.path.length; j<jj; j++){
-                            tempInnerPaths.push(new naver.maps.LatLng(tempRegion.path[j].lat, tempRegion.path[j].lng));
-                        }
-                        tempPaths.push(tempInnerPaths);
+                    //path가 있는 경우
+                    if(tempMarkerData.path.length != 0){
                         var tempNPolygon = new naver.maps.Polygon({
                             //map: map,
-                            paths: tempInnerPaths,
+                            paths: tempRegion,
                             fillColor: '#ff0000',
                             fillOpacity: 0.3,
                             strokeColor: '#ff0000',
@@ -990,8 +1083,6 @@
                 }
                 
             }
-            //console.log(newKMarkerArr);
-
             return newKMarkerArr;   //새로 추가된 kMarkers
                     
         };
@@ -1062,7 +1153,7 @@
             }
         };
 
-        //inCategoryTitleArr 해당하는 nMarkers를 map상에 올림. bSetMapNullNMarkersOnMap인 경우 현재 map상에 표시되는 모든 nMarker를 내림.
+        //inCategoryTitleArr(표시할 카테고리들)에 해당하는 nMarkers를 map상에 올림. bSetMapNullNMarkersOnMap인 경우 현재 map상에 표시되는 모든 nMarker를 내림.
         //inCategoryTitleArr는 array만 받으며 ALL을 전달 할 때 ["ALL"]을 전달.
         function setMapToNMarkersWithCategoryKMarkersArr(inCategoryTitleArr, bSetMapNullNMarkersOnMap){
             //현재 map상에 있는 nMarker 해제
@@ -1117,6 +1208,7 @@
     //user location button function
         //user 위치
         function moveToUserLocation(){
+            //$state.go('app.main.map.side');
             if(userLocationMarker != null){
                 userLocationMarker.setMap(null);
                 userLocationMarker = null;    
@@ -1306,10 +1398,79 @@
             //TODO : enable peer marker clickable
         };
 
+        function startCreateMode(){
+            //all marker click disable(peer, category marker, category button)
+            vm.bIsCreateMode = true;            //modify mode
+            $rootScope.$broadcast('ToSide', {
+                    type : 'create',
+                });
+            vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
+            //vm.bCategoryButtonIsEnable = false;
+            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+                var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(false);
+                }
+            }
+            //TODO : disable peer marker clickable
+        };
+
+        function endCreateMode(){
+            //all marker click disable(peer, category marker, category button)
+            vm.bIsCreateMode = false;           //create mode
+            vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
+            //vm.bCategoryButtonIsEnable = true;
+            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+                var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(true);
+                }
+            }
+            //TODO : enable peer marker clickable
+        };
+
         function selectDrawingMenu(input){
             //input  = MARKER, POLYGON, CREATE, CANCEL
             //vm.bIsModifyMode -> create or modify
+            if(input == "MARKER"){
+                var tempdrawingOverlays = drawingManager.getDrawings();
+
+                for(var key in tempdrawingOverlays){
+                    if(tempdrawingOverlays[key].name == "marker"){
+                        tempdrawingOverlays[key].setMap(null);
+                        delete tempdrawingOverlays[key];
+                    }
+                }
+                
+                drawingManager.setOptions('drawingMode', 6);
+            }
+            else if(input == "POLYGON"){
+                var tempdrawingOverlays = drawingManager.getDrawings();
+                for(var key in tempdrawingOverlays){
+                    if(tempdrawingOverlays[key].name == "polygon"){
+                        tempdrawingOverlays[key].setMap(null);
+                        delete tempdrawingOverlays[key];
+                    }
+                }
+                drawingManager.setOptions('drawingMode', 5);
+            }
+            else if(input == "CREATE"){
+                console.log(drawingManager.getDrawings());
+            }
+            else if(input == "CANCEL"){
+                /*drawingManager.setOptions('drawingMode', 0);
+                drawingManager.destroy();
+                drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);
+                */
+            }
         };
+
+        function drwingButtonClicked(){
+            if(vm.bIsCreateMode == false){
+                vm.bIsCreateMode = true;
+                startCreateMode();
+            }
+        }
 
     //etc
         function updateMapLocationService() {
@@ -1317,6 +1478,83 @@
             mapLocation.lastLng = map.getCenter().getLng();
             mapLocation.lastZoomLevel = map.getLevel();
             //mapLocation.lastCategoryStatus = vm.categoryStatus;
+        };
+
+
+        //모바일인지 체크하여 drawing button을 disable 한다.
+        function mobileConfig(){
+            //'http://detectmobilebrowser.com/mobile'
+            vm.isMobile = false;
+            (function(a,b){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4)))vm.isMobile = true})(navigator.userAgent||navigator.vendor||window.opera);
+            
+            if(vm.isMobile){
+                console.log('모바일 환경 접속 확인 완료');
+                vm.ngShowDrawingButton = false;
+                //$("#drawingButton").hide();
+                //document.getElementById("drawingButton").hide();
+            }
+        };
+        //주어진 sidebar width로 map과 button들의 size를 조절한다.
+        function updateDocumentElementSize(sideWitdh, sideOpen){
+            if(sideOpen){
+                var winWitdh = $(window).width();
+                document.getElementById("nmap").style.width = "" + (winWitdh - sideWitdh) + "px";
+                document.getElementById("nmap").style.left = "" + sideWitdh + "px";
+                document.getElementById("drawingButton").style.left = "" + (sideWitdh + 40) + "px";
+                //userLocationButton, peerLocationButton display
+                //버튼이 나올 너비 계산
+                var widthSpace = winWitdh - sideWitdh;
+                console.log("space : " + widthSpace);
+                if(widthSpace > (260)){
+                    $('#userLocationButton').show();
+                    $('#peerLocationButton').show();
+                    $("#categoryButtonId").show();
+                    
+                    /*vm.ngShowUserLocationButton = true;
+                    vm.ngShowPeerLocationButton = true;
+                    vm.ngShowCategoryButton = true;*/
+                }
+                else if(widthSpace > 210){
+                    $('#userLocationButton').hide();
+                    $('#peerLocationButton').show();
+                    $("#categoryButtonId").show();                    
+                }
+                else if(widthSpace > 160){
+                    $('#userLocationButton').hide();
+                    $('#peerLocationButton').hide();
+                    $("#categoryButtonId").show(); 
+                }
+                else{
+                    $('#userLocationButton').hide();
+                    $('#peerLocationButton').hide();
+                    $("#categoryButtonId").hide();
+                }
+            }
+            else{
+                //side close
+                document.getElementById("nmap").style.width = "100%";
+                document.getElementById("nmap").style.left = "0%";
+                document.getElementById("drawingButton").style.left = "40px";
+                //userLocationButton, peerLocationButton display
+                /*vm.ngShowUserLocationButton = true;
+                vm.ngShowPeerLocationButton = true;
+                vm.ngShowCategoryButton = true;*/
+                $('#userLocationButton').show();
+                $('#peerLocationButton').show();
+                $("#categoryButtonId").show();
+            }
+            
+        };
+
+        $scope.safeApply = function(fn) {
+            var phase = this.$root.$$phase;
+            if(phase == '$apply' || phase == '$digest') {
+                if(fn && (typeof(fn) === 'function')) {
+                    fn();
+                }
+            } else {
+                this.$apply(fn);
+            }
         };
 
 
@@ -1328,6 +1566,7 @@
         mapLocation.getLocation();  //user의 gps location
         $interval(updateMapLocationService, 1000);
         */
+        mobileConfig();
         initCategorySelect();   //카테고리 variable 초기화
         //stream
         vm.commGetDataFromServerFunc(["프린터"]);
