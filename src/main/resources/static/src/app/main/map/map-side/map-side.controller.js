@@ -68,7 +68,11 @@
         vm.openSide = openSide;
         vm.initWithCreate = initWithCreate;
 
-        window.setIFrameSize=setIFrameSize;
+        var sideBarWidthNumMin = 300;  //sideBar Width Min (최소 너비가 다음 값 이상)
+        var sideBarWidthNum = 300;  //sideBar Width
+        var sideBarHeightExceptIFrame = 165;
+
+        //window.setIFrameSize=setIFrameSize;
 
         //tab index watch
         $scope.$watch(function(){return vm.tabIndex}, function(newValue, oldValue){
@@ -259,12 +263,16 @@
             vm.bSideOpen = false;
         };
 
-        //사이드 wiki 부분을 엽니다.
+        //사이드 wiki 부분을 엽니다. $RootScope.$on ToSide function
         function openSide(event, args){
             if(args.type == "bOpen"){
+                updateSideMapWidthSize();   //side map width 조절
+                updateIFrameWidthSize();    //iframe 조절
+                updateIFrameHeightSize();
                 $rootScope.$broadcast('ToMain', {
                     type : 'bOpen',
-                    bOpen : true
+                    bOpen : true,
+                    arg : sideBarWidthNum
                 });
 
                 $scope.$apply(function() {
@@ -285,7 +293,7 @@
                     }
 
                     vm.initWithIdx(0);  //init idx
-                    setIFrameSize();
+                    //updateIFrameHeightSize();
                     //finally open
                     vm.bSideOpen = args.bOpen;
 
@@ -295,9 +303,13 @@
             }
             //단순 재오픈
             else if(args.type == 'reOpen'){
+                updateSideMapWidthSize();   //side map width 조절
+                updateIFrameWidthSize();    //iframe 조절
+                updateIFrameHeightSize();
                 $rootScope.$broadcast('ToMain', {
                     type : 'bOpen',
-                    bOpen : true
+                    bOpen : true,
+                    arg : sideBarWidthNum
                 });
                 $scope.$apply(function() {
                     if(vm.resolvedKMarkerDataArr.length == 0){
@@ -344,9 +356,13 @@
                 enableAll();    //end api. enable all.
             }
             else if(args.type == 'create'){
+                updateSideMapWidthSize();   //side map width 조절
+                updateIFrameWidthSize();    //iframe 조절
+                updateIFrameHeightSize();
                 $rootScope.$broadcast('ToMain', {
                     type : 'bOpen',
-                    bOpen : true
+                    bOpen : true,
+                    arg : sideBarWidthNum
                 });
                 
                 $scope.safeApply(function() {
@@ -364,30 +380,152 @@
             }
         };
 
-        function setIFrameSize(){
+        //iFrame의 높이를 재조정한다.
+        function updateIFrameHeightSize(){
             var windowHeight = window.innerHeight;
-            windowHeight = windowHeight - 164;
+            windowHeight = windowHeight - sideBarHeightExceptIFrame;
             var iFrameHeightStr = "";
             iFrameHeightStr = iFrameHeightStr + windowHeight + "px";
-            document.getElementById("myIFrame").height = iFrameHeightStr;
+            //document.getElementById("myIFrameWrapper").height = iFrameHeightStr;
+            $("#myIFrameWrapper").css("height", iFrameHeightStr);    //change upper html div width
+        };
+
+        //SideBar & IFrame의 Width를 재설정한다.
+        function setIFrameWidthSize(width){
+            if(sideBarWidthNumMin > width){
+                sideBarWidthNum = sideBarWidthNumMin;
+                //console.log("set to(1st) : " + sideBarWidthNum);
+                return sideBarWidthNum;
+            }
+            if($(window).width()-20 < width){
+                sideBarWidthNum = $(window).width() -20;
+                //console.log("set to(2st) : " + sideBarWidthNum);
+                return sideBarWidthNum;
+            }
+
+            sideBarWidthNum = width;
+            //console.log("set to(3st) : " + sideBarWidthNum);
+            return sideBarWidthNum;
+        };
+        //Iframe의 너비를 재조정한다.
+        function updateIFrameWidthSize(){
+            var iFrameWidthStr = "";
+            iFrameWidthStr = iFrameWidthStr + sideBarWidthNum + "px";
+            //document.getElementById("myIFrameWrapper").width = iFrameWidthStr;
+            $("#myIFrameWrapper").css("width", iFrameWidthStr);    //change upper html div width
+        }
+        //Side-bar의 너비를 재조정한다.
+        function updateSideMapWidthSize(){
+            var iFrameWidthStr = "";
+            iFrameWidthStr = iFrameWidthStr + sideBarWidthNum + "px";
+            $("#map-side").css("width", iFrameWidthStr);    //change upper html div width
+            $("#dragBar").css("left", iFrameWidthStr);
+            //document.getElementById("map-side").width = iFrameWidthStr;
         };
 
         //창크기 변화 감지
         $(window).resize(function() {
             //var windowWidth = $(window).height();
-            setIFrameSize();
+            if($(window).height() < sideBarWidthNum){
+                sideBarWidthNum = $(window).width() - 20;
+            }
+            updateSideMapWidthSize();
+            updateIFrameWidthSize();
+            updateIFrameHeightSize();
+            $rootScope.$broadcast('ToMain', {
+                type : 'windowResize',
+                bOpen : vm.bSideOpen,
+                arg : sideBarWidthNum
+            }
+            );
            
         });
         
         $scope.safeApply = function(fn) {
             var phase = this.$root.$$phase;
-                if(phase == '$apply' || phase == '$digest') {
-                    if(fn && (typeof(fn) === 'function')) {
-                        fn();
-                    }
-                } else {
-                    this.$apply(fn);
+            if(phase == '$apply' || phase == '$digest') {
+                if(fn && (typeof(fn) === 'function')) {
+                    fn();
                 }
-            };
-        }
+            } else {
+                this.$apply(fn);
+            }
+        };
+
+        //드래그 바 JQuery
+        $( function() {
+        $( '#dragBar' ).each( function() {
+            var $drag = $( this );
+            $drag.on( 'mousedown', function( ev ) {
+                var $this = $( this );
+                //var $parent = $this.parent();
+                //var poffs = $parent.position();
+                //var pwidth = $parent.width();
+                
+                var x = ev.pageX;
+                var y = ev.pageY;
+                var savedRx = 0;
+                var tempSideBarWidthNum = sideBarWidthNum;
+                //console.log("mouseDown");
+                //$this.parent();
+                    
+                $( document ).on( 'mousemove.dragging', function( ev ) {
+                    var mx = ev.pageX;
+                    var my = ev.pageY;
+                    
+                    var rx = mx - x;
+                    var ry = my - y;
+                    //console.log("mouseDraging");
+                    if(tempSideBarWidthNum + rx < 300 || mx < 300){
+                        tempSideBarWidthNum = 300;
+                    }
+                    else{
+                        $this.css( {
+                        'left' : (tempSideBarWidthNum + rx) + 'px'
+                        } );
+                    //savedRx = rx;
+
+                    setIFrameWidthSize(tempSideBarWidthNum + rx);
+                    updateSideMapWidthSize();
+                    updateIFrameWidthSize();
+                    updateIFrameHeightSize();
+                    $rootScope.$broadcast('ToMain', {
+                        type : 'windowResize',
+                        bOpen : vm.bSideOpen,
+                        arg : sideBarWidthNum
+                    }
+                    );
+
+
+                    }                    
+                } ).on( 'mouseup.dragging mouseleave.dragging', function( ev) {
+                    $( document ).off( '.dragging' );
+                    var $this = $( this );
+/*
+                    tempSideBarWidthNum = setIFrameWidthSize(tempSideBarWidthNum + savedRx);
+                    updateSideMapWidthSize();
+                    updateIFrameWidthSize();
+                    updateIFrameHeightSize();
+                    $this.css( {
+                        'left' : tempSideBarWidthNum + 'px'
+                    } );
+                    $rootScope.$broadcast('ToMain', {
+                        type : 'windowResize',
+                        bOpen : vm.bSideOpen,
+                        arg : sideBarWidthNum
+                    }
+                    );
+                    */
+                    //console.log("leave dragging");
+                } );
+                
+                
+            } );
+            
+        } );
+    });
+    
+
+
+    }
 })();

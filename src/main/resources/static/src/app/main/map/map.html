@@ -7,15 +7,15 @@
                                               
 <!-- User 위치이동 아이콘 -->
 
-<md-button class="md-fab md-mini" style="position:absolute; z-index:99990;bottom:20px;right:70px;height:40px;width:40px;" ng-click="vm.moveToUserLocation()">
+<md-button id="userLocationButton" ng-show="vm.ngShowUserLocationButton" class="md-fab md-mini" style="position:absolute; z-index:99990;bottom:20px;right:70px;height:40px;width:40px;" ng-click="vm.moveToUserLocation()">
   <md-tooltip md-direction="top">사용자위치</md-tooltip>
   <md-icon md-font-icon="icon-crosshairs-gps"; class="icon"></md-icon>
 </md-button>
 
-
 <!-- 친구위치 아이콘 -->
 
-<md-button class="md-fab md-primary" style="position:absolute; z-index:99990;bottom:20px;right:120px;height:40px;width:40px;" ng-click="vm.peerOnMapFunciton()">
+
+<md-button id="peerLocationButton" ng-show="vm.ngShowPeerLocationButton" class="md-fab md-primary" style="position:absolute; z-index:99990;bottom:20px;right:120px;height:40px;width:40px;" ng-click="vm.peerOnMapFunciton()">
   <md-tooltip md-direction="top">Peer위치</md-tooltip>
   <md-icon md-font-icon="icon-account-multiple-outline"; class="icon"></md-icon>
 </md-button>
