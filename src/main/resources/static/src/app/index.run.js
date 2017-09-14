@@ -29,6 +29,9 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         /* state 변경시 로딩 화면 활성화 */
         var stateChangeStartEvent = $rootScope.$on('$stateChangeStart', function (evt, toState)
         {
+            $rootScope.numResolveData = 0;
+            $rootScope.loadingData = 0;
+            if (toState.resolve != undefined) $rootScope.numResolveData = Object.keys(toState.resolve).length;
 
             if( (toState.name != 'app.login' && toState.name != 'app.register') && $sessionStorage.get('useremail') == undefined)
             {
@@ -37,6 +40,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 $state.go('app.login');
             }
             $rootScope.loadingProgress = true;
+            $rootScope.$broadcast('msSplashScreen::add');
         });
 
         /* state 변경 완료시 로딩 화면 비활성화 */
@@ -46,6 +50,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             {
                 $rootScope.loadingProgress = false;
             });
+            $rootScope.$broadcast('msSplashScreen::remove');
         });
 
         /* rootScope 모듈에 현재 state 저장. */

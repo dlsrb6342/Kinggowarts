@@ -37,7 +37,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 resolve: {
                     NoticeCategoryData: function ($http)
                     {
-
+                        
                         return $http({
                             method: 'GET',
                             url: 'app/data/notice_category.json'
