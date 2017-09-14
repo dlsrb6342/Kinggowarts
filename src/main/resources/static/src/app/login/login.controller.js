@@ -36,7 +36,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
 
         /* 초기화 */
-        $rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
+        //$rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
 
         if($stateParams.auth == 'true'){ // 인증토큰을 통한 접근이 성공했을 경우 alert 띄움
             alert('인증이 완료되었습니다.');

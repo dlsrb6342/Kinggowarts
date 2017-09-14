@@ -20,6 +20,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
     function MainController($scope, $rootScope)
     {
         /* 초기화 */
+        /*
         $scope.$on('$viewContentAnimationEnded', function (event) 
         {
             if ( event.targetScope.$id === $scope.$id )
@@ -27,5 +28,6 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 $rootScope.$broadcast('msSplashScreen::remove'); // Remove the splash screen
             }
         });
+        */
     }
 })();
