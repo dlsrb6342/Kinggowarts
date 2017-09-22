@@ -595,6 +595,9 @@
 
 //constant
 
+        var LATLNG_UNIV_SUWON = new naver.maps.LatLng(37.293669, 126.975099);
+        var LATLNG_UNIV_SEOUL = new naver.maps.LatLng(37.587005, 126.993858);
+
         var MARKER_SPRITE_X_OFFSET = 29;
         var MARKER_SPRITE_Y_OFFSET = 50;
         var MARKER_ICON_URL = 'https://ssl.pstatic.net/static/maps/img/icons/sp_pins_spot_v3.png';
@@ -673,6 +676,7 @@
         vm.nMarkerTitleToKMarkerMappingObj = {};      //nMarkerTitleToKMarkerMappingObj. With Title, can get KMarker
         vm.categoriesToKMarkerMappingObj = {};
         vm.kMarkersOnMap = [];  //nMarker.setmap(map) 되어 있는 kMarker들의 배열
+        vm.univName=""; //univ button title
         
 
     //naver map
@@ -772,6 +776,7 @@
         vm.categorySelect = categorySelect;
         vm.selectDrawingMenu = selectDrawingMenu;
         vm.drwingButtonClicked = drwingButtonClicked;
+        vm.univButtonClicked =  univButtonClicked;
 //rootscope on
         $rootScope.$on('ToMain', function (event, args) {
                 if(args.type == "modifyShape"){
@@ -1546,6 +1551,32 @@
             
         };
 
+        //univ button
+        function univButtonClicked(){
+            if(vm.univName == "자과캠"){
+                vm.univName = "인사캠";    // move to 인사캠
+                univMoveToSeoul();
+            }
+            else{
+                vm.univName = "자과캠";    // move to 자과캠
+                univMoveToSuwon();
+            }
+        };
+
+        function univMoveToSuwon(){
+            vm.univName = "자과캠";
+            mapLocation.lastLat = LATLNG_UNIV_SUWON.lat();
+            mapLocation.lastLng = LATLNG_UNIV_SUWON.lng();  //app 첫 진입시 사용자 위치가 아닌 성대 중앙으로 이동
+            map.panTo(LATLNG_UNIV_SUWON, {duration : 400, easing : 'easeOutCubic'});
+        };
+
+        function univMoveToSeoul(){
+            vm.univName = "인사캠";
+            mapLocation.lastLat = LATLNG_UNIV_SEOUL.lat();
+            mapLocation.lastLng = LATLNG_UNIV_SEOUL.lng();  //app 첫 진입시 사용자 위치가 아닌 성대 중앙으로 이동
+            map.panTo(LATLNG_UNIV_SEOUL, {duration : 400, easing : 'easeOutCubic'});
+        };
+
         $scope.safeApply = function(fn) {
             var phase = this.$root.$$phase;
             if(phase == '$apply' || phase == '$digest') {
@@ -1561,8 +1592,17 @@
 
 //do stuff
 
+        
+        //usercheck();
+        //get univ info
+        /*if(자과캠){
+            univMoveToSuwon();
+        }
+        else{
+            univMoveToSeoul();
+        }*/
+        univMoveToSuwon();  //TODO : 위의 조건분기를 통해 처리되어야 함.
         /*
-        usercheck();
         mapLocation.getLocation();  //user의 gps location
         $interval(updateMapLocationService, 1000);
         */
