@@ -1,0 +1,26 @@
+md-dialog {
+
+    &.contraction-dialog {
+        max-width: 400px;
+        width: 400px;
+
+        md-toolbar {
+            
+
+        }
+
+        md-dialog-content {
+            display: block;
+            position: relative;
+        }
+
+        md-dialog-actions {
+            position: relative;
+            overflow-y: hidden;
+            overflow-x: auto;
+            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-top: 1px solid rgba(0, 0, 0, 0.12);
+        }
+    }
+}
