@@ -28,6 +28,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
     {
         var vm = this;
         $rootScope.wikipath = "../xwiki/bin/view/XWiki/";
+        $rootScope.loadingData = 0;
 
         /* 기본 테마를 fuse 테마 서비스로 설정. */
         vm.themes = fuseTheming.themes;
