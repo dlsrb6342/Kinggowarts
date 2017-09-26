@@ -22,8 +22,10 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
     function LoginController(
         /* 모듈 */
+        $document,
         $http, 
         $httpParamSerializerJQLike,
+        $mdDialog, 
         $rootScope,
         $state, 
         $stateParams, 
@@ -36,7 +38,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
 
         /* 초기화 */
-        //$rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
+        $rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
 
         if($stateParams.auth == 'true'){ // 인증토큰을 통한 접근이 성공했을 경우 alert 띄움
             alert('인증이 완료되었습니다.');
@@ -95,6 +97,23 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             }
             
         };
+
+
+        /**********************************************************************//**
+        약관 내용에 대한 다이얼로그를 띄움. */
+        vm.openContractionDialog = function (
+            ev) // 현재 이벤트
+        {
+            console.log("asd");
+            $mdDialog.show({
+                controller         : 'ContractionDialogController',
+                controllerAs       : 'vm',
+                templateUrl        : 'app/login/dialog/contraction-dialog.html',
+                parent             : angular.element($document.find('#content-container')),
+                targetEvent        : ev,
+                clickOutsideToClose: true
+            });
+        }
 
     }
 })();

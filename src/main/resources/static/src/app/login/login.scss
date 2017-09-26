@@ -43,7 +43,11 @@
                     margin-top: 8px;
 
                     .remember-me {
-                        margin-bottom: 16px
+                        margin-bottom: 16px;
+                    }
+                    
+                    .contraction {
+                        cursor: pointer;
                     }
 
                     .forgot-password {
