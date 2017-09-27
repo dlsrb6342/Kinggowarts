@@ -695,6 +695,12 @@
     //user location marker
         var userLocationMarker = null;  // userLocationMarker
 
+    //peer variable
+        var peerMarkerList = {};
+        var peerMemSeqTrueSet = new Set();
+        var peerMemSeqOnMapSet = new Set(); //현재 맵위에 올라와있는 peer들의 memSeq
+        var peerMemSeqSet = new Set();  //peerMarkerList에 존재하는 marker memSeq
+
 
     //겹침마커처리
         var bounds = map.getBounds(),
@@ -1221,58 +1227,10 @@
                 userLocationMarker = null;    
             }
             else{
-                userLocationMarker = new naver.maps.Marker({  
-                    position: new naver.maps.LatLng(37.5666805, 126.9784147),
-                    draggable: false, // 도착 마커가 드래그 가능하도록 설정합니다
-                    animation: naver.maps.Animation.DROP,
-                    icon: {
-                        url: BLUEFLAG_URL,
-                        size: new naver.maps.Size(BLUEFLAG_SIZE_X, BLUEFLAG_SIZE_X),
-                        origin: new naver.maps.Point(0, 0),
-                        anchor: new naver.maps.Point(BLUEFLAG_ANCHOR_X, BLUEFLAG_ANCHOR_Y)
-                    }
-                });
-                map.panTo(new naver.maps.LatLng(37.5666805, 126.9784147), {duration : 400, easing : 'easeOutCubic'});
-                setTimeout(function(){
-                        if(userLocationMarker != null){
-                            userLocationMarker.setMap(map);
-                        }
-                    }, 100);
-                
-            } 
-            //alert(vm.userLat + " " + vm.userLng);
-            if(mapLocation.userLastLat != 0 && mapLocation.userLastLng!= 0){
-                var dragendListenerLat = angular.copy(mapLocation.userLastLat);
-                var dragendListenerLng = angular.copy(mapLocation.userLastLng);
-                /*var dragendMoveLatLon = isLatlngInSkkuMap(dragendListenerLat, dragendListenerLng);
-                if(false == dragendMoveLatLon){
-                    //alert('out of region');
-                }
-                else{
-                    if(arriveMarker != null){
-                        arriveMarker.setMap(null);
-                    }
-                    if(isArriveMarkerOn == true){
-                        isArriveMarkerOn = false;
-                    }
-                    else{
-                        isArriveMarkerOn = true;
-                        arriveMarker = new daum.maps.Marker({  
-                            position: dragendMoveLatLon,
-                            draggable: false, // 도착 마커가 드래그 가능하도록 설정합니다
-                            image: arriveImage // 도착 마커이미지를 설정합니다
-                        });
-                        arriveMarker.setMap(map);
-                        map.panTo(dragendMoveLatLon);
-                    }
-                }*/
-                if(userLocationMarker != null){
-                    userLocationMarker.setMap(null);
-                    userLocationMarker = null;    
-                }
-                else{
+                if(mapLocation.userLastLat != 0 && mapLocation.userLastLng!= 0){
+                    //user 위치 파악된 경우
                     userLocationMarker = new naver.maps.Marker({  
-                        position: new naver.maps.LatLng(37.5666805, 126.9784147),
+                        position: new naver.maps.LatLng(mapLocation.userLastLat, mapLocation.userLastLng),
                         draggable: false, // 도착 마커가 드래그 가능하도록 설정합니다
                         animation: naver.maps.Animation.DROP,
                         icon: {
@@ -1281,16 +1239,18 @@
                             origin: new naver.maps.Point(0, 0),
                             anchor: new naver.maps.Point(BLUEFLAG_ANCHOR_X, BLUEFLAG_ANCHOR_Y)
                         }
-                    });
-                    map.panTo(new naver.maps.LatLng(37.5666805, 126.9784147), {duration : 400, easing : 'easeOutCubic'});
+                        });
+                    map.panTo(new naver.maps.LatLng(mapLocation.userLastLat, mapLocation.userLastLng), {duration : 400, easing : 'easeOutCubic'});
                     setTimeout(function(){
                             if(userLocationMarker != null){
                                 userLocationMarker.setMap(map);
                             }
                         }, 100);
-                    
-            } 
-                                
+                }
+                else{
+                    alert("유저의 현재 위치를 파악할 수 없습니다.");
+                }
+                mapLocation.userCord.cnt = mapLocation.userCord.cnt+1;  //자신의 위치 정보 버튼 클릭
             }
         };
 
@@ -1514,7 +1474,7 @@
                 //console.log("space : " + widthSpace);
                 if(widthSpace > (260)){
                     $('#userLocationButton').show();
-                    $('#peerLocationButton').show();
+                    //$('#peerLocationButton').show();
                     $("#categoryButtonId").show();
                     
                     /*vm.ngShowUserLocationButton = true;
@@ -1523,17 +1483,17 @@
                 }
                 else if(widthSpace > 210){
                     $('#userLocationButton').hide();
-                    $('#peerLocationButton').show();
+                    //$('#peerLocationButton').show();
                     $("#categoryButtonId").show();                    
                 }
                 else if(widthSpace > 160){
                     $('#userLocationButton').hide();
-                    $('#peerLocationButton').hide();
+                    //$('#peerLocationButton').hide();
                     $("#categoryButtonId").show(); 
                 }
                 else{
                     $('#userLocationButton').hide();
-                    $('#peerLocationButton').hide();
+                    //$('#peerLocationButton').hide();
                     $("#categoryButtonId").hide();
                 }
             }
@@ -1547,7 +1507,7 @@
                 vm.ngShowPeerLocationButton = true;
                 vm.ngShowCategoryButton = true;*/
                 $('#userLocationButton').show();
-                $('#peerLocationButton').show();
+                //$('#peerLocationButton').show();
                 $("#categoryButtonId").show();
             }
             
@@ -1573,10 +1533,12 @@
         };
 
         function univMoveToSeoul(){
-            vm.univName = "인사캠";
+            /*vm.univName = "인사캠";
             mapLocation.lastLat = LATLNG_UNIV_SEOUL.lat();
             mapLocation.lastLng = LATLNG_UNIV_SEOUL.lng();  //app 첫 진입시 사용자 위치가 아닌 성대 중앙으로 이동
             map.panTo(LATLNG_UNIV_SEOUL, {duration : 400, easing : 'easeOutCubic'});
+            */
+            console.log(peerLocation);
         };
 
         $scope.safeApply = function(fn) {
@@ -1649,6 +1611,73 @@
             //if vm.categoryIsOpen then
             vm.tooltipVisible = vm.categoryIsOpen;
         }, true);
+
+        //peer의 변경 watch
+        $scope.$watch(
+            function watchEvent(scope){
+                return(peerLocation.modified);   //갱신 버튼 누른 경우
+            },
+            function handleEvent(newValue, oldValue){
+                if(peerLocation.peer == ""){
+                    return; //아직 peerlist를 받지 않음.
+                }
+                peerMemSeqTrueSet = new Set();
+                //memseq에 해당하는 마커를 생성하고 checked==true인 것들만 peerMemSeqTrueSet에 포함.
+                for(var i=0; i<peerLocation.peer.active.length; i++){
+                    var tempPeer = peerLocation.peer.active[i];
+                    if(peerMemSeqSet.has(""+tempPeer.memberSeq)){   //peerMarkerList에 이미 존재하는 경우
+                        
+                    }
+                    else{   //peerMarkerList에 존재하지 않는 경우
+                        peerMarkerList[""+tempPeer.memberSeq] = new naver.maps.Marker({
+                            position: new naver.maps.LatLng(tempPeer.lat, tempPeer.lng),
+                            icon: {
+                                content: '<div><img class="avatar mh-0" src="' + tempPeer["profileImgPath"] + '" ' + 'onerror="this.src=\'assets/images/avatars/profile.jpg\'"></img>' +'<p style="text-align: center" class="mv-0">'+ tempPeer["name"] +'</p></div>',
+                                size: new naver.maps.Size(22, 35),
+                                anchor: new naver.maps.Point(11, 35)
+                            }
+                        });
+                        peerMemSeqSet.add(""+tempPeer.memberSeq);
+                    }
+                    if(tempPeer.hasOwnProperty('checked') && tempPeer.checked == true){
+                        peerMemSeqTrueSet.add(""+tempPeer.memberSeq);
+                    }
+                }
+                
+                //get Intersection of 2 Set
+                var intersection = new Set();
+                for (var elem of peerMemSeqTrueSet) {
+                    if (peerMemSeqOnMapSet.has(elem)) {
+                        intersection.add(elem);
+                    }
+                }
+
+                //marker down from map : peerMemSeqOnMapSet - intersection
+                for(var elem of peerMemSeqOnMapSet){
+                    if(!intersection.has(elem)){
+                        //down from map
+                        peerMarkerList[elem].setMap(null);
+                    }
+                }
+
+                //marker on map : peerMemSeqTrueSet - intersection
+                for(var elem of peerMemSeqTrueSet){
+                    if(!intersection.has(elem)){
+                        //on marker map
+                        peerMarkerList[elem].setMap(map);
+                    }
+                }
+
+                //peerMemSeqOnMapSet = peerMemSeqTrueSet + intersection
+                peerMemSeqOnMapSet = peerMemSeqTrueSet;
+                for(var elem of intersection){
+                    peerMemSeqOnMapSet.add(elem);
+                }
+            }, true);
+
+        
+
+        
 
 
         

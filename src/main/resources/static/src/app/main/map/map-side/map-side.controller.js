@@ -70,7 +70,7 @@
 
         var sideBarWidthNumMin = 300;  //sideBar Width Min (최소 너비가 다음 값 이상)
         var sideBarWidthNum = 300;  //sideBar Width
-        var sideBarHeightExceptIFrame = 165;
+        var sideBarHeightExceptIFrame = 180;
 
         //window.setIFrameSize=setIFrameSize;
 
