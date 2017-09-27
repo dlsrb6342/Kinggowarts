@@ -999,10 +999,11 @@
         function createKMarkerStorageArrFromDataWithCategory(inCategoryTitleArr, bInit){
             var newKMarkerArr = [];
             //vm.kMarkerStorageArr = [];
+            /* 우선 제외
             if(bInit == true){
                 //TODO : delete left data using kMarkerStorageArr
                 vm.kMarkerStorageArr = [];
-            }
+            }*/
 
             //vm.categoriesToKMarkerMappingObj에 해당되는 category key가 없으면 추가.
             for(var i=0, ii=inCategoryTitleArr.length; i<ii; i++){
@@ -1088,7 +1089,8 @@
                 }
                 
             }
-            return newKMarkerArr;   //새로 추가된 kMarkers
+            return newKMarkerArr;   //새로 추가된 kMarkers. 주의)이미 생성되어있는 마커의 경우 리턴값에 포함되지 않는다.
+            //ex) category2,3에 포함되어있는 마커가 존재하며, catetory3에 대해 이 함수를 호출하면, 처음 서술한 마커는 다음 return값에 포함되지 않음.
                     
         };
 
@@ -1509,7 +1511,7 @@
                 //userLocationButton, peerLocationButton display
                 //버튼이 나올 너비 계산
                 var widthSpace = winWitdh - sideWitdh;
-                console.log("space : " + widthSpace);
+                //console.log("space : " + widthSpace);
                 if(widthSpace > (260)){
                     $('#userLocationButton').show();
                     $('#peerLocationButton').show();
