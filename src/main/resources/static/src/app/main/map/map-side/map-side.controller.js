@@ -113,14 +113,6 @@
                     kMarker : vm.resolvedKMarkerDataArr[vm.tabIndex]
                 });
     		}
-    		/*se if(answer == 'modifyShape'){
-    			//modifyShape할 마커 정보 vm.resolvedKMarkerDataArr[vm.tabIndex] return
-                vm.bSideOpen = false;
-    			$rootScope.$broadcast('ToMain', {
-                    type : 'modifyShape',
-                    kMarker : vm.resolvedKMarkerDataArr[vm.tabIndex]
-                });
-    		}*/
     		else if(answer == 'create'){
     			if(kMarkerCategoriesArr.length == 0){
     				alert('카테고리가 1개 이상 필요합니다.');
@@ -132,7 +124,7 @@
     					vm.kMarkerTitle,		//changed
     					null,  //center
     					vm.selectedCategories,	//not categoryObj
-    					null,	//tagsArr	//changed
+    					vm.tagsCreate,	//tagsArr	//changed
     					null	//region
     				);
     				mapApiService.postMarkerDetail(forCommKMarker);
@@ -151,7 +143,7 @@
                         vm.kMarkerTitle,        //changed
                         null,
                         vm.selectedCategories,  //not categoryObj
-                        null,   //tagsArr   //changed
+                        vm.tagsModify,   //tagsArr   //changed
                         null    //region
                     );
                     //forCommKMarker.setTimeStampAuto();
@@ -245,6 +237,9 @@
       		vm.kMarkerTitle = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr[idx].getTitle()));	//title
       		kMarkerCategoriesArr = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr[idx].getCategoriesArr()));
       		vm.selectedCategories.length = 0;	//표시할 seleceted categories
+            vm.tags = angular.copy(vm.resolvedKMarkerDataArr[idx].getTagsArr());
+            vm.tagsModify = angular.copy(vm.resolvedKMarkerDataArr[idx].getTagsArr());
+            vm.tagsCreate = [];
 	    	//카테고리의 title만 추가.
 	    	for(var i=0 ,ii = kMarkerCategoriesArr.length; i<ii; i++){
 	    		//vm.selectedCategories.push(kMarkerCategoriesArr[i].title);
@@ -260,6 +255,7 @@
             vm.kMarkerTitle = "이름없음";    //title
             kMarkerCategoriesArr = [];
             vm.selectedCategories.length = 0;   //표시할 seleceted categories
+            vm.tagsCreate = [];
         };
 
         //response를 위한 disable
@@ -387,7 +383,7 @@
 
                 enableAll();    //end api. enable all.
             }
-            else if(args.type == 'create'){
+            else if(args.type == 'gotoCreate'){
                 updateSideMapWidthSize();   //side map width 조절
                 updateIFrameWidthSize();    //iframe 조절
                 updateIFrameHeightSize();

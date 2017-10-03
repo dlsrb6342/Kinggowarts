@@ -94,14 +94,7 @@
 
 
 
-		<div layout-gt-sm="row" class="tags">
-		  <md-chips ng-model= "retData['tags']" md-transform-chip="newTag($chip)" placeholder="Enter a tag" >
-		    <md-chip-template>
-		      <!--<span ng-if="$chip.color" class="color" ng-style="{'background-color':$chip.color}"></span>-->
-		      <span>{{$chip.name}}</span>
-		    </md-chip-template>
-		  </md-chips>
-		</div>
+		<md-chips ng-model="vm.tagsModify" readonly='false' md-removable='true'></md-chips>
 		<md-button ng-click="vm.toggleWindowGuide()">
 	      마커/폴리곤 guide
 	    </md-button>
@@ -150,14 +143,7 @@
 
 
 
-		<div layout-gt-sm="row" class="tags">
-		  <md-chips ng-model= "retData['tags']" md-transform-chip="newTag($chip)" placeholder="Enter a tag" >
-		    <md-chip-template>
-		      <!--<span ng-if="$chip.color" class="color" ng-style="{'background-color':$chip.color}"></span>-->
-		      <span>{{$chip.name}}</span>
-		    </md-chip-template>
-		  </md-chips>
-		</div>
+		<md-chips ng-model="vm.tagsCreate" readonly='false' md-removable='true'></md-chips>
 		<md-button ng-click="vm.toggleWindowGuide()">
 	      마커/폴리곤 guide
 	    </md-button>

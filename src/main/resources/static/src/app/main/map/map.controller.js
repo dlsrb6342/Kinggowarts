@@ -1388,7 +1388,7 @@
             //all marker click disable(peer, category marker, category button)
             vm.bIsCreateMode = true;            //modify mode
             $rootScope.$broadcast('ToSide', {
-                    type : 'create',
+                    type : 'gotoCreate',
                 });
             vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
             //vm.bCategoryButtonIsEnable = false;
@@ -1754,6 +1754,7 @@
                                     0,
                                     tempRegion
                                 );
+                            newKMarker.setTagsArr(indata.tagsArr);
 
                             //create nPolygon
                             //path가 있는 경우
@@ -1929,6 +1930,18 @@
                 }
                 else if(args.type == "windowGuide"){
                     vm.ngShowWindowGuide = args.bOnOff;
+                }
+                else if(args.type == "gotoModify"){
+                    //modify start. add overlay to drawingManager
+                    var modifiedKMarker = args.kMarker;
+                    //marker
+                    var tempMarker = angular.copy(modifiedKMarker.getNMarker());
+                    drawingManager.addDrawing(tempMarker, 6);
+                    //polygon
+                    if(modifiedKMarker.getNPolygon() != null){
+                        var tempPoly = angular.copy(modifiedKMarker.getNPolygon());
+                        drawingManager.addDrawing(tempPoly, 5);
+                    }
                 }
             }
         }
