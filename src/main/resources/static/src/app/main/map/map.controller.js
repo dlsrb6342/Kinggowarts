@@ -28,7 +28,7 @@
         //AreaAdmin,
         //DrawingMenuData,
         //CustomEventData,
-        CategoryMenuData,
+        //CategoryMenuData,
 
         //module
         $mdDialog,
@@ -669,6 +669,31 @@
             //{"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
 
+        var categoryMenu = [
+            {"name":"편의시설", "type":"Facilities", "icon" : "icon-emoticon-happy", "inner" : 
+                [
+                    {"name":"은행/ATM", "type":"ATM", "icon" : "icon-square-inc-cash"},
+                    {"name":"휴게실", "type":"휴게실", "icon" : "icon-leaf"},
+                    {"name":"정류장", "type":"정류장", "icon" : "icon-subway"},
+                    {"name":"복사/제본", "type":"프린터", "icon" : "icon-printer"},
+                    {"name":"편의점", "type":"편의점", "icon" : "icon-store"}
+                ]
+            },
+            {"name":"음식점", "type":"Restaurant", "icon" : "icon-food-variant", "inner" : 
+                [
+                    {"name":"교내식당", "type":"교내식당", "icon" : "icon-food-apple"},
+                    {"name":"교외식당", "type":"교외식당", "icon" : "icon-food-apple"},
+                    {"name":"교내매점", "type":"교내매점", "icon" : "icon-pen"},
+                    {"name":"카페", "type":"카페", "icon" : "icon-martini"}
+                ]
+            },
+            
+            
+                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"},
+                    {"name":"이벤트", "type":"customevent", "icon" : "icon-radio-tower"}
+           
+        ];
+
 
 //data
         var vm = this;
@@ -676,7 +701,7 @@
         vm.isMobile = false;    //mobile
 
         vm.markerDataArr = MarkerData.data;
-        var categoryMenu = CategoryMenuData.data;
+        //var categoryMenu = CategoryMenuData.data;
         //var categoryTypes = CategoryTypes.data;
 
         //vm.categories = MarkerData.data;

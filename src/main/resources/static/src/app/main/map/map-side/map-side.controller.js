@@ -9,7 +9,6 @@
     /** @ngInject */
     function MapSideController(
         sideMapCommService,
-        CategoryMenuData,
         /*nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj, kMarkerStorageArr, kMarkersOnMap, CategoryMenuData, kMarkerData,*/ 
         $http, $httpParamSerializerJQLike, $mdDialog, $sessionStorage, $sce, $state, $rootScope, $scope, $timeout)
     {
@@ -37,7 +36,32 @@
     	var vm = this;
     	
     	//JSON.parse(JSON.stringify(kMarkerData));
-        vm.categoryMenuData = CategoryMenuData.data; //카테고리 트리 구조
+        var categoryMenuDataConstant = [
+            {"name":"편의시설", "type":"Facilities", "icon" : "icon-emoticon-happy", "inner" : 
+                [
+                    {"name":"은행/ATM", "type":"ATM", "icon" : "icon-square-inc-cash"},
+                    {"name":"휴게실", "type":"휴게실", "icon" : "icon-leaf"},
+                    {"name":"정류장", "type":"정류장", "icon" : "icon-subway"},
+                    {"name":"복사/제본", "type":"프린터", "icon" : "icon-printer"},
+                    {"name":"편의점", "type":"편의점", "icon" : "icon-store"}
+                ]
+            },
+            {"name":"음식점", "type":"Restaurant", "icon" : "icon-food-variant", "inner" : 
+                [
+                    {"name":"교내식당", "type":"교내식당", "icon" : "icon-food-apple"},
+                    {"name":"교외식당", "type":"교외식당", "icon" : "icon-food-apple"},
+                    {"name":"교내매점", "type":"교내매점", "icon" : "icon-pen"},
+                    {"name":"카페", "type":"카페", "icon" : "icon-martini"}
+                ]
+            },
+            
+            
+                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"},
+                    {"name":"이벤트", "type":"customevent", "icon" : "icon-radio-tower"}
+           
+        ];
+
+        vm.categoryMenuData = JSON.parse(JSON.stringify(categoryMenuDataConstant)); //카테고리 트리 구조
     	vm.resolvedKMarkerDataArr = sideMapCommService.kMarkerResolvedArr; //service로 온 선택된 kMarkers.
         vm.resolvedKMarkerDataArrTitles = [];                               //tabs의 title로 표시할 kMarkers Title
     	
@@ -203,7 +227,7 @@
             kMarkerCategoriesArr.length = 0;  //현재 kMarker의 카테고리 obj들
             vm.tabIndex = 0;
             vm.kMarkerTitle = "";   //title
-            vm.categoryMenuData = CategoryMenuData.data; //카테고리 트리 구조
+            vm.categoryMenuData = JSON.parse(JSON.stringify(categoryMenuDataConstant)); //카테고리 트리 구조
             vm.selectedCategories.length = 0; //표시할 seleceted categories
             vm.wikiPath = '';
             vm.bModifyMode = false;
