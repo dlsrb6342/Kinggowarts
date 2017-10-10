@@ -264,6 +264,6 @@ public class MemberService {
         if(member.getProfileImgPath()!=null)
             fileService.deleteFile(member.getProfileImgPath());
         member.setProfileImgPath(message);
-        return "success";
+        return message;
     }
 }

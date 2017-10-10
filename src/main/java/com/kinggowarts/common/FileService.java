@@ -36,7 +36,7 @@ public class FileService {
                 UUID randomId = UUID.randomUUID();
                 String fileName = randomId+"_"+filenm+file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
                 HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-                String path = request.getSession().getServletContext().getRealPath("")+"../resources/static/profileimg/";
+                String path = request.getSession().getServletContext().getRealPath("/") + "WEB-INF/classes/static/profileimg/";
                 System.out.println(path);
                 BufferedOutputStream buffStream =
                         new BufferedOutputStream(new FileOutputStream(new File(path+fileName)));
@@ -58,7 +58,7 @@ public class FileService {
     public void deleteFile(String fileName){
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            String path = request.getSession().getServletContext().getRealPath("")+"../resources/static/profileimg/";
+            String path = request.getSession().getServletContext().getRealPath("/") + "WEB-INF/classes/static/profileimg/";
             System.out.println(path);
             File file = new File(path + fileName);
             file.delete();
