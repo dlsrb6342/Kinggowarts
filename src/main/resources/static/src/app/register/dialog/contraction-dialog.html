@@ -1,0 +1,43 @@
+<md-dialog class="contraction-dialog" aria-label="New Task">
+    <!-- DIALOG TOOLBAR -->
+    <md-toolbar class="md-accent">
+        <div class="md-toolbar-tools">
+            <h2>개인정보 이용 및 관리 약관</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="vm.closeDialog()" aria-label="Close dialog">
+                <md-icon md-font-icon="icon-close"></md-icon>
+            </md-button>
+        </div>
+
+    </md-toolbar>
+    <!-- / DIALOG TOOLBAR -->
+
+    <!-- DIALOG CONTENT -->
+    <md-dialog-content ms-scroll>
+        <p> 정보통신망법 규정에 따라 개인정보의 항목, 개인정보의 수집 및 이용목적, 개인정보의 보유 및 이용기간을 안내 드립니다.</p>
+        <p> 1. 수집하는 개인정보 </p>
+        <p> - 회원 가입 시에 ‘학교 및 직장 등의 거점에 해당하는 이메일 주소, 비밀번호, 닉네임, 사용자 이름’을 필수항목으로 수집합니다.</p>
+        <p> - 차후 해당 거점의 서버와 연계하여 메일 주소만으로 사용자 이름을 제공받는 형식으로 변경될 수 있습니다.</p>
+        <p> 서비스 이용 과정에서 IP 주소, 쿠키, 서비스 이용 기록, 기기정보, 위치정보가 생성되어 수집될 수 있습니다. </p>
+        <p> 구체적으로 1) 서비스 이용 과정에서 이용자에 관한 정보를 정보통신서비스 제공자가 자동화된 방법으로 생성하여 이를 저장(수집)하거나, 
+        2) 이용자 기기의 고유한 정보를 원래의 값을 확인하지 못 하도록 안전하게 변환한 후에 수집하는 경우를 의미합니다.</p>
+        </p>
+        <p> 2. 수집한 개인정보의 이용 </p>
+        <p> - 회원 가입 의사의 확인, 이용자 식별, 회원탈퇴 의사의 확인 등 회원관리를 위하여 개인정보를 이용합니다. </p>
+        <p> - 보안, 프라이버시, 안전 측면에서 이용자가 안심하고 이용할 수 있는 서비스 이용환경 구축을 위해 개인정보를 이용합니다. </p>
+        <p> 3. 개인정보의 파기 </p>
+        <p> 개인정보는 회원 탈퇴 시 즉시 파기되나 사용자로부터 사전에 별도의 동의를 얻은 경우 보존될 수 있습니다. </p>
+    </md-dialog-content>
+    <!-- / DIALOG CONTENT -->
+
+    <!-- DIALOG ACTIONS -->
+    <md-dialog-actions layout="row" layout-align="space-between center">
+        <div layout="row" layout-align="start center">
+            <md-button ng-click="vm.closeDialog()"
+                       class="send-button md-accent md-raised">
+                확인
+            </md-button>
+
+        </div>
+    </md-dialog-actions>
+</md-dialog>

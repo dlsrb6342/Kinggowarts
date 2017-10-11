@@ -5,7 +5,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 *****************************************************************************/
 
 /******************************************************
-*  Document   : src/app/login/dialog/contraction-dialog.controller.js
+*  Document   : src/app/register/dialog/contraction-dialog.controller.js
 *  Author     : underkoo
 *  Description: 로그인 화면에서의 약관 dialog 모듈 컨트롤러
 *******************************************************/
