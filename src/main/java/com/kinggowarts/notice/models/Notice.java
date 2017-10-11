@@ -1,6 +1,6 @@
 package com.kinggowarts.notice.models;
 
-import com.kinggowarts.map.models.Location;
+import com.kinggowarts.marker.models.Marker;
 import lombok.Data;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -18,8 +18,8 @@ public class Notice {
     @JoinColumn(name="c_id")
     private NoticeCategory category;
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="l_id")
-    private Location location;
+    @JoinColumn(name="m_id")
+    private Marker marker;
     @Field(type= FieldType.String, analyzer="korean")
     private String title;
     @Lob @Column(columnDefinition="TEXT") @Field(type=FieldType.String, analyzer="korean")

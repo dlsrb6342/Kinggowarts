@@ -14,4 +14,5 @@ public class MarkerCategory {
     @GeneratedValue
     private long id;
     private String name;
+    private String type;
 }

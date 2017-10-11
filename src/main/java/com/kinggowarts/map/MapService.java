@@ -1,6 +1,8 @@
 package com.kinggowarts.map;
 
 import com.kinggowarts.map.models.Location;
+import com.kinggowarts.marker.CoordinateRepository;
+import com.kinggowarts.marker.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
