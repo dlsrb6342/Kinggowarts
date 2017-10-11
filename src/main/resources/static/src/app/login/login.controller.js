@@ -25,7 +25,6 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         $document,
         $http, 
         $httpParamSerializerJQLike,
-        $mdDialog, 
         $rootScope,
         $state, 
         $stateParams, 
@@ -97,23 +96,6 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             }
             
         };
-
-
-        /**********************************************************************//**
-        약관 내용에 대한 다이얼로그를 띄움. */
-        vm.openContractionDialog = function (
-            ev) // 현재 이벤트
-        {
-            console.log("asd");
-            $mdDialog.show({
-                controller         : 'ContractionDialogController',
-                controllerAs       : 'vm',
-                templateUrl        : 'app/login/dialog/contraction-dialog.html',
-                parent             : angular.element($document.find('#content-container')),
-                targetEvent        : ev,
-                clickOutsideToClose: true
-            });
-        }
 
     }
 })();
