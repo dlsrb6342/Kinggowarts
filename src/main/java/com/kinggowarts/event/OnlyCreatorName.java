@@ -1,6 +1,6 @@
 package com.kinggowarts.event;
 
-import com.kinggowarts.map.models.Tag;
+import com.kinggowarts.marker.models.Tag;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;

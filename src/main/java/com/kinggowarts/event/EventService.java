@@ -2,7 +2,7 @@ package com.kinggowarts.event;
 
 import com.kinggowarts.authentication.UserAuth;
 import com.kinggowarts.event.models.Event;
-import com.kinggowarts.map.TagRepository;
+import com.kinggowarts.marker.TagRepository;
 import com.kinggowarts.member.MemberRepository;
 import com.kinggowarts.member.models.Member;
 import org.springframework.beans.factory.annotation.Autowired;

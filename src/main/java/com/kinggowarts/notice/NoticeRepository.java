@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Page<Notice> findAllByCategory_NameOrderByTimeDesc(String category, Pageable pageable);
-    List<Notice> findAllByCategory_NameOrderByTimeAsc(String category);
-    List<Notice> findAllByOrderByTimeAsc();
-    Page<Notice> findAllByOrderByTimeAsc(Pageable pageable);
+    List<Notice> findAllByCategory_NameOrderByTimeDesc(String category);
+    List<Notice> findAllByOrderByTimeDesc();
+    Page<Notice> findAllByOrderByTimeDesc(Pageable pageable);
 }

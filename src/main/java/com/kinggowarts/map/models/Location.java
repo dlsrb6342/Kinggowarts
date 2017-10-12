@@ -2,6 +2,8 @@ package com.kinggowarts.map.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kinggowarts.marker.models.Coordinate;
+import com.kinggowarts.marker.models.Tag;
 import lombok.Data;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;

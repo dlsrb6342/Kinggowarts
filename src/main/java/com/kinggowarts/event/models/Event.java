@@ -1,7 +1,7 @@
 package com.kinggowarts.event.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kinggowarts.map.models.Tag;
+import com.kinggowarts.marker.models.Tag;
 import com.kinggowarts.member.models.Member;
 import lombok.Data;
 import lombok.NoArgsConstructor;

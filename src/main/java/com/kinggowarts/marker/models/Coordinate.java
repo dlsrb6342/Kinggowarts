@@ -1,4 +1,4 @@
-package com.kinggowarts.map.models;
+package com.kinggowarts.marker.models;
 
 
 import lombok.Data;
