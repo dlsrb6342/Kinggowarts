@@ -144,9 +144,11 @@
 
 
 		<md-chips ng-model="vm.tagsCreate" readonly='false' md-removable='true'></md-chips>
-		<md-button ng-click="vm.toggleWindowGuide()">
+		<div ng-if="vm.bCreateMode == true">
+		<md-button id="id-map-sidemap-guide-buttom" ng-click="vm.toggleWindowGuide()">
 	      마커/폴리곤 guide
 	    </md-button>
+	    </div>
 		</md-content>
 	</div>
 	
@@ -197,10 +199,10 @@
 	    </md-button>
 	    <span flex></span>
 	    
-	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('modifyInfo')">
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('gotoModify')">
 	      정보수정
 	    </md-button>
-	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('modifyShape')">
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('gotoModify')">
 	      위치수정
 	    </md-button>
 	    <!--

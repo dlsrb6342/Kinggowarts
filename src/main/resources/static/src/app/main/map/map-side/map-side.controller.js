@@ -109,7 +109,7 @@
     			vm.bModifyMode = true;
                 vm.bSideOpen = true;
                 $rootScope.$broadcast('ToMain', {
-                    type : 'gotoModify'
+                    type : 'gotoModify',
                     kMarker : vm.resolvedKMarkerDataArr[vm.tabIndex]
                 });
     		}
@@ -455,25 +455,25 @@
             if(toggleOnOff == false){
                 toggleOnOff = true;
                 $rootScope.$broadcast('ToMain', {
-                    type : 'windowGuide'
-                    bOnOff : toggleOnOff;
+                    type : 'windowGuide',
+                    bOnOff : toggleOnOff
                 });
             }
             else{
                 toggleOnOff = false;
                 $rootScope.$broadcast('ToMain', {
-                    type : 'windowGuide'
-                    bOnOff : toggleOnOff;
+                    type : 'windowGuide',
+                    bOnOff : toggleOnOff
                 });
             }
         };
 
         function toggleWindowGuideOff(){
-            if(toogleOnOff == true){
+            if(toggleOnOff == true){
                 toggleOnOff = false;
                 $rootScope.$broadcast('ToMain', {
-                    type : 'windowGuide'
-                    bOnOff : toggleOnOff;
+                    type : 'windowGuide',
+                    bOnOff : toggleOnOff
                 });
             }
         };

@@ -112,15 +112,15 @@
             inData.id = inDataId;
 
             $rootScope.$broadcast('ToMain', {
-                type : 'api'
-                apiType : 'create'
-                result : 'success'
+                type : 'api',
+                apiType : 'create',
+                result : 'success',
                 data : inData
             });
             $rootScope.$broadcast('ToSide', {
-                type : 'api'
-                apiType : 'create'
-                result : 'success'
+                type : 'api',
+                apiType : 'create',
+                result : 'success',
                 data : inData
             });
 
@@ -176,17 +176,17 @@
                     else if(response.data == "success"){
                         var originTitleInKMarkerData = kMarkerData.getTitle();
                         $rootScope.$broadcast('ToMain', {
-                            type : 'api'
-                            apiType : 'modify'
-                            result : 'success'
+                            type : 'api',
+                            apiType : 'modify',
+                            result : 'success',
                             data : inData,
                             originData : kMarkerData
                         });
 
                         $rootScope.$broadcast('ToSide', {
-                            type : 'api'
-                            apiType : 'modify'
-                            result : 'success'
+                            type : 'api',
+                            apiType : 'modify',
+                            result : 'success',
                             data : inData,
                             originData : kMarkerData
                         });   
@@ -222,16 +222,16 @@
                     }
                     else if(response.data == "success"){
                         $rootScope.$broadcast('ToMain', {
-                            type : 'api'
-                            apiType : 'delete'
-                            result : 'success'
+                            type : 'api',
+                            apiType : 'delete',
+                            result : 'success',
                             data : kMarkerData,
                         });
 
                         $rootScope.$broadcast('ToSide', {
-                            type : 'api'
-                            apiType : 'delete'
-                            result : 'success'
+                            type : 'api',
+                            apiType : 'delete',
+                            result : 'success',
                             data : kMarkerData,
                         });   
                     }

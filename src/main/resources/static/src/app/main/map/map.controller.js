@@ -722,7 +722,7 @@
             scaleControl: true,    //좌하단 축척
             logoControl: true,     //척도 옆 로고
             mapDataControl: true,   //좌하단 저작권표시
-            mapTypeControl: true,   //일반/위성
+            mapTypeControl: false,   //일반/위성
             zoomControl: true   //좌상단 스크롤
         });
     
@@ -1562,12 +1562,12 @@
         };
 
         function univMoveToSeoul(){
-            /*vm.univName = "인사캠";
+            vm.univName = "인사캠";
             mapLocation.lastLat = LATLNG_UNIV_SEOUL.lat();
             mapLocation.lastLng = LATLNG_UNIV_SEOUL.lng();  //app 첫 진입시 사용자 위치가 아닌 성대 중앙으로 이동
             map.panTo(LATLNG_UNIV_SEOUL, {duration : 400, easing : 'easeOutCubic'});
-            */
-            console.log(peerLocation);
+            
+            //console.log(peerLocation);
         };
 
         $scope.safeApply = function(fn) {
@@ -1642,6 +1642,8 @@
         }, true);
 
         //peer의 변경 watch
+
+/*
         $scope.$watch(
             function watchEvent(scope){
                 return(peerLocation.modified);   //갱신 버튼 누른 경우
@@ -1703,6 +1705,8 @@
                     peerMemSeqOnMapSet.add(elem);
                 }
             }, true);
+        
+        */
 
         //rootscope on
         $rootScope.$on('ToMain', function (event, args) {
@@ -1868,7 +1872,7 @@
                                     break;
                                 }
                             }
-                            if()
+                            
                         }
                         else if(args.result == "--"){
 
@@ -1936,21 +1940,17 @@
                     var modifiedKMarker = args.kMarker;
                     //marker
                     var tempMarker = angular.copy(modifiedKMarker.getNMarker());
+                    //TODO : do not use angular copy
                     drawingManager.addDrawing(tempMarker, 6);
                     //polygon
                     if(modifiedKMarker.getNPolygon() != null){
                         var tempPoly = angular.copy(modifiedKMarker.getNPolygon());
+                        //TODO : do not use angular copy
                         drawingManager.addDrawing(tempPoly, 5);
                     }
                 }
-            }
         }
         );
-
-        
-
-        
-
 
         
     }

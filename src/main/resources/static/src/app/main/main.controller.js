@@ -17,7 +17,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         .controller('MainController', MainController);
 
     /** @ngInject */
-    function MainController($scope, $rootScope)
+    function MainController($scope, $rootScope, tutorialMarkService)
     {
         /* 초기화 */
         $scope.$on('$viewContentAnimationEnded', function (event) 
@@ -27,5 +27,9 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 $rootScope.$broadcast('msSplashScreen::remove'); // Remove the splash screen
             }
         });
+
+        
+
+
     }
 })();
