@@ -1,9 +1,28 @@
 #login {
     height: 100%;
-    background : none 50% / cover;
-    background-size: cover;
+
+    .bgimg {
+        width : 100%;
+        height : auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+    .bgimg.ng-hide-add, .bgimg.ng-hide-remove {
+        transition: all linear 0.5s;
+        display: block !important;
+    }
+
+    .bgimg.ng-hide-add.ng-hide-add-active, .bgimg.ng-hide-remove {
+        opacity: 0;
+    }
+
+    .bgimg.ng-hide-add, .bgimg.ng-hide-remove.ng-hide-remove-active {
+        opacity: 1;
+    }
 
     #login-form-wrapper {
+        z-index: 8888;
         flex: 1 0 auto;
         padding: 32px;
 
