@@ -36,6 +36,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
         vm.isdisabled = false;
         vm.bgf = true;
+        vm.isM = false;
         vm.surly = 'assets/images/backgrounds/skku_y.jpg';
         vm.surlm = 'assets/images/backgrounds/skku_m2.JPG';
 
@@ -44,6 +45,11 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
         if($stateParams.auth == 'true'){ // 인증토큰을 통한 접근이 성공했을 경우 alert 띄움
             alert('인증이 완료되었습니다.');
+        }
+
+        if($rootScope.isMobile == true)
+        {
+            vm.isM = true;
         }
 
         /* Methods */

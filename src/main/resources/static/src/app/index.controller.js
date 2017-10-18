@@ -22,6 +22,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
     function IndexController(
         /* 모듈 */
         $rootScope,
+        $window,
 
         /* 서비스 */
         fuseTheming)
@@ -29,6 +30,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         var vm = this;
         $rootScope.wikipath = "../xwiki/bin/view/XWiki/";
         $rootScope.loadingData = 0;
+        $rootScope.isMobile = ($window.innerWidth < 480);
 
         /* 기본 테마를 fuse 테마 서비스로 설정. */
         vm.themes = fuseTheming.themes;
