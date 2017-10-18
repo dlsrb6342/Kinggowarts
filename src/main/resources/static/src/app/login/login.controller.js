@@ -28,12 +28,14 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         $rootScope,
         $state, 
         $stateParams, 
-        $sessionStorage)
+        $sessionStorage,
+        $interval)
     {
         /* Data */
         var vm = this;
 
         vm.isdisabled = false;
+        vm.surl = 'assets/images/backgrounds/skku_y.jpg';
 
 
         /* 초기화 */
@@ -96,6 +98,22 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             }
             
         };
+
+        vm.bgChanger = function ()
+        {
+            if (vm.surl == 'assets/images/backgrounds/skku_y.jpg')
+            {
+                vm.surl = 'assets/images/backgrounds/skku_m.JPG';
+            }
+            else
+            {
+                vm.surl = 'assets/images/backgrounds/skku_y.jpg';
+            }
+        }
+
+        $interval(vm.bgChanger, 10000);
+
+
 
     }
 })();
