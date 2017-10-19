@@ -45,7 +45,8 @@
         //service
         peerLocation,
         mapLocation,
-        sideMapCommService
+        sideMapCommService,
+        tutorialMarkService
     )
     {
 //object
@@ -1492,6 +1493,8 @@
         };
         //주어진 sidebar width로 map과 button들의 size를 조절한다.
         function updateDocumentElementSize(sideWitdh, sideOpen){
+            console.log("updateDocumentcalled");
+            //tutorialMarkService.notifyDOMChangeForTutorialMark();  //notify DOM modified to map.tutorial.service
             if(sideOpen){
                 var winWitdh = $(window).width();
                 document.getElementById("nmap").style.width = "" + (winWitdh - sideWitdh) + "px";
@@ -1643,7 +1646,7 @@
 
         //peer의 변경 watch
 
-/*
+
         $scope.$watch(
             function watchEvent(scope){
                 return(peerLocation.modified);   //갱신 버튼 누른 경우
@@ -1677,36 +1680,56 @@
                 
                 //get Intersection of 2 Set
                 var intersection = new Set();
-                for (var elem of peerMemSeqTrueSet) {
+                /*for (var elem of peerMemSeqTrueSet) {
                     if (peerMemSeqOnMapSet.has(elem)) {
-                        intersection.add(elem);
+                        intersection.add(item);
                     }
-                }
+                }*/
+                peerMemSeqTrueSet.forEach(function (item) {
+                    if (peerMemSeqOnMapSet.has(item)) {
+                        intersection.add(item);
+                    }
+                });
 
                 //marker down from map : peerMemSeqOnMapSet - intersection
-                for(var elem of peerMemSeqOnMapSet){
+                /*for(var elem of peerMemSeqOnMapSet){
                     if(!intersection.has(elem)){
                         //down from map
                         peerMarkerList[elem].setMap(null);
                     }
-                }
+                }*/
+                peerMemSeqOnMapSet.forEach(function (item) {
+                    if(!intersection.has(item)){
+                        //down from map
+                        peerMarkerList[item].setMap(null);
+                    }
+                });
 
                 //marker on map : peerMemSeqTrueSet - intersection
-                for(var elem of peerMemSeqTrueSet){
+                /*for(var elem of peerMemSeqTrueSet){
                     if(!intersection.has(elem)){
                         //on marker map
                         peerMarkerList[elem].setMap(map);
                     }
-                }
+                }*/
+                peerMemSeqTrueSet.forEach(function (item) {
+                    if(!intersection.has(item)){
+                        //on marker map
+                        peerMarkerList[item].setMap(map);
+                    }
+                });
 
                 //peerMemSeqOnMapSet = peerMemSeqTrueSet + intersection
                 peerMemSeqOnMapSet = peerMemSeqTrueSet;
-                for(var elem of intersection){
+                /*for(var elem of intersection){
                     peerMemSeqOnMapSet.add(elem);
-                }
+                }*/
+                intersection.forEach(function (item) {
+                    peerMemSeqOnMapSet.add(item);
+                });
             }, true);
         
-        */
+        
 
         //rootscope on
         $rootScope.$on('ToMain', function (event, args) {

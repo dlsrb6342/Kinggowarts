@@ -9,12 +9,23 @@
     /** @ngInject */
     function tutorialMark($interval, $mdPanel, $sessionStorage)
     {
+        /**
+            tutorial 추가하는 방법
+                1. tutorial panel html 생성
+                2. map.tutorial.service.js에서 service.tutorialMarkObjList.push(new tutorialMarkObj())
+                3. main.html에서 <img> 태크를 index만 1 증가시켜 그대로 태그 하나 추가.
+        **/
+
+        // variable
         var service = this;
-        service._$sessionStorage = $sessionStorage;
-        service.notifyDOMChangeForTutorialMark = _notifyDOMChangeForTutorialMark;
+        service._sessionStorage = $sessionStorage;
         service._mdPanel = $mdPanel;
         service.tutorialMarkObjList = [];   //관리할 tutorial mark list
         service.markerImagePath = 'assets/images/icons/exclamation-mark-tutorial.png';
+
+        //service function
+        service.notifyDOMChangeForTutorialMark = _notifyDOMChangeForTutorialMark;
+
         var defaultConfig = {
             attachTo: angular.element(document.body),
             //controller: PanelDialogCtrl,
@@ -27,38 +38,41 @@
             trapFocus: true,
             zIndex: 150,
             clickOutsideToClose: true,
-            resolve: {
-                    tutorialMarkServiceResolved : function(){
-                        return service;
-                    }
+            locals: {
+                    ResolvedTutorialMarkService : this
                     /*
                     {   tutorialMarkServiceResolvedIdx : int    }
                     */
-            }
+            },
             escapeToClose: true,
             focusOnOpen: true
         };
 
-        function tutorialMarkObj(id, left, top, config, ctrl, tempUrl, index){ 
-            this.id = id;
-            this.left = left;
-            this.top = top;
+        function tutorialMarkObj(id, left, top, height, width, config, ctrl, tempUrl, index, imgSrc){ 
+            this.id = id;   //bind id : 어느 elem에 tutorial mark를 bind 할지
+            this.markerId = id + "-tutorialMark";     //main.html에서 mark의 id
+            this.left = 0;   //real position
+            this.top = 0;     //real position
+            this.incLeft = left;
+            this.incTop = top;
+            this.height = height;
             this.config = config;
             this.config.controller = ctrl;
             this.config.templateUrl = tempUrl;
-            //this.config.panelClass = id + 'TargetPanel';
             this.config.position = service._mdPanel.newPanelPosition().absolute().center();
             this.bShowWithCookie = false;
             this.bShowNow = false;
-            this.config.resolve.tutorialMarkServiceResolvedIdx = index;
-            //this.config.position = service._mdPanel.newPanelPosition().absolute().center(); with left, top
+            this.config.locals.tutorialMarkServiceArrIdx = index;
+            this.imgSrc = imgSrc;
+            this.ngStyle = {'left' : left+'px', 'top' : top+'px', 'max-height' : height, 'max-width' : width, 'opacity' : 0.0};
+            this.bMarkerNgIf = false;
         };
 
-        //panel controllers
-        function PanelDialogCtrl(mdPanelRef, tutorialMarkServiceResolved, tutorialMarkServiceResolvedIdx) {
+    //panel controllers
+        function PanelDialogCtrl(mdPanelRef/*, tutorialMarkServiceResolved, tutorialMarkServiceResolvedIdx*/) {
             this._mdPanelRef = mdPanelRef;
-            this.ResolvedTutorialMarkService = tutorialMarkServiceResolved;
-            this.tutorialMarkServiceArrIdx = tutorialMarkServiceResolvedIdx;
+            //this.ResolvedTutorialMarkService = tutorialMarkServiceResolved();
+            //this.tutorialMarkServiceArrIdx = tutorialMarkServiceResolvedIdx;
         }
         PanelDialogCtrl.prototype.closeDialog = function() {
             var panelRef = this._mdPanelRef;
@@ -78,20 +92,24 @@
             });
         };
 
+    //main
 
         //add new tutorial target id
-        service.tutorialMarkObjList.push(new tutorialMarkObj('id-map-sidemap-guide-buttom', 10, 10, swallowClone(defaultConfig), PanelDialogCtrl, 'app/main/tutorialHtml/tutorial1.html', service.tutorialMarkObjList.length));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('id-map-sidemap-guide-buttom', 0, 0, '10%', '10%',swallowClone(defaultConfig), PanelDialogCtrl, 'app/main/tutorialHtml/tutorial1.html', service.tutorialMarkObjList.length, service.markerImagePath));
         console.log(service.tutorialMarkObjList);   //TODO : check index is same
 
         //check cookie
         for(var i=0, ii=service.tutorialMarkObjList.length; i<ii; i++){
-            if(checkCookie(id+"Cookie") == true){
-                service.tutorialMarkObjList[i].bShowWithCookie = true;
+            if(checkCookie(service.tutorialMarkObjList[i].id+"Cookie") == true){    //쿠키 존재시
+                service.tutorialMarkObjList[i].bShowWithCookie = false; //표시x
             }
             else{
-                service.tutorialMarkObjList[i].bShowWithCookie = false;
+                service.tutorialMarkObjList[i].bShowWithCookie = true;  //쿠키 없을시 표시
             }
+            service.tutorialMarkObjList[i].bShowWithCookie = true;  //todo : delete
         }
+
+    //functions
 
         function getPosition(el) {
             var xPos = 0;
@@ -118,19 +136,26 @@
             };
         }
 
+        
         function _notifyDOMChangeForTutorialMark(){
             for(var i=0, ii=service.tutorialMarkObjList.length; i<ii; i++){
                 if(service.tutorialMarkObjList[i].bShowWithCookie == true){ //쿠키 상태 : 표시해야 하는 mark들만 검색한다.
-                    if(document.getElementById(service.tutorialMarkObjList[i].id) == null){ //튜토리얼 마크에 해당되는 element를 못찾은 경우
+                    var tempElem = document.getElementById(service.tutorialMarkObjList[i].id);
+                    if(tempElem == null){ //튜토리얼 마크에 해당되는 element를 못찾은 경우
                         service.tutorialMarkObjList[i].bShowNow = false;    //mark 표시 off
                     }
                     else{
                         //TODO : use getPosition and (modify position & style of mark)
-                        service.tutorialMarkObjList[i].bShowNow = true;     //mark 표시 on
+                        var posObj = getPosition(tempElem);
+                        service.tutorialMarkObjList[i].top = posObj.y + service.tutorialMarkObjList[i].incTop;
+                        service.tutorialMarkObjList[i].bShowNow = true;     //mark 표시 on(animation & 타켓 element가 있음을 알림.)
+                        
                     }
                 }
             }
         }
+        //check DOM change with interval
+        $interval(_notifyDOMChangeForTutorialMark, 1000);
 
 
         //swallowClone
@@ -151,7 +176,7 @@
             var d = new Date();
             d.setTime(d.getTime() + (exdays*24*60*60*1000));
             var expires = "expires=" + d.toGMTString();
-            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+            //document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
         }
 
         function setCookieWithNicknameValue(cname) {
@@ -183,9 +208,10 @@
             }
         }
 
-
         
 
     }
 
 })();
+
+
