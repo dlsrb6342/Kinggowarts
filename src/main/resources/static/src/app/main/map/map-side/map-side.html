@@ -23,7 +23,7 @@
 	</div>
 
 	<div ng-if="vm.bModifyMode != true && vm.bCreateMode != true">
-		<md-button class="md-fab md-mini md-warn" aria-label="canc" ng-click="vm.answer('cancel')">
+		<md-button class="md-fab md-mini md-warn" aria-label="canc" ng-click="vm.answer('close')">
 		  		<md-icon md-font-icon="icon-cancel" aria-label="cancel"></md-icon>
 		</md-button>
 	</div>
@@ -55,7 +55,9 @@
 	</div>
      
     <!-- modify -->
+    
 	<div ng-hide="vm.bModifyMode != true">
+	<md-content>
 		<!--title-->
 		<div layout-gt-sm="row">
 		  <md-input-container class="md-block">
@@ -92,20 +94,19 @@
 
 
 
-		<div layout-gt-sm="row" class="tags">
-		  <md-chips ng-model= "retData['tags']" md-transform-chip="newTag($chip)" placeholder="Enter a tag" >
-		    <md-chip-template>
-		      <!--<span ng-if="$chip.color" class="color" ng-style="{'background-color':$chip.color}"></span>-->
-		      <span>{{$chip.name}}</span>
-		    </md-chip-template>
-		  </md-chips>
-		</div>
+		<md-chips ng-model="vm.tagsModify" readonly='false' md-removable='true'></md-chips>
+		<md-button ng-click="vm.toggleWindowGuide()">
+	      마커/폴리곤 guide
+	    </md-button>
+		</md-content>
 	</div>
 
-
+	
 
 	<!-- create -->
+	
 	<div ng-hide="vm.bCreateMode != true">
+	<md-content>
 		<!--title-->
 		<div layout-gt-sm="row">
 		  <md-input-container class="md-block">
@@ -142,19 +143,21 @@
 
 
 
-		<div layout-gt-sm="row" class="tags">
-		  <md-chips ng-model= "retData['tags']" md-transform-chip="newTag($chip)" placeholder="Enter a tag" >
-		    <md-chip-template>
-		      <!--<span ng-if="$chip.color" class="color" ng-style="{'background-color':$chip.color}"></span>-->
-		      <span>{{$chip.name}}</span>
-		    </md-chip-template>
-		  </md-chips>
-		</div>
+		<md-chips ng-model="vm.tagsCreate" readonly='false' md-removable='true'></md-chips>
+		<div ng-if="vm.bCreateMode == true">
+		<md-button id="id-map-sidemap-guide-buttom" ng-click="vm.toggleWindowGuide()">
+	      마커/폴리곤 guide
+	    </md-button>
+	    </div>
+		</md-content>
 	</div>
+	
 
 
 	<!-- 하단 버튼 : modify -->
+	
 	<div ng-if="vm.bModifyMode == true">
+	<md-content>
 	  <md-dialog-actions layout="row">
 	    <md-button ng-disabled="data['type']=='admin'" ng-click="vm.answer('delete')">
 	      전체삭제
@@ -167,10 +170,14 @@
 	      취소
 	    </md-button>
 	  </md-dialog-actions>
+	  </md-content>
 	</div>
+	
 
 	<!-- 하단 버튼 : create -->
+	
 	<div ng-if="vm.bCreateMode == true">
+	<md-content>
 	  <md-dialog-actions layout="row">
 	    <md-button ng-disabled="data['type']=='admin'" ng-click="vm.answer('save')">
 	      저장
@@ -179,27 +186,32 @@
 	      취소
 	    </md-button>
 	  </md-dialog-actions>
+	  </md-content>
 	</div>
 
 
 	<!-- 하단 버튼 : info -->
 	<div ng-if="vm.bModifyMode != true && vm.bCreateMode != true">
+	<md-content>
 	  <md-dialog-actions layout="row">
 	    <md-button ng-click= "vm.movewiki()">
 	      More on Wikipedia
 	    </md-button>
 	    <span flex></span>
 	    
-	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('modifyInfo')">
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('gotoModify')">
 	      정보수정
 	    </md-button>
-	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('modifyShape')">
+	    <md-button hide show-gt-xs ng-disabled="data['type']=='admin'" ng-click="vm.answer('gotoModify')">
 	      위치수정
 	    </md-button>
+	    <!--
 	    <md-button ng-click="vm.answer('cancel')">
 	      Cancel
 	    </md-button>
+	    -->
 	  </md-dialog-actions>
+	  </md-content>
 	</div>
 </div>
 

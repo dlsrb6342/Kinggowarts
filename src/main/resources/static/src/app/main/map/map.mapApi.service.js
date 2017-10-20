@@ -11,6 +11,16 @@
     {
         var service = this;
         
+        //object
+        function commKMarker(id, title, center, categoriesArr, region, tagsArr){
+            this.id = id;           //id
+            this.title = title;       //title TMP
+            this.center = center;
+            this.categoriesArr = categoriesArr;   //marker's category
+            this.tagsArr = tagsArr;
+            this.region = region;
+        };
+
         //nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj, kMarkerStorageArr, kMarkersOnMap, CategoryMenuData, kMarkerData,
         
         //basic
@@ -19,6 +29,7 @@
         service.kMarkerStorageArr = null;
         service.kMarkersOnMap = null;
         service.CategoryMenuData = null;
+        service.mapControllerDrawingManager = null;
 
         //service.kMarkerData = null;
 
@@ -34,9 +45,25 @@
             service.kMarkerStorageArr = kMarkerStorageArr;
             service.kMarkersOnMap = kMarkersOnMap;
             service.CategoryMenuData = CategoryMenuData;
+            service.mapControllerDrawingManager = mapControllerDrawingManager;
         };
 
         //http
+        function postMarkerDetailHttp(inData){
+            if(inData.hasOwnProperty('id')){
+                delete inData["id"];
+            }
+            return $http({
+                method: 'POST',
+                url: './api/map',
+                data : JSON.stringify(inData),
+                headers: {'x-auth-token': $sessionStorage.get('AuthToken'),
+                        },
+                transformResponse: [function (data) {
+                    return data;
+                }]
+            });
+        };
         function putMarkerDetailHttp(inData){
             var putid = inData["id"];
             delete inData["id"];
@@ -63,8 +90,79 @@
             });
         };
 
+        function postMarkerDetail(inData){     //inData : commKMarker
+            //add drawing data into indata
+            var tempdrawingOverlays = mapControllerDrawingManager.getDrawings();
+            for(var key in tempdrawingOverlays){
+                if(tempdrawingOverlays[key].name == "marker"){
+                    var latlng = tempdrawingOverlays[key].getOptions('position');
+                    inData.center = latlng; //center setting from drawing
+                }
+                if(tempdrawingOverlays[key].name == "polygon"){
+                    var pathArr = tempdrawingOverlays[key].getOptions('path');
+                    inData.region = pathArr;
+                }
+            }
+
+            if(inData.region == null || inData.region.length == 0){
+                //retion empty
+            }
+
+            var inDataId = 0;   //TODO : get id from server
+            inData.id = inDataId;
+
+            $rootScope.$broadcast('ToMain', {
+                type : 'api',
+                apiType : 'create',
+                result : 'success',
+                data : inData
+            });
+            $rootScope.$broadcast('ToSide', {
+                type : 'api',
+                apiType : 'create',
+                result : 'success',
+                data : inData
+            });
+
+            /*
+            var respo = postMarkerDetailHttp(inData);
+            respo.then(
+                function successFunc(response){
+
+                    if(response.data == "duplicatedName"){
+                        alert('중복된 이름입니다. 다른 이름을 설정하세요');
+                    }
+                    else if(response.data == "notAllowed"){
+                        alert('notAllowed');
+                    }
+                    else if(response.data == "success"){
+                        var inDataId = 0;   //TODO : get id from server
+                        inData.id = inDataId;
+
+                        $rootScope.$broadcast('ToMain', {
+                            type : 'api'
+                            apiType : 'create'
+                            result : 'success'
+                            data : inData
+                        });
+
+                        $rootScope.$broadcast('ToSide', {
+                            type : 'api'
+                            apiType : 'create'
+                            result : 'success'
+                            data : inData
+                        });
+                    }
+                },
+                 function failFunc(response){
+                    console.log(response);
+                });
+                */
+        }
+
+
         //put process
-        function putMarkerDetail(inData, kMarkerData){
+        function putMarkerDetail(inData, kMarkerData){      //commKMarker & kMarker
             //데이터 변경을 위한 statue 전환.
             var respo = putMarkerDetailHttp(inData);
             respo.then(
@@ -76,33 +174,22 @@
                         alert('notAllowed');
                     }
                     else if(response.data == "success"){
-                        //TODO : success
-                        //title, category, tags
+                        var originTitleInKMarkerData = kMarkerData.getTitle();
+                        $rootScope.$broadcast('ToMain', {
+                            type : 'api',
+                            apiType : 'modify',
+                            result : 'success',
+                            data : inData,
+                            originData : kMarkerData
+                        });
 
-                        //mapping 해제
-                        delete service.markerTitleToKMarkerMappingObj[kMarkerData.getTitle()];
-                        var tempKMarkerCategoriesArr = kMarkerData.getCategoriesArr();
-                        for(var i = 0, ii = tempKMarkerCategoriesArr.length; i<ii; i++){
-                            var tempKMarkerInnerObjArr = service.categoriesToKMarkerMappingObj[tempKMarkerCategoriesArr[i].title].kMarker;
-                            for(var j =0 , jj = tempKMarkerInnerObjArr.length; j<jj; j++){
-                                if(tempKMarkerInnerObjArr[j] == kMarkerData){
-                                //if(tempKMarkerInnerObjArr[j].getTitle() == kMarkerData.getTitle())
-                                    splice(tempKMarkerInnerObjArr(j,j));
-                                    break;  //한개의 kMarker만 존재 할 것이므로
-                                }
-                            }
-                        }                       
-                        //mapping register
-                        service.markerTitleToKMarkerMappingObj[kMarkerData.getTitle()] = kMarker;
-                        for(var i = 0, ii = inData.categoriesArr.length; i<ii; i++){
-                            //service.categoriesToKMarkerMappingObj[inData.categoriesArr[i]] == innerMappingObj
-                            service.categoriesToKMarkerMappingObj[inData.categoriesArr[i]].getKMarkersArr().push(newKMarker);;
-                        }
-
-
-
-
-                        
+                        $rootScope.$broadcast('ToSide', {
+                            type : 'api',
+                            apiType : 'modify',
+                            result : 'success',
+                            data : inData,
+                            originData : kMarkerData
+                        });   
 
                     }
                     else if(response.data == "noLocation"){
@@ -121,9 +208,9 @@
         };
 
         //커스텀 지역 내용 수정 Process.
-        function deleteMarker(inData, kMarkerData){
+        function deleteMarkerDetail(kMarkerData){
             //데이터 변경을 위한 statue 전환.
-            var respo = deleteMarkerHttp(inData);
+            var respo = deleteMarkerHttp(kMarkerData);
             respo.then(
                 function successFunc(response){
                     if(response.data == "noLocation"){
@@ -134,45 +221,19 @@
                         alert('notAllowed');
                     }
                     else if(response.data == "success"){
-                        kMarkerData.unsetOnMap();   //nMarker Unset
-                        kMarkerData.unsetPolyOnMap();
+                        $rootScope.$broadcast('ToMain', {
+                            type : 'api',
+                            apiType : 'delete',
+                            result : 'success',
+                            data : kMarkerData,
+                        });
 
-                        //service.kMarkerStorageArr, service.kMarkersOnMap delete
-                        for(var i = 0, ii = service.kMarkerStorageArr.length; i<ii; i++){
-                            //if(service.kMarkerStorageArr[j].getTitle() == kMarkerData.getTitle())
-                            if(service.kMarkerStorageArr[i] == kMarkerData){
-                                service.kMarkerStorageArr.splice(i,i);
-                                break;
-                            }
-                        }
-                        for(var i = 0, ii = service.kMarkersOnMap.length; i<ii; i++){
-                            //if(service.kMarkerStorageArr[j].getTitle() == kMarkerData.getTitle())
-                            if(service.kMarkersOnMap[i] == kMarkerData){
-                                service.kMarkersOnMap.splice(i,i);
-                                break;
-                            }
-                        }
-
-                        //mapping 해제
-                        delete service.markerTitleToKMarkerMappingObj[kMarkerData.getTitle()];
-                        var tempKMarkerCategoriesArr = kMarkerData.getCategoriesArr();
-                        for(var i = 0, ii = tempKMarkerCategoriesArr.length; i<ii; i++){
-                            var tempKMarkerInnerObjArr = service.categoriesToKMarkerMappingObj[tempKMarkerCategoriesArr[i].title].kMarker;
-                            for(var j =0 , jj = tempKMarkerInnerObjArr.length; j<jj; j++){
-                                if(tempKMarkerInnerObjArr[j] == kMarkerData){
-                                //if(tempKMarkerInnerObjArr[j].getTitle() == kMarkerData.getTitle())
-                                    tempKMarkerInnerObjArr.splice(j,j);
-                                    break;  //한개의 kMarker만 존재 할 것이므로
-                                }
-                            }
-                        }
-
-                        $mdDialog.hide(
-                            {
-                                'kMarker' : kMarkerData,
-                                'respond' : 'delete'
-                            }
-                        );
+                        $rootScope.$broadcast('ToSide', {
+                            type : 'api',
+                            apiType : 'delete',
+                            result : 'success',
+                            data : kMarkerData,
+                        });   
                     }
                 },
                  function failFunc(response){

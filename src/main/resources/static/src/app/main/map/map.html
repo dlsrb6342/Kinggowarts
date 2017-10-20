@@ -1,6 +1,27 @@
 <div id="map-side" ui-view="map-side" style="position:absolute;top:0px;left:0px;width:30%;height:100%;"></div>
 
-<div id="nmap" style="position:absolute;top:0px;left:0%;width:100%;height:100%;"></div>
+<div id="nmap" style="position:absolute;top:0px;left:0%;width:100%;height:100%;">
+	<div id="window-guide" ng-show="vm.ngShowWindowGuide" style="display: inline-block;position:relative; z-index:10001;position:relative;top:0px;left:56px; margin: 20px 0px 20px 0px">
+		<div id="white-box" style="display: inline-block;border: 1px solid #669999; border-radius:3px;padding:10px;background:#f0f5f5">
+			<b>마커, 폴리곤 추가</b><br>
+			좌하단 버튼을 누른뒤 마커 또는 폴리곤을 선택합니다.<br>
+			맵을 클릭하면 선택한 도형을 추가할 수 있습니다.<br>
+			마커는 반드시 1개가 있어야 하지만 폴리곤은 선택사항입니다.<br>
+			폴리곤은 우클릭 또는 esc로 그리기를 완료할 수 있습니다.<br><br>
+			<b>수정</b><br>
+			마커를 드래그하여 위치를 수정합니다.<br>
+			폴리곤을 클릭한뒤 제어점을 드래그하여 수정합니다.<br>
+			중간제어점을 클릭하여 제어점을 추가할 수 있습니다.<br><br>
+			<b>삭제</b><br>
+			마커/폴리곤을 우클릭하여 삭제 버튼을 누릅니다.
+		</div>
+	</div>
+</div>
+
+<div id="univ-button-div" style="position:absolute;top:70px;right:0px;">
+	<md-button id="univ-button" class="md-raised" ng-click="vm.univButtonClicked()">{{vm.univName}}</md-button>
+</div>
+
 
 <ng-include src ="'app/main/map/layout/map-categoryButton.html'"></ng-include>
 
@@ -14,11 +35,11 @@
 
 <!-- 친구위치 아이콘 -->
 
-
+<!-- 
 <md-button id="peerLocationButton" ng-show="vm.ngShowPeerLocationButton" class="md-fab md-primary" style="position:absolute; z-index:99990;bottom:20px;right:120px;height:40px;width:40px;" ng-click="vm.peerOnMapFunciton()">
   <md-tooltip md-direction="top">Peer위치</md-tooltip>
   <md-icon md-font-icon="icon-account-multiple-outline"; class="icon"></md-icon>
 </md-button>
-
+-->
 
 <ng-include src ="'app/main/map/layout/map-drawingButton.html'"></ng-include>

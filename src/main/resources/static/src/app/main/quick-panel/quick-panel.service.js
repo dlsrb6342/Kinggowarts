@@ -24,6 +24,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
     {
         var service = this;
         service.peer = '';
+        service.modified = 0;
     }
 
 })();

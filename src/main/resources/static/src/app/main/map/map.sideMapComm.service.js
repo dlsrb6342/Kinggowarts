@@ -29,10 +29,10 @@
         //methods
         service.startSideBar = function(inKMarkerArr){
             service.kMarkerResolvedArr = inKMarkerArr;
-            console.log("startSideBar func");
+            //console.log("startSideBar func");
             //service.bSideOpen = true;
         }
-	    
+
     }
 
 })();
