@@ -46,8 +46,13 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
 
         function tutorialMarkClickedFunc(idx){
+            //setting position
+            vm.tutorialMarkArr[idx].config.position = $mdPanel.newPanelPosition()
+                .absolute()
+                .top((vm.tutorialMarkArr[idx].top + vm.tutorialMarkArr[idx].incPanelTop) + 'px')
+                .left((vm.tutorialMarkArr[idx].left + vm.tutorialMarkArr[idx].incPanelLeft) + 'px');
             $mdPanel.open(vm.tutorialMarkArr[idx].config);
-            console.log("cliked:" + idx);
+            //console.log("cliked:" + idx);
         }
 
     //animation function
@@ -61,7 +66,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                     window.oRequestAnimationFrame ||
                     // if all else fails, use setTimeout
                     function (callback) {
-                        return window.setTimeout(callback, 1000/5); // shoot for 60 fps : 1000/60
+                        return window.setTimeout(callback, 1000/1); // shoot for 60 fps : 1000/60
                     };
         })();
 
@@ -78,6 +83,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
 
         function render() {
+            //console.log(vm.tutorialMarkArr.length);
             for(var i=0, ii=vm.tutorialMarkArr.length; i<ii; i++){
                 var tempTutorialMark = vm.tutorialMarkArr[i];
                 if(tempTutorialMark.bShowNow == true){
@@ -85,9 +91,10 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                     var markerElem = document.getElementById(tempTutorialMark.markerId);
                     if(markerElem != null){ //marker icon이 존재하는 경우
                         document.getElementById(tempTutorialMark.markerId).style.top = tempTutorialMark.top + lpos + "px";
+                        document.getElementById(tempTutorialMark.markerId).style.left = tempTutorialMark.left + "px";
                         var opt = parseFloat(document.getElementById(tempTutorialMark.markerId).style.opacity);
                         if(opt < 1.0){
-                            document.getElementById(tempTutorialMark.markerId).style.opacity = opt + 0.1;
+                            document.getElementById(tempTutorialMark.markerId).style.opacity = opt + 0.05;
                         }
 
                         //up down animation

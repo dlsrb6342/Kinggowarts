@@ -14,5 +14,7 @@
 
 	<!-- ng-repeat를 사용하는 경우 img를 포함하는 사각형의 div 형태로 absolue가 생성이 되며 이로 인해 하단 레이아웃 클릭이 불가능해짐. 따라서 모두 일일히 지정해야함.-->
 	<img ng-if="vm.tutorialMarkArr[0].bMarkerNgIf" id= {{vm.tutorialMarkArr[0].markerId}} ng-click="vm.tutorialMarkClicked(0)" ng-src="{{vm.tutorialMarkArr[0].imgSrc}}" ng-style="vm.tutorialMarkArr[0].ngStyle" style="z-index:70;position:absolute;">
+	<img ng-if="vm.tutorialMarkArr[1].bMarkerNgIf" id= {{vm.tutorialMarkArr[1].markerId}} ng-click="vm.tutorialMarkClicked(1)" ng-src="{{vm.tutorialMarkArr[1].imgSrc}}" ng-style="vm.tutorialMarkArr[1].ngStyle" style="z-index:70;position:absolute;">
+</div>
 </div>
 

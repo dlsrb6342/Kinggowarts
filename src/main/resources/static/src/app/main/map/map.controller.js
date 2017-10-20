@@ -1584,6 +1584,19 @@
             }
         };
 
+        function swallowCopy(obj) {
+            if (obj === null || typeof(obj) !== 'object')
+                return obj;
+            var copy = obj.constructor();
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr))
+                {
+                    copy[attr] = obj[attr];
+                }
+            }
+            return copy;
+        };
+
 
 
 //do stuff
@@ -1946,9 +1959,15 @@
                 }
                 else if(args.type == "cancelCreate"){
                     //remote all drawing
-                    drawingManager.setOptions('drawingMode', 0);
+                    /*drawingManager.setOptions('drawingMode', 0);
                     drawingManager.destroy();
-                    drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);
+                    drawingManager = new naver.maps.drawing.DrawingManager(drawingOption);*/
+                    drawingManagerClear();
+                    endCreateMode();
+                }
+                else if(args.type == "cancelModify"){
+                    //remote all drawing
+                    drawingManagerClear();
                     endCreateMode();
                 }
                 else if(args.type == "windowResize"){
@@ -1960,15 +1979,41 @@
                 }
                 else if(args.type == "gotoModify"){
                     //modify start. add overlay to drawingManager
+                    //marker, polygon positoin만 사용.
                     var modifiedKMarker = args.kMarker;
                     //marker
-                    var tempMarker = angular.copy(modifiedKMarker.getNMarker());
-                    //TODO : do not use angular copy
+                    var tempMarker = new naver.maps.Marker({
+                        //map: map,
+                        position: modifiedKMarker.getNMarker().getPosition().clone(),
+                        title: "변경중인 마커",
+                        icon: {
+                            url: MARKER_ICON_URL,
+                            size: new naver.maps.Size(24, 37),
+                            anchor: new naver.maps.Point(12, 37),
+                            origin: new naver.maps.Point(MARKER_SPRITE_POSITION[modifiedKMarker.getFirstCategoryTitle()][0], MARKER_SPRITE_POSITION[modifiedKMarker.getFirstCategoryTitle()][1])
+                        },
+                        shape: MARKER_SPRITE_SHAPE,
+                        zIndex: 20
+                    });
                     drawingManager.addDrawing(tempMarker, 6);
                     //polygon
+
+                    //make path
+                    var tempPolyPath = [];
+                    var tempOriginPath = modifiedKMarker.getNPolygon().getPath();
+                    for(var i=0, ii=tempOriginPath.length; i<ii; i++){
+                        tempPolyPath.push(new naver.maps.LatLng(tempOriginPath._array[i]._lat, tempOriginPath._array[i]._lng));
+                    }
                     if(modifiedKMarker.getNPolygon() != null){
-                        var tempPoly = angular.copy(modifiedKMarker.getNPolygon());
-                        //TODO : do not use angular copy
+                        var tempPoly = new naver.maps.Polygon({
+                            //map: map,
+                            paths: tempPolyPath,
+                            fillColor: '#00ff00',
+                            fillOpacity: 0.3,
+                            strokeColor: '#ff0000',
+                            strokeOpacity: 0.6,
+                            strokeWeight: 3
+                        });
                         drawingManager.addDrawing(tempPoly, 5);
                     }
                 }

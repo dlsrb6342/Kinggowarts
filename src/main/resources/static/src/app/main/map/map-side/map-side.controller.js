@@ -160,6 +160,10 @@
                 //vm.initWithIdx(vm.tabIndex);
                 if(vm.bModifyMode == true){
                     vm.bModifyMode = false;
+                    $rootScope.$broadcast('ToMain', {
+                        type : 'cancelModify',
+                    });
+                    closeSide();
                 }
                 else if(vm.bCreateMode == true){
                     vm.bCreateMode = false;
@@ -171,7 +175,6 @@
     		}
             else if(answer == 'cancel'){
                 //vm.bSideOpen = false;
-            
                 closeSide();
             }
     		
