@@ -52,7 +52,8 @@ public class Member{
     @NotNull(message="이름은 1~16자까지 허용합니다.")
     private String name;
 
-    private Character type='S';
+    //캠퍼스 (M, Y)
+    private Character type;
     private Integer confirm;
     private Double lng;
     private Double lat;
@@ -86,6 +87,8 @@ public class Member{
             inverseJoinColumns= {@JoinColumn(name="REQ_TO_SEQ")})
     @JsonIgnore
     private Set<Member> reqFollowing = new HashSet<Member>();
+
+    private ArrayList<String> favorite = new ArrayList<>();
 
     public Member(Long memberSeq, String nickname, String name, String profileImgPath, Double lng, Double lat){
         this.memberSeq = memberSeq;

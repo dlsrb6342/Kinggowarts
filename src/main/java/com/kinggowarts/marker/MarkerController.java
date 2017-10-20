@@ -13,8 +13,8 @@ public class MarkerController {
     private MarkerService markerService;
 
     @GetMapping("")
-    public List<Marker> findAllByType(@RequestParam String q){
-        return markerService.findAllByCategory(q);
+    public List<Marker> findAllByType(@RequestParam String q, @RequestParam String type){
+        return markerService.findAllByCategory(q, type);
     }
 
     @PostMapping("")

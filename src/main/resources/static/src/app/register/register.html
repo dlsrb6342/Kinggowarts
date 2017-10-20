@@ -4,11 +4,9 @@
     <div id="register-form-wrapper" class="flex-scrollable md-whiteframe-1dp" layout="column" flex ms-scroll>
         <div id="register-form">
             <div class="title"><h1>Create Account</h1></div>
-                
-           
-           <form name="registerForm" novalidate>
+            <form name="registerForm" novalidate>
                 <md-input-container class="md-block" md-no-float>
-                    <input name="userId" ng-model="vm.form.userId" placeholder="이메일 주소" ng-pattern="/^.+@+skku+\.+edu+$/"
+                    <input name="userId" ng-model="vm.form.userId" placeholder="이메일 주소 (@skku.edu)" ng-pattern="/^.+@+skku+\.+edu+$/"
                            required>
                            
                     
@@ -22,7 +20,7 @@
                     </div>
                 </md-input-container>
                 <md-input-container class="md-block" md-no-float>
-                    <input type="password" name="passWd" ng-model="vm.form.passWd" placeholder="비밀번호" ng-minlength="6" ng-maxlength="16"
+                    <input type="password" name="passWd" ng-model="vm.form.passWd" placeholder="비밀번호 (6~16자)" ng-minlength="6" ng-maxlength="16"
                             required>
                     <div ng-messages="registerForm.passWd.$error" role="alert" multiple>
                         <div ng-message="required">
@@ -49,7 +47,7 @@
                     </div>
                 </md-input-container>
                 <md-input-container class="md-block" md-no-float>
-                    <input type="nickname" name="nickname" ng-model="vm.form.nickname" placeholder="닉네임" ng-minlength="1" ng-maxlength="16" ng-pattern="/[0-9]|[a-z]|[A-Z]/"
+                    <input type="nickname" name="nickname" ng-model="vm.form.nickname" placeholder="닉네임 (영문 및 숫자 조합 1~16자)" ng-minlength="1" ng-maxlength="16" ng-pattern="/[0-9]|[a-z]|[A-Z]/"
                            required>
                     <div ng-messages="registerForm.nickname.$error" role="alert">
                         <div ng-message="required">
@@ -68,7 +66,7 @@
                 </md-input-container>
                 
                 <md-input-container class="md-block" md-no-float>
-                    <input name="name" ng-model="vm.form.username" placeholder="사용자 이름" ng-minlength="1" ng-maxlength="16"
+                    <input name="name" ng-model="vm.form.username" placeholder="사용자 이름 (1~16자)" ng-minlength="1" ng-maxlength="16"
                            required>
                     <div ng-messages="registerForm.name.$error" role="alert">
                         <div ng-message="required">
@@ -79,6 +77,17 @@
                         </div>
                         <div ng-message="maxlength">
                             <span>닉네임은 최대 16자까지 입력하실 수 있습니다.</span>
+                        </div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block" md-no-float>
+                    <md-checkbox name="agree" ng-model="vm.form.agree" required>
+                    </md-checkbox>
+                    <span>개인정보 이용 및 관리 </span><a ng-click="vm.openContractionDialog($event)" class="md-accent-color contraction">약관</a><span>에 동의합니다.</span>
+                    <div ng-messages="registerForm.agree.$error" role="alert" multiple md-auto-hide="false">
+                        <div ng-message="required">
+                            <span>약관에 동의해주세요.</span>
                         </div>
                     </div>
                 </md-input-container>

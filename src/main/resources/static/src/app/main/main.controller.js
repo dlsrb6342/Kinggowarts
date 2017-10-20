@@ -33,6 +33,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         vm.tutorialMarkArr = tutorialMarkService.tutorialMarkObjList;
 
         /* 초기화 */
+
         $scope.$on('$viewContentAnimationEnded', function (event) 
         {
             if ( event.targetScope.$id === $scope.$id )
@@ -144,8 +145,6 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         
     //main
         start();
-
-
 
     }
 })();

@@ -39,7 +39,8 @@
         background: #FFFFFF;
 
         #register-form {
-            padding: 48px 48px 48px 48px;
+            padding-left: 48px;
+            padding-right: 48px;
 
             .logo {
                 width: 128px;
@@ -63,7 +64,7 @@
             form {
                 width: 100%;
                 text-align: left;
-                padding-top: 32px;
+                padding-top: 16px;
 
                 md-checkbox {
                     margin: 0;
@@ -83,10 +84,14 @@
                     margin: 16px auto;
                     display: block;
                 }
+
+                .contraction {
+                    cursor: pointer;
+                }
             }
 
             .login {
-                margin: 32px auto 24px auto;
+                margin: 32px auto 16px auto;
                 width: 250px;
                 font-weight: 500;
 

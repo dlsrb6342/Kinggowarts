@@ -22,24 +22,34 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
     function LoginController(
         /* 모듈 */
+        $document,
         $http, 
         $httpParamSerializerJQLike,
         $rootScope,
         $state, 
         $stateParams, 
-        $sessionStorage)
+        $sessionStorage,
+        $interval)
     {
         /* Data */
         var vm = this;
 
         vm.isdisabled = false;
-
+        vm.bgf = true;
+        vm.isM = false;
+        vm.surly = 'assets/images/backgrounds/skku_y.jpg';
+        vm.surlm = 'assets/images/backgrounds/skku_m2.JPG';
 
         /* 초기화 */
         $rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
 
         if($stateParams.auth == 'true'){ // 인증토큰을 통한 접근이 성공했을 경우 alert 띄움
             alert('인증이 완료되었습니다.');
+        }
+
+        if($rootScope.isMobile == true)
+        {
+            vm.isM = true;
         }
 
         /* Methods */
@@ -95,6 +105,15 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             }
             
         };
+        /*bgf 값을 변경하여 배경 이미지 교체 */
+        vm.bgChanger = function ()
+        {
+            vm.bgf = !vm.bgf;
+        }
+
+        $interval(vm.bgChanger, 10000);
+
+
 
     }
 })();

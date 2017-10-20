@@ -1,4 +1,6 @@
 <div id="login" class="flex-scrollable" layout="column" ms-scroll>
+    <img ng-src = "{{vm.surly}}" class = "bgimg" ms-fade ng-show ="vm.bgf" ng-if = "vm.isM == false">
+    <img ng-src = "{{vm.surlm}}" class = "bgimg" ms-fade ng-hide ="vm.bgf" ng-if = "vm.isM == false">
     <div id="login-form-wrapper" layout="column" layout-align="center center">
         <div id="login-form" class="md-whiteframe-8dp">
             <img ng-src="assets/images/logos/logo_login.png" class="logo" />
@@ -26,6 +28,14 @@
                         </div>
                     </div>
                 </md-input-container>
+
+                <div class="remember-forgot-password" layout="row" layout-xs="column"
+                     layout-align="space-between center">
+                    <div>
+                    </div>
+                    <a ui-sref="app.pages_auth_forgot-password" class="forgot-password md-accent-color"
+                       >비밀번호 찾기</a>
+                </div>
 
                 <md-button type="submit" class="md-raised md-accent submit-button" aria-label="LOG IN"
                            ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="vm.loginfun(loginForm.email.$viewValue,loginForm.password.$viewValue)">
