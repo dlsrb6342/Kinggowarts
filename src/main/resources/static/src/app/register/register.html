@@ -1,6 +1,7 @@
     
 <div id="register" layout="row" layout-align="end end">
-   
+    <img ng-src = "{{vm.surly}}" class = "bgimg" ms-fade ng-show ="vm.bgf" ng-if = "vm.isM == false">
+    <img ng-src = "{{vm.surlm}}" class = "bgimg" ms-fade ng-hide ="vm.bgf" ng-if = "vm.isM == false">
     <div id="register-form-wrapper" class="flex-scrollable md-whiteframe-1dp" layout="column" flex ms-scroll>
         <div id="register-form">
             <div class="title"><h1>Create Account</h1></div>

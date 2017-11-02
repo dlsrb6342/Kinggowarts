@@ -29,7 +29,12 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         /* Data */
         var vm = this;
 
+        /* 초기화 */
         vm.isdisabled = false;
+        vm.bgf = true;
+        vm.isM = false;
+        vm.surly = 'assets/images/backgrounds/skku_y.jpg';
+        vm.surlm = 'assets/images/backgrounds/skku_m2.JPG';
 
         /* Methods */
         /**********************************************************************//**
