@@ -40,7 +40,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 $state.go('app.login');
             }
 
-            if( (toState.name == 'app.login' || toState.name == 'app.register') && $sessionStorage.get('useremail') != undefined)
+            if( (toState.name == 'app.login' || toState.name == 'app.findpw' || toState.name == 'app.register') && $sessionStorage.get('useremail') != undefined)
             {
                 evt.preventDefault();
                 $state.go('app.main.map');

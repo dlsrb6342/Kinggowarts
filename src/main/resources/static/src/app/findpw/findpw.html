@@ -1,4 +1,6 @@
 <div id="findpw" class="flex-scrollable" layout="column" ms-scroll>
+    <img ng-src = "{{vm.surly}}" class = "bgimg" ms-fade ng-show ="vm.bgf" ng-if = "vm.isM == false">
+    <img ng-src = "{{vm.surlm}}" class = "bgimg" ms-fade ng-hide ="vm.bgf" ng-if = "vm.isM == false">
     <div id="findpw-form-wrapper" layout="column" layout-align="center center">
         <div id="findpw-form" class="md-whiteframe-8dp">
             <img ng-src="assets/images/logos/logo_login.png" class="logo" />
