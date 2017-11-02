@@ -1,0 +1,27 @@
+<div role="dialog" layout="column" layout-align="center center" style="background:'white';">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>상세 Guide</h2>
+    </div>
+  </md-toolbar>
+
+  <div class="demo-dialog-content">
+    <p>다음 버튼을 통해 상세한 사용법을 볼 수 있습니다.</p>
+
+    <!--
+    <div layout="row" >
+      <img flex alt="Delicious donut" src="img/donut.jpg">
+      <p>img</p>
+    </div>
+     -->
+  </div>
+
+  <div layout="row" class="demo-dialog-button">
+    <md-button md-raised class="md-raised" ng-click="vm.closeDialog()">
+      확인
+    </md-button>
+    <md-button md-autofocus flex class="md-raised" ng-click="vm.closeDialogWithCookieRegister()">
+      더 이상 이 창을 띄우지 않음
+    </md-button>
+  </div>
+</div>

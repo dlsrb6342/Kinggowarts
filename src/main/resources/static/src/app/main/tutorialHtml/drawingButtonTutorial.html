@@ -1,0 +1,25 @@
+<div role="dialog" layout="column" layout-align="center center" style="background:'white';">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <h2>마커/다각형 그리기 도구모음</h2>
+    </div>
+  </md-toolbar>
+
+  <div class="demo-dialog-content">
+    <p>이 버튼을 클릭하여 새로운 마커/다각형을 생성합니다.</p>
+    <p>마커 도구를 클릭하고 마커를 생성하고자 하는 원하는 위치에 마우스를 클릭하면</p>
+    <p>마커가 생성됩니다. (필수)</p>
+    <p> 왼쪽 사이드바를 통해 마커의 상세 정보를 입력합니다.</p>
+    <p>모든 입력이 끝나면 '생성' 버튼을 눌러주세요.</p>
+    
+  </div>
+
+  <div layout="row" class="demo-dialog-button">
+    <md-button md-raised class="md-raised" ng-click="vm.closeDialog()">
+      확인
+    </md-button>
+    <md-button md-autofocus flex class="md-raised" ng-click="vm.closeDialogWithCookieRegister()">
+      더 이상 이 창을 띄우지 않음
+    </md-button>
+  </div>
+</div>

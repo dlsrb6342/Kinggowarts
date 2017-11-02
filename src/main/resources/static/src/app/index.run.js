@@ -39,6 +39,13 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 evt.preventDefault();
                 $state.go('app.login');
             }
+
+            if( (toState.name == 'app.login' || toState.name == 'app.register') && $sessionStorage.get('useremail') != undefined)
+            {
+                evt.preventDefault();
+                $state.go('app.main.map');
+            }
+
             $rootScope.loadingProgress = true;
             $rootScope.$broadcast('msSplashScreen::add');
         });

@@ -27,7 +27,7 @@
                     MarkerData: function (msApi)
                     {
                         return msApi.resolve('marker@get');
-                    },
+                    }
                     /*
                     MBusstop: function($http, $sessionStorage){
                         return $http({
@@ -80,10 +80,11 @@
                         return $q.all([prom[0], prom[1], prom[2], prom[3], prom[4], prom[5], prom[6]]);
                         
                     },*/
-                    CategoryMenuData: function(msApi)
+                    /*CategoryMenuData: function(msApi)
                     {
                         return msApi.resolve('categoryMenu@get');
                     }
+                    */
                 }
             });
 
@@ -91,7 +92,7 @@
 
         
         msApiProvider.register('marker', ['app/data/map/marker.json']);  
-        msApiProvider.register('categoryMenu', ['app/data/map/categoryMenu.json']);
+        //msApiProvider.register('categoryMenu', ['app/data/map/categoryMenu.json']);
         
         
     }
