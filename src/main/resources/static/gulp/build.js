@@ -20,7 +20,7 @@ gulp.task('partials', function ()
             removeComments    : true
         }))
         .pipe($.angularTemplatecache('templateCacheHtml.js', {
-            module: 'fuse',
+            module: 'kinggowarts',
             root  : 'app'
         }))
         .pipe(gulp.dest(conf.paths.tmp + '/partials/'));

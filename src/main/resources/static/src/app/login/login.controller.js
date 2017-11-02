@@ -90,15 +90,18 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                         headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
                     }).then(function successCallback(response)
                     {
+                        console.log(response);
                         $state.go('app.main.map');
 
                     }, function errorCallback(response) 
                     {
+                        console.log(response);
                         vm.isdisabled = false;
                         alert('위키 로그인에 실패하였습니다.');
                     });
                     
                 }, function errorCallback(response) {
+                    console.log(response);
                     vm.isdisabled = false;
                     alert('아이디나 비밀번호를 확인해주세요.');
                 });
