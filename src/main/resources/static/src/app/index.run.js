@@ -33,7 +33,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             $rootScope.loadingData = 0;
             if (toState.resolve != undefined) $rootScope.numResolveData = Object.keys(toState.resolve).length;
 
-            if( (toState.name != 'app.login' && toState.name != 'app.register') && $sessionStorage.get('useremail') == undefined)
+            if( (toState.name != 'app.login' && toState.name != 'app.findpw' && toState.name != 'app.register') && $sessionStorage.get('useremail') == undefined)
             {
                 alert('로그인 되어 있지 않거나 세션 유효기간이 끝나 로그아웃 되었습니다.');
                 evt.preventDefault();

@@ -2,7 +2,6 @@
     <div id="login-form-wrapper" layout="column" layout-align="center center">
         <div id="login-form" class="md-whiteframe-8dp">
             <img ng-src="assets/images/logos/logo_login.png" class="logo" />
-
             <form name="loginForm" novalidate>
                 <md-input-container class="md-block" md-no-float>
                     <input type="email" name="email" ng-model="vm.form.email" placeholder="이메일 입력"
@@ -31,12 +30,12 @@
                      layout-align="space-between center">
                     <div>
                     </div>
-                    <a ui-sref="app.pages_auth_forgot-password" class="forgot-password md-accent-color"
+                    <a ui-sref="app.findpw" class="forgot-password md-accent-color"
                        >비밀번호 찾기</a>
                 </div>
 
                 <md-button type="submit" class="md-raised md-accent submit-button" aria-label="LOG IN"
-                           ng-disabled="loginForm.$invalid || loginForm.$pristine" ng-click="vm.loginfun(loginForm.email.$viewValue,loginForm.password.$viewValue)">
+                           ng-disabled="loginForm.$invalid || loginForm.$pristine || vm.isdiabled" ng-click="vm.loginfun(loginForm.email.$viewValue,loginForm.password.$viewValue)">
                     LOG IN
                 </md-button>
             </form>
