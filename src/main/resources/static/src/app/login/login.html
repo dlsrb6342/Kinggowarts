@@ -2,7 +2,7 @@
     <img ng-src = "{{vm.surly}}" class = "bgimg" ms-fade ng-show ="vm.bgf" ng-if = "vm.isM == false">
     <img ng-src = "{{vm.surlm}}" class = "bgimg" ms-fade ng-hide ="vm.bgf" ng-if = "vm.isM == false">
     <div id="login-form-wrapper" layout="column" layout-align="center center">
-        <div id="login-form" class="md-whiteframe-8dp">
+        <div id="login-form" ng-class="vm.loginformclass">
             <img ng-src="assets/images/logos/logo_login.png" class="logo" />
             <form name="loginForm" novalidate>
                 <md-input-container class="md-block" md-no-float>
