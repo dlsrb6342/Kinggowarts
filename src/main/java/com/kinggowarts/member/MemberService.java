@@ -62,16 +62,19 @@ public class MemberService {
         member.setProfileImgPath("");
         member.setLat(-1.0);
         member.setLng(-1.0);
+        member.setAgreement(false);
         if(memberRepository.findFirstByUserId(member.getUserId()) != null) {
 
             return "duplicateId";
         }else if(memberRepository.findFirstByNickname(member.getNickname()) != null){
 
             return "duplicateNickname";
+        }else if(member.getType() != 'M' || member.getType() != 'Y'){
+
+            return "invalidType";
         }else {
             member.setConfirm(Member.NOT_CONFIRM);
             mailService.sendMailAuth(member.getUserId(), url);
-
             memberRepository.save(member);
             return "success";
         }
@@ -91,6 +94,37 @@ public class MemberService {
             return "success";
         }
     }
+
+    @Transactional
+    public String findPassword(String email, String name) {
+        System.out.println(email + " " + name);
+        Member member = memberRepository.findFirstByUserId(email);
+        if (member == null) {
+            return "입력하신 내용을 다시 확인해주시기 바랍니다.";
+        } else if(!member.getName().equals(name)) {
+            return "입력하신 내용을 다시 확인해주시기 바랍니다.";
+        } else {
+            String newPassword = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 9);
+            member.setPassWd(passwordEncoder.encode(newPassword));
+            memberRepository.save(member);
+            changePasswordXwiki(member.getNickname(), newPassword);
+            mailService.sendNewPassword(email, newPassword);
+            return "success";
+        }
+    }
+
+    @Transactional
+    public String setAgreement(Long memSeq, Boolean agreement) {
+        Member member = getMemberBySeq(memSeq);
+        if(member.getAgreement() ^ agreement) {
+            member.setAgreement(agreement);
+            memberRepository.save(member);
+            return "success";
+        } else {
+            return "notChanged";
+        }
+    }
+
     private static boolean isValidEmail(String email) {
         boolean err = false;
         String regex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -113,7 +147,6 @@ public class MemberService {
             return true;
         }else
             return false;
-
     }
 
     @Transactional
@@ -145,7 +178,7 @@ public class MemberService {
             httpPost.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
             CloseableHttpResponse response = httpclient.execute(httpPost);
             try {
-               // System.out.println(response.getStatusLine());
+                // System.out.println(response.getStatusLine());
                 //API서버로부터 받은 JSON 문자열 데이터
                 //System.out.println(EntityUtils.toString(response.getEntity()));
                 //HttpEntity entity = response.getEntity();
@@ -185,7 +218,7 @@ public class MemberService {
 
             CloseableHttpResponse response = httpclient.execute(httpPost);
             try {
-                 System.out.println(response.getStatusLine());
+                System.out.println(response.getStatusLine());
                 //API서버로부터 받은 JSON 문자열 데이터
                 //System.out.println(EntityUtils.toString(response.getEntity()));
                 //HttpEntity entity = response.getEntity();
@@ -212,7 +245,7 @@ public class MemberService {
     public void decideReqFollower(Long fromUserSeq, Long toUserSeq, String type){
         memberRepository.deleteReqPeer(fromUserSeq, toUserSeq);
         if(type.equals("true")) {
-           memberRepository.insertPeer(fromUserSeq, toUserSeq);
+            memberRepository.insertPeer(fromUserSeq, toUserSeq);
             memberRepository.insertPeer(toUserSeq, fromUserSeq);
         }
 

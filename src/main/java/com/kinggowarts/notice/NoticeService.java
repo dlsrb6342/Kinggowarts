@@ -31,7 +31,7 @@ public class NoticeService {
         return noticeDao.findAllByCategory_NameOrderByTimeDesc(category, pageable);
     }
     List<Notice> findAllByCategory(String category){
-        return noticeDao.findAllByCategory_NameOrderByTimeDesc(category);
+        return noticeDao.findAllByCategory_NameOrderByTimeAsc(category);
     }
 
     List<Notice> searchNotice(String q){

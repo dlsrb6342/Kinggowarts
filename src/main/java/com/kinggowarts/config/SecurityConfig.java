@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/login").permitAll()
                 .antMatchers("/api/auth/login").permitAll()
                 .antMatchers("/api/member/signup").permitAll()
+                .antMatchers("/api/member/findPassword").permitAll()
                 .antMatchers("/api/mail/active").permitAll()
                 //.antMatchers("/api/**").hasAuthority("ROLE_STUDENT")
                 .antMatchers("/api/**").hasAuthority("ROLE_GUEST")

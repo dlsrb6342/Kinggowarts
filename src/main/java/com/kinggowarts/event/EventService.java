@@ -24,7 +24,7 @@ public class EventService {
     @Autowired
     private EventSearchRepository eventSearchDao;
 
-    public List<OnlyCreatorName> findAll(){
+    public List<EventProjection> findAll(){
         return eventDao.findAllByCustom();
     }
 
