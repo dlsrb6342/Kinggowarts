@@ -1,0 +1,43 @@
+<div id="findpw" class="flex-scrollable" layout="column" ms-scroll>
+    <img ng-src = "{{vm.surly}}" class = "bgimg" ms-fade ng-show ="vm.bgf" ng-if = "vm.isM == false">
+    <img ng-src = "{{vm.surlm}}" class = "bgimg" ms-fade ng-hide ="vm.bgf" ng-if = "vm.isM == false">
+    <div id="findpw-form-wrapper" layout="column" layout-align="center center">
+        <div id="findpw-form" class="md-whiteframe-8dp">
+            <img ng-src="assets/images/logos/logo_login.png" class="logo" />
+            <div class="title">비밀번호 찾기</div>
+            <form name="findpwForm" novalidate>
+                <md-input-container class="md-block" md-no-float>
+                    <input type="email" name="email" ng-model="vm.findpwForm.email" placeholder="이메일 입력"
+                           ng-pattern="/^.+@.+\..+$/" required>
+                    <div ng-messages="findpwForm.email.$error" role="alert" multiple>
+                        <div ng-message="required">
+                            <span>이메일 입력이 필요합니다.</span>
+                        </div>
+                        <div ng-message="pattern">
+                            <span>유효한 이메일 주소를 입력해야 합니다.</span>
+                        </div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block" md-no-float>
+                    <input type="text" name="name" ng-model="vm.findpwForm.name" placeholder="이름 입력"
+                           required>
+                    <div ng-messages="findpwForm.name.$error" role="alert">
+                        <div ng-message="required">
+                            <span>이름 입력이 필요합니다.</span>
+                        </div>
+                    </div>
+                </md-input-container>
+
+                <md-button type="submit" class="md-raised md-accent submit-button" aria-label="LOG IN"
+                           ng-disabled="findpwForm.$invalid || findpwForm.$pristine" ng-click="vm.clickFindPw()">
+                    새 비밀번호 발급
+                </md-button>
+            </form>
+
+            <div class="register" layout="row" layout-sm="column" layout-align="center center">
+                <a class="link" ui-sref="app.login">로그인으로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+</div>

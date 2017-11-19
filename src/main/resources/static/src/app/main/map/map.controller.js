@@ -46,7 +46,8 @@
         peerLocation,
         mapLocation,
         sideMapCommService,
-        tutorialMarkService
+        tutorialMarkService,
+        mapApiService
     )
     {
 //object
@@ -157,19 +158,25 @@
             }
             return this.bOnMap;
         }
-        kMarker.prototype.setOnMap = function(inMap){
+        kMarker.prototype.setOnMap = function(inMap, recog){
             if(this.nMarker == null){
                 console.log("setOnMap is called with no nMarker");
                 return;
+            }
+            if(recog != null){
+                recog.add(this.nMarker);
             }
             this.nMarker.setMap(inMap);
             this.bOnMap = true;
             return;
         }
-        kMarker.prototype.unsetOnMap = function(){
+        kMarker.prototype.unsetOnMap = function(recog){
             if(this.nMarker == null){
                 console.log("unsetOnMap is called with no nMarker");
                 return;
+            }
+            if(recog != null){
+                recog.remove(this.nMarker);
             }
             this.nMarker.setMap(null);
             this.bOnMap = false;
@@ -610,18 +617,24 @@
 
         var MARKER_SPRITE_X_OFFSET = 29;
         var MARKER_SPRITE_Y_OFFSET = 50;
-        var MARKER_ICON_URL = 'https://ssl.pstatic.net/static/maps/img/icons/sp_pins_spot_v3.png';
-        var MARKER_HIGHLIGHT_ICON_URL = 'https://ssl.pstatic.net/static/maps/img/icons/sp_pins_spot_v3_over.png';
+        //var MARKER_ICON_URL = 'https://ssl.pstatic.net/static/maps/img/icons/sp_pins_spot_v3.png';
+        //var MARKER_HIGHLIGHT_ICON_URL = 'https://ssl.pstatic.net/static/maps/img/icons/sp_pins_spot_v3_over.png';
+        var MARKER_ICON_URL = 'assets/images/marker/marker_sprites_non_highright.png'
+        var MARKER_HIGHLIGHT_ICON_URL = 'assets/images/marker/marker_sprites_highright.png';
+        var MARKER_MODIFY_ICON_URL = 'http://static.naver.net/maps/mantle/1x/marker-default.png';
         var MARKER_SPRITE_POSITION = {
-            "카페1": [0, 0],
-            "카페2": [MARKER_SPRITE_X_OFFSET, 0],
-            "none": [MARKER_SPRITE_X_OFFSET*2, 0],
-            "프린터": [MARKER_SPRITE_X_OFFSET*3, 0],
-            "E0": [MARKER_SPRITE_X_OFFSET*4, 0],
+            "ATM": [0, 0],
+            "정류장": [MARKER_SPRITE_X_OFFSET, 0],
+            "프린터": [MARKER_SPRITE_X_OFFSET*2, 0],
+            "교내식당": [MARKER_SPRITE_X_OFFSET*3, 0],
+            "교외식당": [MARKER_SPRITE_X_OFFSET*3, 0],
+            "휴게실": [MARKER_SPRITE_X_OFFSET*4, 0],
             "F0": [MARKER_SPRITE_X_OFFSET*5, 0],
-            "G0": [MARKER_SPRITE_X_OFFSET*6, 0],
-            "H0": [MARKER_SPRITE_X_OFFSET*7, 0],
-            "I0": [MARKER_SPRITE_X_OFFSET*8, 0],
+            "교내매점": [MARKER_SPRITE_X_OFFSET*6, 0],
+            "편의점": [MARKER_SPRITE_X_OFFSET*6, 0],
+            "AA7": [MARKER_SPRITE_X_OFFSET*7, 0],
+            "카페": [MARKER_SPRITE_X_OFFSET*8, 0],
+            "교내시설": [MARKER_SPRITE_X_OFFSET*9, 0],
             "A1": [0, MARKER_SPRITE_Y_OFFSET],
             "B1": [MARKER_SPRITE_X_OFFSET, MARKER_SPRITE_Y_OFFSET],
             "C1": [MARKER_SPRITE_X_OFFSET*2, MARKER_SPRITE_Y_OFFSET],
@@ -639,8 +652,9 @@
             "F2": [MARKER_SPRITE_X_OFFSET*5, MARKER_SPRITE_Y_OFFSET*2],
             "G2": [MARKER_SPRITE_X_OFFSET*6, MARKER_SPRITE_Y_OFFSET*2],
             "H2": [MARKER_SPRITE_X_OFFSET*7, MARKER_SPRITE_Y_OFFSET*2],
-            "I2": [MARKER_SPRITE_X_OFFSET*8, MARKER_SPRITE_Y_OFFSET*2]
+            "none": [MARKER_SPRITE_X_OFFSET*8, MARKER_SPRITE_Y_OFFSET*2]
         };
+        
         var BLUEFLAG_URL = 'assets/images/marker/blueflag.png'
         var BLUEFLAG_SIZE_X = 46;
         var BLUEFLAG_SIZE_Y = 42;
@@ -660,13 +674,13 @@
         var drawingMenuModify = [
             {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"}, 
             {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
-            {"name":"수정완료", "type":"CREATE", "icon" : "icon-play-box-outline"}
+            //{"name":"수정완료", "type":"CREATE", "icon" : "icon-play-box-outline"}
             //{"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
         var drawingMenuCreate = [
             {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"}, 
             {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
-            {"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"}
+            //{"name":"생성", "type":"CREATE", "icon" : "icon-play-box-outline"}
             //{"name":"취소", "type":"CANCEL", "icon" : "icon-cancel"}
         ];
 
@@ -688,11 +702,23 @@
                     {"name":"카페", "type":"카페", "icon" : "icon-martini"}
                 ]
             },
-            
-            
-                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"},
-                    {"name":"이벤트", "type":"customevent", "icon" : "icon-radio-tower"}
+                    {"name":"교내시설", "type":"교내시설", "icon" : "icon-vector-square"}
            
+        ];
+
+
+        var categoryMenu_PC = [
+                {"name":"은행/ATM", "type":"ATM", "icon" : "icon-square-inc-cash"},
+                {"name":"휴게실", "type":"휴게실", "icon" : "icon-leaf"},
+                {"name":"정류장", "type":"정류장", "icon" : "icon-subway"},
+                {"name":"복사/제본", "type":"프린터", "icon" : "icon-printer"},
+                {"name":"편의점", "type":"편의점", "icon" : "icon-store"},
+                {"name":"교내식당", "type":"교내식당", "icon" : "icon-food-apple"},
+                {"name":"교외식당", "type":"교외식당", "icon" : "icon-food-apple"},
+                {"name":"교내매점", "type":"교내매점", "icon" : "icon-pen"},
+                {"name":"카페", "type":"카페", "icon" : "icon-martini"},
+                {"name":"교내시설", "type":"교내시설", "icon" : "icon-vector-square"},
+                {"name":"타입 미선택", "type":"none", "icon" : "icon-vector-square"}
         ];
 
 
@@ -700,8 +726,9 @@
         var vm = this;
         var marker;
         vm.isMobile = false;    //mobile
+        vm.isIEBrowser = false;    //mobile
 
-        vm.markerDataArr = MarkerData.data;
+        vm.markerDataArr = MarkerData.data; //서버로 부터 얻은 데이터
         //var categoryMenu = CategoryMenuData.data;
         //var categoryTypes = CategoryTypes.data;
 
@@ -712,6 +739,8 @@
         vm.categoriesToKMarkerMappingObj = {};
         vm.kMarkersOnMap = [];  //nMarker.setmap(map) 되어 있는 kMarker들의 배열
         vm.univName=""; //univ button title
+
+        vm.selectedKMarker = null;  //선택된 kMarker
         
 
     //naver map
@@ -763,11 +792,18 @@
         vm.currentCategoryData = [];         //인쇄할 4개 이하의 카테고리 array
         vm.bCategoryButtonIsEnable = true;  //카테고리 버튼 활성화
 
+
+        vm.selectedCategoryPC = "none";         //선택된 카테고리 오브젝트(PC)
+        vm.selectedCategoryType = "none";  //선택된 카테고리 타입(PC, mobile)
+        vm.categoryMenu_PC = categoryMenu_PC;
+        vm.isOnCategoryPC = false;  //하위 카테고리 버튼을 표시할 지 여부.
+
     //drawing
         vm.bDrawingButtonIsOpen = false;
         vm.bIsModifyMode = false;
         vm.bIsCreateMode = false;
         vm.drawingMenu = drawingMenuCreate; //drawingMenuModify
+        vm.modifiedKMarker = null;  //수정중인 kMarker
         var drawingOption = {
             map: map,
             drawingMode : 0, //HAND
@@ -792,6 +828,7 @@
                     fillOpacity: 0.5
                 }
             },
+            markerOptions : {zIndex : 110},
             drawingControl: [
                 //must empty array
             ]
@@ -823,6 +860,8 @@
         vm.selectDrawingMenu = selectDrawingMenu;
         vm.drwingButtonClicked = drwingButtonClicked;
         vm.univButtonClicked =  univButtonClicked;
+        vm.categorySelectPC = categorySelectPC;
+        vm.isMouseOverOnCategoryButtonPC = isMouseOverOnCategoryButtonPCFunc;
 
         
 
@@ -863,27 +902,82 @@
 
     //마커 highlighting
         function highlightMarker(marker) {
-            var icon = marker.getIcon();
+            var tempKMarker = vm.nMarkerTitleToKMarkerMappingObj[marker.title];
+            if(tempKMarker != null && tempKMarker != vm.selectedKMarker){
+                var tempNPolygon = tempKMarker.getNPolygon();
+                if(tempNPolygon != null){
+                    tempNPolygon.setOptions({fillColor: '#357080'});
+                }
+                var icon = marker.getIcon();
+                if (icon.url !== MARKER_HIGHLIGHT_ICON_URL) {
+                    icon.url = MARKER_HIGHLIGHT_ICON_URL;
+                    marker.setIcon(icon);
+                }
 
-            if (icon.url !== MARKER_HIGHLIGHT_ICON_URL) {
-                icon.url = MARKER_HIGHLIGHT_ICON_URL;
-                marker.setIcon(icon);
+                marker.setZIndex(100);
             }
-
-            marker.setZIndex(100);
         };
 
         //마커 unhighlighting
         function unhighlightMarker(marker) {
-            var icon = marker.getIcon();
+            var tempKMarker = vm.nMarkerTitleToKMarkerMappingObj[marker.title];
+            if(tempKMarker != null && tempKMarker != vm.selectedKMarker){
+                var tempNPolygon = tempKMarker.getNPolygon();
+                if(tempNPolygon != null){
+                    tempNPolygon.setOptions({fillColor: '#ff0000'});
+                }
+                var icon = marker.getIcon();
+                if (icon.url === MARKER_HIGHLIGHT_ICON_URL) {
+                    icon.url = MARKER_ICON_URL;
+                    marker.setIcon(icon);
+                }
 
-            if (icon.url === MARKER_HIGHLIGHT_ICON_URL) {
-                icon.url = MARKER_ICON_URL;
-                marker.setIcon(icon);
+                marker.setZIndex(20);
+            }
+        };
+
+        function selectKMarker(inKMarker){
+            console.log("selectKMarkerFunc");
+            //같은 마커인 경우 전환 x
+            if(vm.selectedKMarker != null && vm.selectedKMarker != inKMarker){
+                console.log("resetPrevKMarker");
+                //unhighlight previous selectedKMarker
+                var marker = vm.selectedKMarker.getNMarker();
+                var icon = marker.getIcon();
+                if (icon.url === MARKER_HIGHLIGHT_ICON_URL) {
+                    icon.url = MARKER_ICON_URL;
+                    marker.setIcon(icon);
+                }
+                marker.setZIndex(20);
+                var tempNPolygon = vm.selectedKMarker.getNPolygon();
+                if(tempNPolygon != null){
+                    tempNPolygon.setOptions({fillColor: '#ff0000'});
+                }
             }
 
-            marker.setZIndex(20);
+            if(inKMarker == null){
+                vm.selectedKMarker = null;
+                console.log("select -> null");
+            }
+            else if(vm.selectedKMarker != inKMarker){
+                console.log("select -> new");
+                vm.selectedKMarker = inKMarker;
+                var marker = vm.selectedKMarker.getNMarker();
+                var icon = marker.getIcon();
+                if (icon.url !== MARKER_HIGHLIGHT_ICON_URL) {
+                    icon.url = MARKER_HIGHLIGHT_ICON_URL;
+                    marker.setIcon(icon);
+                }
+                marker.setZIndex(100);
+                var tempNPolygon = vm.selectedKMarker.getNPolygon();
+                if(tempNPolygon != null){
+                    tempNPolygon.setOptions({fillColor: '#131327'});
+                }
+            }
         };
+
+
+
     //마커 listener
         function nMarkerListenerMouseover(e){
             vm.highlightMarkerFunc(e.overlay);
@@ -893,12 +987,9 @@
         };
         function nMarkerListenerClick(e){
             var m = e.overlay;
-            //console.log(e.overlay);
-            //alert(m.title);
             //get kMarker with title
             var tempKMarker = vm.nMarkerTitleToKMarkerMappingObj[m.title];
             startSideBarWithKMarker(tempKMarker);
-
         };
 
     //nMarkersArr로 side open
@@ -1031,6 +1122,7 @@
             }*/
 
             //vm.categoriesToKMarkerMappingObj에 해당되는 category key가 없으면 추가.
+            console.log(inCategoryTitleArr);
             for(var i=0, ii=inCategoryTitleArr.length; i<ii; i++){
 
                 //inCategoryTitleArr[i] key가 존재하는가?
@@ -1176,7 +1268,7 @@
                     tempNMarker.addListener('mouseover', nMarkerListenerMouseover);
                     tempNMarker.addListener('mouseout', nMarkerListenerMouseout);
                     tempNMarker.addListener('click', nMarkerListenerClick);
-                    recognizer.add(tempNMarker);
+                    //recognizer.add(tempNMarker);
 
                     window.MARKER = tempNMarker;
                 }
@@ -1187,13 +1279,13 @@
         };
 
         //inCategoryTitleArr(표시할 카테고리들)에 해당하는 nMarkers를 map상에 올림. bSetMapNullNMarkersOnMap인 경우 현재 map상에 표시되는 모든 nMarker를 내림.
-        //inCategoryTitleArr는 array만 받으며 ALL을 전달 할 때 ["ALL"]을 전달.
+        //inCategoryTitleArr는 array만 받으며 ALL을 전달 할 때 ["ALL"]을 전달, 해제하는 경우 ["none"]
         function setMapToNMarkersWithCategoryKMarkersArr(inCategoryTitleArr, bSetMapNullNMarkersOnMap){
             //현재 map상에 있는 nMarker 해제
             if(bSetMapNullNMarkersOnMap == true){
                 //setMap 모두 해제
                 for(var i=0, ii = vm.kMarkersOnMap.length; i<ii; i++){
-                    vm.kMarkersOnMap[i].unsetOnMap();
+                    vm.kMarkersOnMap[i].unsetOnMap(recognizer);
                     vm.kMarkersOnMap[i].unsetPolyOnMap();
                 }
                 vm.kMarkersOnMap.length = 0;//init vm.kMarkersOnMap
@@ -1212,11 +1304,14 @@
             //inCategoryTitleArr All case
             if(inCategoryTitleArr[0] == "ALL"){
                 for(var i=0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
-                    vm.kMarkerStorageArr[i].setOnMap(map);
+                    vm.kMarkerStorageArr[i].setOnMap(map, recognizer);
                     vm.kMarkerStorageArr[i].setPolyOnMap(map);
                     //register on vm.kMarkersOnMap
                     vm.kMarkersOnMap.push(vm.kMarkerStorageArr[i]);
                 }
+            }
+            else if(inCategoryTitleArr[0] == "none"){
+                return;
             }
             //specified inCategoryTitleArr case
             else{   
@@ -1229,7 +1324,7 @@
                          var tempKMarkersArr = vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[i]].getKMarkersArr();
                          //use tempKMarkersArr[j] typeof kMarker
                          if(tempKMarkersArr[j].isOnMap() == false){
-                            tempKMarkersArr[j].setOnMap(map);
+                            tempKMarkersArr[j].setOnMap(map, recognizer);
                             tempKMarkersArr[j].setPolyOnMap(map);
                             vm.kMarkersOnMap.push(tempKMarkersArr[j]);
                          }
@@ -1298,6 +1393,9 @@
         //카테고리 버튼 관련 variable 초기화
         function initCategorySelect(){
             //configNextCat();
+            vm.selectedCategoryType = "none";
+            vm.selectedCategoryPC = {"name":"타입 미선택", "type":"none", "icon" : "icon-vector-square"};    // equal to selectedCategoryPC's none
+            vm.selectedCategoryType = "none";
             currentCategoryIdx = 0;
             currentWholeCategoryData = categoryMenu; //초기 데이터
             //console.log(vm.categoryMenu);
@@ -1332,13 +1430,14 @@
                     if(vm.currentCategoryData["type"] == "none"){
                         //없는 카테고리이므로 되돌아간다.
                         initCategorySelect();
-                        //TODO : category selected
-                        console.log("//TODO : category selected");
+                        vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["none"], true);
                     }
                     else{
-                        initCategorySelect();   
-                        //TODO : category selected  
-                        console.log("//TODO : category selected");                   
+                        initCategorySelect();
+                        vm.selectedCategoryType = answer;
+                        var categoryArrParam = [];
+                        categoryArrParam.push(vm.selectedCategoryType);
+                        vm.setMapToNMarkersWithCategoryKMarkersArrFunc(categoryArrParam, true);      
                     }
                     
                 }
@@ -1355,6 +1454,46 @@
             }
            
         }
+
+        //카테고리 버튼 눌린 경우 호출되는 함수. 
+        function categorySelectPC(answer){
+            if(vm.bIsModifyMode == false && vm.bIsCreateMode == false){
+                vm.selectedCategoryPC = answer;
+                vm.selectedCategoryType = answer.type;
+                if(answer.type == "none"){
+                    //marker delete
+                    vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["none"], true);
+                }
+                else{
+                    var categoryArrParam = [];
+                    categoryArrParam.push(answer.type);
+                    vm.setMapToNMarkersWithCategoryKMarkersArrFunc(categoryArrParam, true);
+                    //type에 따라 마커 인쇄
+                }
+            }
+        };
+
+        //카테고리 버튼에 마우스가 over OR not over 된 경우 호출되는 함수
+        function isMouseOverOnCategoryButtonPCFunc(tf){
+            if(tf == true && vm.bIsCreateMode == false && vm.bIsModifyMode == false){
+                vm.isOnCategoryPC = true;
+            }
+            else if(vm.bIsCreateMode == false && vm.bIsModifyMode == false){
+                vm.isOnCategoryPC = false;
+            }
+            
+        };
+
+        function initKMarkerAndNMarker(){    //모든 카테고리에 해당하는 data 불러와 setting.
+            var typeArr = [];
+            for(var i=0, ii=categoryMenu_PC.length; i<ii; i++){
+                typeArr.push(categoryMenu_PC[i].type);
+            }
+            var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(typeArr, false); //kMarker생성
+            vm.createNMarkerFromKMarkerStorageArrFunc(null, null, false);         //nMarker생성
+        };
+
+
 
     //drawing function
         function startModifyMode(){
@@ -1373,6 +1512,12 @@
 
         function endModifyMode(){
             //all marker click disable(peer, category marker, category button)
+            if(vm.modifiedKMarker != null){
+                selectKMarker(vm.modifiedKMarker);
+                if( vm.modifiedKMarker.getNPolygon() != null){
+                    //vm.modifiedKMarker.getNPolygon().setOptions({fillColor: '#ff0000'});
+                }
+            } 
             vm.bIsModifyMode = false;           //create mode
             vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
             vm.bCategoryButtonIsEnable = true;
@@ -1388,6 +1533,7 @@
         function startCreateMode(){
             //all marker click disable(peer, category marker, category button)
             vm.bIsCreateMode = true;            //modify mode
+            selectKMarker(null);    //selectedKMarker init
             $rootScope.$broadcast('ToSide', {
                     type : 'gotoCreate',
                 });
@@ -1463,10 +1609,17 @@
         };
 
         function drwingButtonClicked(){
-            if(vm.bIsCreateMode == false){
+            if(vm.bIsCreateMode == false && vm.bIsModifyMode != true){
                 vm.bIsCreateMode = true;
                 startCreateMode();
             }
+            else{
+                //do nothing
+            }
+        };
+        function mapApiServiceInit(){
+            //init(nMarkerTitleToKMarkerMappingObj, vm.categoriesToKMarkerMappingObj, vm.kMarkerStorageArr, vm.kMarkersOnMap, categoryMenu)
+            mapApiService.init(vm.nMarkerTitleToKMarkerMappingObj, vm.categoriesToKMarkerMappingObj, vm.kMarkerStorageArr, vm.kMarkersOnMap, categoryMenu, drawingManager);
         }
 
     //etc
@@ -1491,6 +1644,38 @@
                 //document.getElementById("drawingButton").hide();
             }
         };
+
+        //IE check
+        function IEVersionCheck() {
+             var word;
+             var version = "N/A";
+
+             var agent = navigator.userAgent.toLowerCase();
+             var name = navigator.appName;
+
+             // IE old version ( IE 10 or Lower )
+             if ( name == "Microsoft Internet Explorer" ) word = "msie ";
+
+             else {
+                 // IE 11
+                 if ( agent.search("trident") > -1 ) word = "trident/.*rv:";
+
+                 // IE 12  ( Microsoft Edge )
+                 else if ( agent.search("edge/") > -1 ) word = "edge/";
+             }
+
+             var reg = new RegExp( word + "([0-9]{1,})(\\.{0,}[0-9]{0,1})" );
+             if (  reg.exec( agent ) != null  )
+                 version = RegExp.$1 + RegExp.$2;
+             if(version == "N/A"){
+                vm.isIEBrowser = false;
+             }
+             else{
+                vm.isIEBrowser = true;
+             }
+             return version;
+        };
+
         //주어진 sidebar width로 map과 button들의 size를 조절한다.
         function updateDocumentElementSize(sideWitdh, sideOpen){
             console.log("updateDocumentcalled");
@@ -1610,6 +1795,7 @@
         else{
             univMoveToSeoul();
         }*/
+        IEVersionCheck();   //check IE
         univMoveToSuwon();  //TODO : 위의 조건분기를 통해 처리되어야 함.
         /*
         mapLocation.getLocation();  //user의 gps location
@@ -1617,13 +1803,27 @@
         */
         mobileConfig();
         initCategorySelect();   //카테고리 variable 초기화
+        mapApiServiceInit();    //mapApiService Init
         //stream
+
+        /* 단일 카테고리 가져오기
         vm.commGetDataFromServerFunc(["프린터"]);
         var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["프린터"], false);
         vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "프린터", false);
+        */
+
+        initKMarkerAndNMarker();    //모든 카테고리에 해당하는 data 불러와 setting
+        
+
+        //var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["프린터"], false); //kMarker생성
+        //vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "편의점", false);         //nMarker생성
+        //var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["교내식당"], false); //kMarker생성
+        //vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "편의점", false);         //nMarker생성
+        //var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["편의점"], false); //kMarker생성
+        //vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "편의점", false);         //nMarker생성
         //stream end
 
-        vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["프린터"], true);
+        //vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["교내식당"], true);
 
 
 /*
@@ -1665,31 +1865,35 @@
                 return(peerLocation.modified);   //갱신 버튼 누른 경우
             },
             function handleEvent(newValue, oldValue){
+                console.log(peerLocation);
                 if(peerLocation.peer == ""){
                     return; //아직 peerlist를 받지 않음.
                 }
                 peerMemSeqTrueSet = new Set();
                 //memseq에 해당하는 마커를 생성하고 checked==true인 것들만 peerMemSeqTrueSet에 포함.
-                for(var i=0; i<peerLocation.peer.active.length; i++){
-                    var tempPeer = peerLocation.peer.active[i];
-                    if(peerMemSeqSet.has(""+tempPeer.memberSeq)){   //peerMarkerList에 이미 존재하는 경우
-                        
-                    }
-                    else{   //peerMarkerList에 존재하지 않는 경우
-                        peerMarkerList[""+tempPeer.memberSeq] = new naver.maps.Marker({
-                            position: new naver.maps.LatLng(tempPeer.lat, tempPeer.lng),
-                            icon: {
-                                content: '<div><img class="avatar mh-0" src="' + tempPeer["profileImgPath"] + '" ' + 'onerror="this.src=\'assets/images/avatars/profile.jpg\'"></img>' +'<p style="text-align: center" class="mv-0">'+ tempPeer["name"] +'</p></div>',
-                                size: new naver.maps.Size(22, 35),
-                                anchor: new naver.maps.Point(11, 35)
-                            }
-                        });
-                        peerMemSeqSet.add(""+tempPeer.memberSeq);
-                    }
-                    if(tempPeer.hasOwnProperty('checked') && tempPeer.checked == true){
-                        peerMemSeqTrueSet.add(""+tempPeer.memberSeq);
+                if("active" in  peerLocation.peer){
+                    for(var i=0; i<peerLocation.peer.active.length; i++){
+                        var tempPeer = peerLocation.peer.active[i];
+                        if(peerMemSeqSet.has(""+tempPeer.memberSeq)){   //peerMarkerList에 이미 존재하는 경우
+                            
+                        }
+                        else{   //peerMarkerList에 존재하지 않는 경우
+                            peerMarkerList[""+tempPeer.memberSeq] = new naver.maps.Marker({
+                                position: new naver.maps.LatLng(tempPeer.lat, tempPeer.lng),
+                                icon: {
+                                    content: '<div><img class="avatar mh-0" src="' + tempPeer["profileImgPath"] + '" ' + 'onerror="this.src=\'assets/images/avatars/profile.jpg\'"></img>' +'<p style="text-align: center" class="mv-0">'+ tempPeer["name"] +'</p></div>',
+                                    size: new naver.maps.Size(22, 35),
+                                    anchor: new naver.maps.Point(11, 35)
+                                }
+                            });
+                            peerMemSeqSet.add(""+tempPeer.memberSeq);
+                        }
+                        if(tempPeer.hasOwnProperty('checked') && tempPeer.checked == true){
+                            peerMemSeqTrueSet.add(""+tempPeer.memberSeq);
+                        }
                     }
                 }
+                
                 
                 //get Intersection of 2 Set
                 var intersection = new Set();
@@ -1749,22 +1953,24 @@
                 if(args.type == "api"){
                     if(args.apiType == "create"){
                         if(args.result == "success"){
-                             var tempRegion = null;
-                             var indata = args.data;    //commKMarker
+                            var tempRegion = null;
+                            var inData = args.data;    //commKMarker
 
                             //inData region
                             if(inData.region != null && inData.region.length != 0){
                                 tempRegion = [];
+                                //console.log(inData.region._array);
+                                //console.log(inData.region._array.length);
                                 for(var j=0, jj = inData.region.length; j<jj; j++){
-                                    tempRegion.push(new naver.maps.LatLng(inData.region[j].lat, inData.region[j].lng));
+                                    tempRegion.push(new naver.maps.LatLng(inData.region[j]._lat, inData.region[j]._lng));
                                 }
                             }
 
                             //create nMarker
                             var tempNMarker = new naver.maps.Marker({
                                 //map: map,
-                                position: indata.center,
-                                title: indata.title,    //set title with kMarker.title(TMP)
+                                position: inData.center,
+                                title: inData.title,    //set title with kMarker.title(TMP)
                                 icon: {
                                     url: MARKER_ICON_URL,
                                     size: new naver.maps.Size(24, 37),
@@ -1785,7 +1991,7 @@
 
                             var newKMarker = new kMarker(
                                     tempNMarker, //nMarker
-                                    indata.inDataId,
+                                    inData.id,
                                     null,
                                     0.0,
                                     0.0,
@@ -1794,11 +2000,11 @@
                                     0,
                                     tempRegion
                                 );
-                            newKMarker.setTagsArr(indata.tagsArr);
+                            newKMarker.setTagsArr(inData.tagsArr);
 
                             //create nPolygon
                             //path가 있는 경우
-                            if(inData.region.length != 0){
+                            if(inData.region != null && inData.region.length != 0){
                                 var tempNPolygon = new naver.maps.Polygon({
                                     //map: map,
                                     paths: tempRegion,
@@ -1810,13 +2016,14 @@
                                 });
                                 newKMarker.setNPolygon(tempNPolygon);
                             }
-
-                            vm.nMarkerTitleToKMarkerMappingObj[indata.title] = newKMarker;   //nMarkerTitleToKMarkerMappingObj에 등록
+                            
+                            vm.nMarkerTitleToKMarkerMappingObj[inData.title] = newKMarker;   //nMarkerTitleToKMarkerMappingObj에 등록
 
                             //각각의 kMarker에 대해 vm.categoriesToKMarkerMappingObj에 등록.
                             var tempCategoriesForNewMarker = inData.categoriesArr; //newKMarker.getCategoriesArr();
+                            //console.log(inData);
                             for(var j=0, jj=tempCategoriesForNewMarker.length; j<jj; j++){  //comm을 통해 얻은 tempMarkerData.markerCategory가 array라고 가정 
-                                
+                                console.log(1);
                                 //kMarker에 해당하는 모든 categories에 대해 vm.categoriesToKMarkerMappingObj에 등록한다.
                                 if(!vm.categoriesToKMarkerMappingObj.hasOwnProperty(tempCategoriesForNewMarker[j])){             
                                     //해당 카테고리가 categoriesToKMarkerMappingObj의 key로 존재하지 않는 경우
@@ -1828,12 +2035,15 @@
                             vm.kMarkerStorageArr.push(newKMarker);  //kMarker storage에 추가
 
                             drawingManagerClear();
-                            newKMarker.setOnMap();
-                            newKMarker.setPolyOnMap();
+                            newKMarker.setOnMap(map, recognizer);
+                            newKMarker.setPolyOnMap(map);
                             vm.kMarkersOnMap.push(newKMarker);
-                            
 
                             startSideBarWithKMarker(newKMarker);    //open side bar with new marker
+                            endCreateMode();    //enable clickable
+
+                            //selectKMarker(newKMarker);
+
                            /*
                             disable -> enable
                             */
@@ -1844,17 +2054,30 @@
                     }
                     else if(args.apiType == "modify"){
                         if(args.result == "success"){
-                            var indata = args.data;    //commKMarker
+                            var inData = args.data;    //commKMarker
                             var originKMarker = args.originData;
+                            var tempRegion = null;
 
-                            if(indata.title != originKMarker.getTitle()){
-                                vm.nMarkerTitleToKMarkerMappingObj[indata.title] = originKMarker;
+                            if(inData.title != originKMarker.getTitle()){
+                                vm.nMarkerTitleToKMarkerMappingObj[inData.title] = originKMarker;
                                 delete vm.nMarkerTitleToKMarkerMappingObj[originKMarker.getTitle()]
                             }
-                            originKMarker.setTitle(indata.title);
-                            originKMarker.setPositionWithPosition(indata.center);
-                            originKMarker.setTagsArr(indata.tagsArr);
-                            originKMarker.setRegion(indata.region);
+
+                            //inData region
+                            if(inData.region != null && inData.region.length != 0){
+                                tempRegion = [];
+                                //console.log(inData.region._array);
+                                //console.log(inData.region._array.length);
+                                for(var j=0, jj = inData.region.length; j<jj; j++){
+                                    tempRegion.push(new naver.maps.LatLng(inData.region[j]._lat, inData.region[j]._lng));
+                                }
+                            }
+
+
+                            originKMarker.setTitle(inData.title);
+                            originKMarker.setPositionWithLatLngNew(inData.center._lat, inData.center._lng);
+                            originKMarker.setTagsArr(inData.tagsArr);
+                            originKMarker.setRegion(inData.region);
                             originKMarker.unsetPolyOnMap();
                             if(inData.region != null && inData.region.length != 0){
                                 var tempNPolygon = new naver.maps.Polygon({
@@ -1872,7 +2095,7 @@
                             //mapping 해제
                             var tempKMarkerCategoriesArr = originKMarker.getCategoriesArr();
                             for(var i = 0, ii = tempKMarkerCategoriesArr.length; i<ii; i++){
-                                var tempKMarkerInnerObjArr = categoriesToKMarkerMappingObj[tempKMarkerCategoriesArr[i]].kMarker;
+                                var tempKMarkerInnerObjArr = vm.categoriesToKMarkerMappingObj[tempKMarkerCategoriesArr[i]].getKMarkersArr();
                                 for(var j =0 , jj = tempKMarkerInnerObjArr.length; j<jj; j++){
                                     if(tempKMarkerInnerObjArr[j] == originKMarker){
                                     //if(tempKMarkerInnerObjArr[j].getTitle() == kMarkerData.getTitle())
@@ -1883,20 +2106,18 @@
                             }                       
                             
                             //mapping register
-                            originKMarker.setCategoriesArr(indata.categoriesArr);
+                            originKMarker.setCategoriesArr(inData.categoriesArr);
                             for(var i = 0, ii = inData.categoriesArr.length; i<ii; i++){
                                 //service.categoriesToKMarkerMappingObj[inData.categoriesArr[i]] == innerMappingObj
-                                categoriesToKMarkerMappingObj[inData.categoriesArr[i]].getKMarkersArr().push(originKMarker);;
+                                vm.categoriesToKMarkerMappingObj[inData.categoriesArr[i]].getKMarkersArr().push(originKMarker);;
                             }
                             
-                            originKMarker.setPolyOnMap();
+                            originKMarker.setPolyOnMap(map);
 
-                            /*
-                            disable -> enable
-                            close sidebar & open new sidebar
-                            */
                             drawingManagerClear();
 
+                            startSideBarWithKMarker(originKMarker);    //open side bar with new marker
+                            /*
                             for(var i=0; i < sideMapCommService.kMarkerResolvedArr.length; i++){
                                 if(sideMapCommService.kMarkerResolvedArr == originKMarker){
                                     //sidebar arr를 변경하지 않고 있는 상태에서 해당 index로 open
@@ -1908,6 +2129,8 @@
                                     break;
                                 }
                             }
+                            */
+                            endModifyMode();
                             
                         }
                         else if(args.result == "--"){
@@ -1917,12 +2140,11 @@
                     }
                     else if(args.apiType == "delete"){
                         if(args.result=="success"){
-                            var indata = args.data;    //commKMarker
                             var originKMarker = args.originData;
+                            recognizer.remove(originKMarker.getNMarker());
                             
                             delete vm.nMarkerTitleToKMarkerMappingObj[originKMarker.getTitle()];
-                            
-                            originKMarker.unsetOnMap();
+                            originKMarker.unsetOnMap(recognizer);
                             originKMarker.unsetPolyOnMap();
                             //vm.kMarkersOnMap delete
                             for(var i = 0; i<vm.kMarkersOnMap.length; i++){
@@ -1935,7 +2157,7 @@
                             //mapping 해제
                             var tempKMarkerCategoriesArr = originKMarker.getCategoriesArr();
                             for(var i = 0, ii = tempKMarkerCategoriesArr.length; i<ii; i++){
-                                var tempKMarkerInnerObjArr = categoriesToKMarkerMappingObj[tempKMarkerCategoriesArr[i]].kMarker;
+                                var tempKMarkerInnerObjArr = vm.categoriesToKMarkerMappingObj[tempKMarkerCategoriesArr[i]].getKMarkersArr();
                                 for(var j =0 , jj = tempKMarkerInnerObjArr.length; j<jj; j++){
                                     if(tempKMarkerInnerObjArr[j] == originKMarker){
                                     //if(tempKMarkerInnerObjArr[j].getTitle() == kMarkerData.getTitle())
@@ -1944,6 +2166,15 @@
                                     }
                                 }
                             }
+
+                            $rootScope.$broadcast('ToSide', {
+                                type : 'api',
+                                apiType : 'delete',
+                                result : 'success',
+                                data : originKMarker
+                            });
+                            drawingManagerClear();
+                            endModifyMode();
                             /*
                             disable -> enable
                             */
@@ -1968,7 +2199,7 @@
                 else if(args.type == "cancelModify"){
                     //remote all drawing
                     drawingManagerClear();
-                    endCreateMode();
+                    endModifyMode();
                 }
                 else if(args.type == "windowResize"){
                     var sideWitdh = args.arg;
@@ -1980,31 +2211,36 @@
                 else if(args.type == "gotoModify"){
                     //modify start. add overlay to drawingManager
                     //marker, polygon positoin만 사용.
-                    var modifiedKMarker = args.kMarker;
+                    startModifyMode();
+                    vm.modifiedKMarker = args.kMarker;
+                    
                     //marker
                     var tempMarker = new naver.maps.Marker({
                         //map: map,
-                        position: modifiedKMarker.getNMarker().getPosition().clone(),
+                        position: vm.modifiedKMarker.getNMarker().getPosition().clone(),
                         title: "변경중인 마커",
                         icon: {
-                            url: MARKER_ICON_URL,
+                            url: MARKER_MODIFY_ICON_URL,
                             size: new naver.maps.Size(24, 37),
-                            anchor: new naver.maps.Point(12, 37),
-                            origin: new naver.maps.Point(MARKER_SPRITE_POSITION[modifiedKMarker.getFirstCategoryTitle()][0], MARKER_SPRITE_POSITION[modifiedKMarker.getFirstCategoryTitle()][1])
+                            anchor: new naver.maps.Point(11, 37),
+                            origin: new naver.maps.Point(0, 0)
                         },
                         shape: MARKER_SPRITE_SHAPE,
-                        zIndex: 20
+                        draggable:true,
+                        zIndex: 110
                     });
                     drawingManager.addDrawing(tempMarker, 6);
                     //polygon
 
                     //make path
                     var tempPolyPath = [];
-                    var tempOriginPath = modifiedKMarker.getNPolygon().getPath();
-                    for(var i=0, ii=tempOriginPath.length; i<ii; i++){
-                        tempPolyPath.push(new naver.maps.LatLng(tempOriginPath._array[i]._lat, tempOriginPath._array[i]._lng));
-                    }
-                    if(modifiedKMarker.getNPolygon() != null){
+                    if(vm.modifiedKMarker.getNPolygon() != null && vm.modifiedKMarker.getNPolygon() != undefined){
+                        //originNPolygon 색 변경
+                        vm.modifiedKMarker.getNPolygon().setOptions({fillColor: '#112244'});
+                        var tempOriginPath = vm.modifiedKMarker.getNPolygon().getPath();
+                        for(var i=0, ii=tempOriginPath.length; i<ii; i++){
+                            tempPolyPath.push(new naver.maps.LatLng(tempOriginPath._array[i]._lat, tempOriginPath._array[i]._lng));
+                        }
                         var tempPoly = new naver.maps.Polygon({
                             //map: map,
                             paths: tempPolyPath,
@@ -2017,7 +2253,10 @@
                         drawingManager.addDrawing(tempPoly, 5);
                     }
                 }
-        }
+                else if(args.type == "selectKMarker"){
+                    selectKMarker(args.kMarker);
+                }
+            }
         );
 
         

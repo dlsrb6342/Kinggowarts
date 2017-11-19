@@ -26,6 +26,7 @@
 
         //service function
         service.notifyDOMChangeForTutorialMark = _notifyDOMChangeForTutorialMark;
+        service.getPosition = getPosition;
 
         function defaultConfig(){
             this.attachTo = angular.element(document.body);
@@ -51,13 +52,13 @@
         }
         
 
-        function tutorialMarkObj(id, left, top, paneLeft, panelTop, markerImageHeight, markerImageWidth, config, ctrl, tempUrl, index, imgSrc){ 
+        function tutorialMarkObj(id, additionalId, incLeft, incTop, paneLeft, panelTop, markerImageHeight, markerImageWidth, config, ctrl, tempUrl, index, imgSrc, bMarker, opacity){ 
             this.id = id;   //bind id : 어느 elem에 tutorial mark를 bind 할지
-            this.markerId = id + "-tutorialMark";     //main.html에서 mark의 id
+            this.markerId = id + additionalId;     //main.html에서 mark의 id
             this.left = 0;      //튜토리얼 마커 position : target element의 position에 따라 동적으로 설정됨. _notifyDOMChangeForTutorialMark function
             this.top = 0;       
-            this.incLeft = left;    //real mark postion = target element position + incLeft || incTop
-            this.incTop = top;
+            this.incLeft = incLeft;    //real mark postion = target element position + incLeft || incTop
+            this.incTop = incTop;
             this.incPanelLeft = paneLeft;   //realPanelPosition = target element position + inc
             this.incPanelTop = panelTop;
             this.config = config;               //panel config(default)
@@ -69,8 +70,9 @@
             this.bShowNow = false;          //T/F값에 따라 마커를 표시, 삭제하는 animation 동작.
             this.bMarkerNgIf = false;       //makrer image ng-if에 바인딩되는 boolean. 삭제 에니메이션 뒤 또는 target element 발견 뒤에 변경됨.
             this.config.locals.tutorialMarkServiceArrIdx = index;   //해당 marker의 index in Array
-            this.imgSrc = imgSrc;                                   //src
-            this.ngStyle = {'left' : left+'px', 'top' : top+'px', 'max-height' : markerImageHeight, 'max-width' : markerImageWidth, 'opacity' : 0.0};   //marker image dynamic css style
+            this.imgSrc = imgSrc;                                   //src. If bMarker == false then use this as text.
+            this.ngStyle = {'position':'absolute', 'left' : incLeft+'px', 'top' : incTop+'px', 'max-height' : markerImageHeight, 'max-width' : markerImageWidth, 'opacity' : opacity};   //marker image dynamic css style
+            this.bMarker = bMarker;
         };
 
     //panel controllers
@@ -107,22 +109,59 @@
     //main
 
         //add new tutorial target id
-        service.tutorialMarkObjList.push(new tutorialMarkObj('id-map-sidemap-guide-buttom', 120, -10, 50, -200, '60px', '60px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/sideGuideButtonTutorial.html', service.tutorialMarkObjList.length, service.markerImagePath));
-        service.tutorialMarkObjList.push(new tutorialMarkObj('drawingButton', 12, -30, 50, -300,'60px', '60px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, service.markerImagePath));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('id-map-sidemap-guide-buttom', "-tutorialMark", 120, -10, 50, -200, '60px', '60px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/sideGuideButtonTutorial.html', service.tutorialMarkObjList.length, service.markerImagePath, true, 0.0));
+        //service.tutorialMarkObjList.push(new tutorialMarkObj('drawingButton', 12, -30, 50, -300,'60px', '60px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, service.markerImagePath, true));
         
+        //button tutorial line & button
+
+        service.tutorialMarkObjList.push(new tutorialMarkObj('drawingButton', "-line", 20, -60, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('drawingButton', "-button", -30, -100, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "지역추가 도구", false, 1.0));
+        
+        service.tutorialMarkObjList.push(new tutorialMarkObj('user-menu-drop-down', "-line", 30, 50, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('user-menu-drop-down', "-button", -20, 140, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "메인메뉴", false, 1.0));
+        
+        service.tutorialMarkObjList.push(new tutorialMarkObj('user-menu-right-toolbar', "-line", 30, 50, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('user-menu-right-toolbar', "-button", -20, 140, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "계정버튼", false, 1.0));
+        
+        service.tutorialMarkObjList.push(new tutorialMarkObj('search-bar-exp', "-line", 28, 50, 50, -300,'60px', '60px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('search-bar-exp', "-button", -20, 100, 50, -300,'60px', '60px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "검색", false, 1.0));
+         
+        service.tutorialMarkObjList.push(new tutorialMarkObj('quick-panel-toggle', "-line",  28, 50, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('quick-panel-toggle', "-button", -20, 140, 50, -300,'60px', '60px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "패널", false, 1.0));
+
+        service.tutorialMarkObjList.push(new tutorialMarkObj('categoryButtonPCId', "-line", 40, 25, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('categoryButtonPCId', "-button", -15, 120, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "카테고리버튼", false, 1.0));
+        
+        service.tutorialMarkObjList.push(new tutorialMarkObj('univ-button', "-line", 30, 25, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('univ-button', "-button", -15, 115, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "캠퍼스선택", false, 1.0));
+        
+        service.tutorialMarkObjList.push(new tutorialMarkObj('categoryButtonId', "-line", 20, -80, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('categoryButtonId', "-button", -40, -120, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "카테고리버튼", false, 1.0));
+        
+        service.tutorialMarkObjList.push(new tutorialMarkObj('userLocationButton', "-line", 20, -75, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('userLocationButton', "-button", -40, -105, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "내 위치 확인", false, 1.0));
+        
+        service.tutorialMarkObjList.push(new tutorialMarkObj('dragBar', "-line", -50, 0, 50, -300,'50px', '50px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "", false, 1.0));
+        service.tutorialMarkObjList.push(new tutorialMarkObj('dragBar', "-button", -140, -20, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "드래그바", false, 1.0));
+        
+        //service.tutorialMarkObjList.push(new tutorialMarkObj('drawingButton', "-line", 12, -30, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "textx", false, 1.0));
+        //service.tutorialMarkObjList.push(new tutorialMarkObj('drawingButton', "-button", 12, -30, 50, -300,'100px', '100px',new defaultConfig(), PanelDialogCtrl, 'app/main/tutorialHtml/drawingButtonTutorial.html', service.tutorialMarkObjList.length, "textx", false, 1.0));
+        
+
         //check cookie
         for(var i=0, ii=service.tutorialMarkObjList.length; i<ii; i++){
-            if(checkCookie(service.tutorialMarkObjList[i].markerId) == true){    //쿠키 존재시
+            if(service.tutorialMarkObjList[i].bMarker){ //튜토리얼 마커만 쿠키 확인
+                if(checkCookie(service.tutorialMarkObjList[i].markerId) == true){    //쿠키 존재시
                 service.tutorialMarkObjList[i].bShowWithCookie = false; //표시x
+                }
+                else{
+                    service.tutorialMarkObjList[i].bShowWithCookie = true;  //쿠키 없을시 표시
+                }
+                //service.tutorialMarkObjList[i].bShowWithCookie = true;  //todo : delete
             }
-            else{
-                service.tutorialMarkObjList[i].bShowWithCookie = true;  //쿠키 없을시 표시
-            }
-            //service.tutorialMarkObjList[i].bShowWithCookie = true;  //todo : delete
         }
 
     //functions
-
         function getPosition(el) {
             var xPos = 0;
             var yPos = 0;
@@ -148,16 +187,15 @@
             };
         }
 
-        
+        //주기적으로 튜토리얼 마커에 해당하는 DOM check
         function _notifyDOMChangeForTutorialMark(){
             for(var i=0, ii=service.tutorialMarkObjList.length; i<ii; i++){
-                if(service.tutorialMarkObjList[i].bShowWithCookie == true){ //쿠키 상태 : 표시해야 하는 mark들만 검색한다.
+                if(service.tutorialMarkObjList[i].bShowWithCookie == true && service.tutorialMarkObjList[i].bMarker){ //튜토리얼 마커만 쿠키 확인){ //쿠키 상태 : 표시해야 하는 mark들만 검색한다.
                     var tempElem = document.getElementById(service.tutorialMarkObjList[i].id);
                     if(tempElem == null){ //튜토리얼 마크에 해당되는 element를 못찾은 경우
                         service.tutorialMarkObjList[i].bShowNow = false;    //mark 표시 off
                     }
                     else{
-                        //TODO : use getPosition and (modify position & style of mark)
                         var posObj = getPosition(tempElem);
                         service.tutorialMarkObjList[i].left = posObj.x + service.tutorialMarkObjList[i].incLeft;
                         service.tutorialMarkObjList[i].top = posObj.y + service.tutorialMarkObjList[i].incTop;
@@ -170,6 +208,8 @@
                 }
             }
         }
+
+    
         //check DOM change with interval
         $interval(_notifyDOMChangeForTutorialMark, 200);
 

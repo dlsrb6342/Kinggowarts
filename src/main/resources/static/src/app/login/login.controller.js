@@ -34,11 +34,13 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         /* Data */
         var vm = this;
 
+        /* 초기화 */
         vm.isdisabled = false;
         vm.bgf = true;
         vm.isM = false;
         vm.surly = 'assets/images/backgrounds/skku_y.jpg';
         vm.surlm = 'assets/images/backgrounds/skku_m2.JPG';
+        vm.loginformclass = "md-whiteframe-8dp"
 
         /* 초기화 */
         $rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
@@ -50,6 +52,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         if($rootScope.isMobile == true)
         {
             vm.isM = true;
+            vm.loginformclass = ""
         }
 
         /* Methods */
@@ -90,15 +93,18 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                         headers:{'Authorization' : 'Basic ' + btoa(nickname+":"+password)}
                     }).then(function successCallback(response)
                     {
+                        console.log(response);
                         $state.go('app.main.map');
 
                     }, function errorCallback(response) 
                     {
+                        console.log(response);
                         vm.isdisabled = false;
                         alert('위키 로그인에 실패하였습니다.');
                     });
                     
                 }, function errorCallback(response) {
+                    console.log(response);
                     vm.isdisabled = false;
                     alert('아이디나 비밀번호를 확인해주세요.');
                 });

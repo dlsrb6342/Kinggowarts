@@ -175,7 +175,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 if(vm.request[per].profileImgPath == "") vm.request[per].profileImgPath = vm.defaultimg;
                 else vm.request[per].profileImgPath = "./profileimg/"+ vm.request[per].profileImgPath;
             }
-            peerLocation.peer = vm.peerlist.peer;     
+            peerLocation.peer = vm.peerlist.peer;
+            peerLocation.modified += 1;
         }
         
         vm.peerInit();
@@ -192,6 +193,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
               peer.checked = true;
             }
             peerLocation.peer = vm.peerlist.peer;
+            peerLocation.modified += 1;
         };
 
         vm.exists = function (item, list) {
@@ -219,6 +221,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
                 vm.peerlist.peer[vm.peerlist.currentlocation][value].checked = false;
             }
             peerLocation.peer = vm.peer;
+            peerLocation.modified += 1;
         };
 
         //피어를 삭제하는 함수

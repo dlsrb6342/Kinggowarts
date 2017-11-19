@@ -26,6 +26,8 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
             'app.login', // login module
 
+            'app.findpw', // find password module
+
             'app.register', // register module
             
             'swxSessionStorage' // 세션 스토리지 모듈

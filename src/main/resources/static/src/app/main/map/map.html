@@ -1,7 +1,8 @@
 <div id="map-side" ui-view="map-side" style="position:absolute;top:0px;left:0px;width:30%;height:100%;"></div>
 
 <div id="nmap" style="position:absolute;top:0px;left:0%;width:100%;height:100%;">
-	<div id="window-guide" ng-show="vm.ngShowWindowGuide" style="display: inline-block;position:relative; z-index:10001;position:relative;top:0px;left:56px; margin: 20px 0px 20px 0px">
+
+	<div id="window-guide" ng-show="vm.ngShowWindowGuide" style="display: inline-block;position:absolute; z-index:10002;top:0px;left:56px; margin: 20px 0px 20px 0px">
 		<div id="white-box" style="display: inline-block;border: 1px solid #669999; border-radius:3px;padding:10px;background:#f0f5f5">
 			<b>마커, 폴리곤 추가</b><br>
 			좌하단 버튼을 누른뒤 마커 또는 폴리곤을 선택합니다.<br>
@@ -16,9 +17,46 @@
 			마커/폴리곤을 우클릭하여 삭제 버튼을 누릅니다.
 		</div>
 	</div>
+
+
+	<div id="categoryButtonPCId" style="display: inline-block;position:absolute;top:10px;left:56px;z-index:10001;"  ng-mouseover="vm.isMouseOverOnCategoryButtonPC(true)" ng-mouseleave="vm.isMouseOverOnCategoryButtonPC(false)">
+		<!-- selected category vm.selectedCategoryType-->
+		<div>
+			<md-button class="md-raised" ng-if="vm.selectedCategoryPC == null" ng-click="">
+				<!-- <md-icon md-font-icon="{}}" aria-label="menu"></md-icon> -->
+				not selected yet
+			</md-button>
+			<md-button class="md-raised" ng-if="vm.selectedCategoryPC != null" ng-click="vm.categorySelectPC(vm.selectedCategoryPC)">
+				<md-icon md-font-icon="{{vm.selectedCategoryPC.icon}}" aria-label="menu"></md-icon>
+				{{vm.selectedCategoryPC.name}}
+			</md-button>
+		</div>
+
+		<!-- list category -->
+		<div ng-if="vm.isOnCategoryPC == true">
+			<ul style="-webkit-column-gap: 0px; /* Chrome, Safari, Opera */
+    -moz-column-gap: 0px; /* Firefox */
+    column-gap: 0px;column-count:2;-webkit-column-count:2;-moz-column-count:2;margin:0px;padding:0px;list-style-type: disc;
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 0px;list-style-type: none;">
+				<div ng-repeat="item in vm.categoryMenu_PC">
+					<li style="padding: 0px; margin:0px;">
+						<md-button style="min-width: 104px; padding: 0px; margin:0px;" class="md-raised" ng-click="vm.categorySelectPC(item)">
+							<md-icon md-font-icon="{{item.icon}}" aria-label="menu"></md-icon>
+							{{item.name}}
+						</md-button>
+					</li>
+				</div>
+			</ul>
+		</div>
+	</div>
+
 </div>
 
-<div id="univ-button-div" style="position:absolute;top:70px;right:0px;">
+<div id="univ-button-div" style="position:absolute;top:10px;right:0px;">
 	<md-button id="univ-button" class="md-raised" ng-click="vm.univButtonClicked()">{{vm.univName}}</md-button>
 </div>
 

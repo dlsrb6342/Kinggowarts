@@ -7,10 +7,10 @@
         "lng": 126.9753990,
         "lat": 37.2939170
       },
-      "name": "공대식당",
+      "name": "공대 식당",
       "markerCategory": [{
         "id": 3,
-        "name": "프린터"
+        "name": "교내식당"
       }],
       "floor" : 1,
       "timeStamp" : 1,

@@ -8,30 +8,19 @@
 
     /** @ngInject */
     function MapSideController(
-        sideMapCommService,
+        sideMapCommService, mapApiService,
         /*nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj, kMarkerStorageArr, kMarkersOnMap, CategoryMenuData, kMarkerData,*/ 
         $http, $httpParamSerializerJQLike, $mdDialog, $sessionStorage, $sce, $state, $rootScope, $scope, $timeout)
     {
-    	
-/*
-        //kMarker의 categoriesArr element들.
-        function kMarkerCategoryObj(id, title){ 
-            this.id = id;
-            this.title = title;
+    	//object
+        function commKMarker(id, title, center, categoriesArr, region, tagsArr){
+            this.id = id;           //id
+            this.title = title;       //title TMP
+            this.center = center;
+            this.categoriesArr = categoriesArr;   //marker's category
+            this.tagsArr = tagsArr;
+            this.region = region;
         };
-        kMarkerCategoryObj.prototype.getId = function() {
-            return this.id;
-        };
-        kMarkerCategoryObj.prototype.getTitle = function(){
-            return this.title;
-        }
-        kMarkerCategoryObj.prototype.setId = function(id) {
-            this.id = id
-        };
-        kMarkerCategoryObj.prototype.setTitle = function(title){
-            this.title = title;
-        };
-*/
 
     	var vm = this;
     	
@@ -54,10 +43,7 @@
                     {"name":"카페", "type":"카페", "icon" : "icon-martini"}
                 ]
             },
-            
-            
-                    {"name":"구역", "type":"regions", "icon" : "icon-vector-square"},
-                    {"name":"이벤트", "type":"customevent", "icon" : "icon-radio-tower"}
+            {"name":"교내시설", "type":"교내시설", "icon" : "icon-vector-square"}
            
         ];
 
@@ -114,37 +100,36 @@
                 });
     		}
     		else if(answer == 'create'){
-    			if(kMarkerCategoriesArr.length == 0){
+    			if(vm.selectedCategories.length == 0){
     				alert('카테고리가 1개 이상 필요합니다.');
     			}
     			else{
     				//comm을 위한 commKMarker
     				var forCommKMarker = new commKMarker(
     					0, //id
-    					vm.kMarkerTitle,		//changed
+    					JSON.parse(JSON.stringify(vm.kMarkerTitle)),		//changed
     					null,  //center
-    					vm.selectedCategories,	//not categoryObj
-    					vm.tagsCreate,	//tagsArr	//changed
-    					null	//region
+    					JSON.parse(JSON.stringify(vm.selectedCategories)),	//not categoryObj
+                        null,    //region
+    					JSON.parse(JSON.stringify(vm.tagsCreate))	//tagsArr	//changed
     				);
     				mapApiService.postMarkerDetail(forCommKMarker);
                     //disableAll();
     			}
     		}
             else if(answer == 'modify'){
-                if(kMarkerCategoriesArr.length == 0){
+                if(vm.selectedCategories.length == 0){
                     alert('카테고리가 1개 이상 필요합니다.');
                 }
                 else{
                     //comm을 위한 commKMarker
                     var forCommKMarker = new commKMarker(
-                        null,   //nMarker
-                        0, //id
-                        vm.kMarkerTitle,        //changed
-                        null,
-                        vm.selectedCategories,  //not categoryObj
-                        vm.tagsModify,   //tagsArr   //changed
-                        null    //region
+                        vm.resolvedKMarkerDataArr[vm.tabIndex].id, //id
+                        JSON.parse(JSON.stringify(vm.kMarkerTitle)),        //changed
+                        null,       //center
+                        JSON.parse(JSON.stringify(vm.selectedCategories)),  //not categoryObj
+                        null,       //region
+                        JSON.parse(JSON.stringify(vm.tagsModify))   //tagsArr   //changed
                     );
                     //forCommKMarker.setTimeStampAuto();
                     mapApiService.putMarkerDetail(forCommKMarker, vm.resolvedKMarkerDataArr[vm.tabIndex]);
@@ -153,7 +138,7 @@
                 }
             }
     		else if(answer == 'delete'){
-    			deleteMarkerDetail(vm.resolvedKMarkerDataArr[vm.tabIndex]);
+    			mapApiService.deleteMarkerDetail(vm.resolvedKMarkerDataArr[vm.tabIndex]);
                 //disableAll();		                
     		}
     		else if(answer == 'return'){
@@ -163,6 +148,10 @@
                     $rootScope.$broadcast('ToMain', {
                         type : 'cancelModify',
                     });
+                    $rootScope.$broadcast('ToMain', {
+                    type : 'selectKMarker',
+                    kMarker : null
+                });
                     closeSide();
                 }
                 else if(vm.bCreateMode == true){
@@ -170,12 +159,31 @@
                     $rootScope.$broadcast('ToMain', {
                         type : 'cancelCreate',
                     });
+                    $rootScope.$broadcast('ToMain', {
+                    type : 'selectKMarker',
+                    kMarker : null
+                });
                     closeSide();
                 }
     		}
             else if(answer == 'cancel'){
                 //vm.bSideOpen = false;
                 closeSide();
+                $rootScope.$broadcast('ToMain', {
+                    type : 'selectKMarker',
+                    kMarker : null
+                });
+            }
+            else if(answer == 'backSpace'){
+                if(vm.bModifyMode == true){
+                    vm.bModifyMode = false;
+                    $rootScope.$broadcast('ToMain', {
+                        type : 'cancelModify',
+                    });
+                }
+                vm.bCreateMode = false;
+                refreshMofifyInfoWithTabIndex();
+                //closeSide();
             }
     		
     	};
@@ -251,11 +259,31 @@
 	    	vm.wikiPath = '../xwiki/bin/view/XWiki/' + vm.kMarkerTitle;
             document.getElementById('myIFrame').src = vm.wikiPath;
     		vm.bModifyMode = false;
+
+            //선택된 kMarker 전달 //set selectedKMarker in map.constroller
+            $rootScope.$broadcast('ToMain', {
+                type : 'selectKMarker',
+                kMarker : vm.resolvedKMarkerDataArr[idx]
+            });
       	};
+
+        function refreshMofifyInfoWithTabIndex(){
+            vm.kMarkerTitle = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr[vm.tabIndex].getTitle()));    //title
+            kMarkerCategoriesArr = JSON.parse(JSON.stringify(vm.resolvedKMarkerDataArr[vm.tabIndex].getCategoriesArr()));
+            vm.selectedCategories.length = 0;   //표시할 seleceted categories
+            vm.tags = angular.copy(vm.resolvedKMarkerDataArr[vm.tabIndex].getTagsArr());
+            vm.tagsModify = angular.copy(vm.resolvedKMarkerDataArr[vm.tabIndex].getTagsArr());
+            vm.tagsCreate = [];
+            //카테고리의 title만 추가.
+            for(var i=0 ,ii = kMarkerCategoriesArr.length; i<ii; i++){
+                //vm.selectedCategories.push(kMarkerCategoriesArr[i].title);
+                vm.selectedCategories.push(kMarkerCategoriesArr[i]);
+            }
+        };
 
         //새로운 마커생성을 위한 init
         function initWithCreate(){
-            vm.kMarkerTitle = "이름없음";    //title
+            vm.kMarkerTitle = "";    //title
             kMarkerCategoriesArr = [];
             vm.selectedCategories.length = 0;   //표시할 seleceted categories
             vm.tagsCreate = [];
@@ -283,6 +311,8 @@
         //사이드 wiki 부분을 엽니다. $RootScope.$on ToSide function
         function openSide(event, args){
             if(args.type == "bOpen"){
+                vm.bModifyMode = false;
+                vm.bCreateMode = false;
                 updateSideMapWidthSize();   //side map width 조절
                 updateIFrameWidthSize();    //iframe 조절
                 updateIFrameHeightSize();
@@ -292,7 +322,7 @@
                     arg : sideBarWidthNum
                 });
 
-                $scope.$apply(function() {
+                //$scope.$apply(function() {
                     vm.init();  //init all
                     vm.resolvedKMarkerDataArrTitles.length = 0;
                     vm.resolvedKMarkerDataArr = sideMapCommService.kMarkerResolvedArr;
@@ -319,11 +349,13 @@
                     vm.bSideOpen = args.bOpen;
 
                     
-                });
+                //});
                 
             }
             //단순 재오픈
             else if(args.type == 'reOpen'){
+                vm.bModifyMode = false;
+                vm.bCreateMode = false;
                 updateSideMapWidthSize();   //side map width 조절
                 updateIFrameWidthSize();    //iframe 조절
                 updateIFrameHeightSize();
@@ -348,7 +380,7 @@
             else if(args.type == 'api'){
                 if(args.apiType == 'create'){
                     if(args.result == 'success'){
-                        //do nothing
+                        //open new marker
                     }
                     else if(args.result == 'fail'){
                     }   
@@ -364,20 +396,54 @@
                 else if(args.apiType == 'delete'){
                     if(args.result == 'success'){
                         var deletedKMarker = args.data;   //deleted
+                        
                         //vm.resolvedKMarkerDataArr[vm.tabIndex]를 delete.
-                        if(vm.resolvedKMarkerDataArr.length == 1){
-                            //close
-                        }
                         for(var i=0; i< vm.resolvedKMarkerDataArr.length; i++){
                             if(vm.resolvedKMarkerDataArr[i] == deletedKMarker){
                                 vm.resolvedKMarkerDataArr.splice(i, 1);
+                                vm.resolvedKMarkerDataArrTitles.splice(i, 1);
                             } 
                         }
+                        console.log(vm.resolvedKMarkerDataArr);
                         if(vm.resolvedKMarkerDataArr.length != 0){
-                            initWithIdx(0);
+                            //vm.init();
+                            //vm.initWithIdx(0);
+                            vm.tabIndex = 0;
+                        }
+                        else{
+                            closeSide();
                         }
                         vm.bModifyMode = false;
                         vm.bCreateMode = false;
+                        //vm.bSideOpen = true;
+
+
+
+/*
+                        vm.init();  //init all
+                        vm.resolvedKMarkerDataArrTitles.length = 0;
+                        vm.resolvedKMarkerDataArr = sideMapCommService.kMarkerResolvedArr;
+                        
+                        if(vm.resolvedKMarkerDataArr.length == 0){
+                            vm.bSideOpen = false;
+                            return;
+                        }
+                        //vm.tabIndex = 0;
+                        if(vm.resolvedKMarkerDataArr.length != 0){
+                            for(var i = 0, ii = vm.resolvedKMarkerDataArr.length; i<ii; i++){
+                                vm.resolvedKMarkerDataArrTitles.push(vm.resolvedKMarkerDataArr[i].getTitle());
+                                //console.log(vm.resolvedKMarkerDataArr[i].getTitle());
+                            }
+                        }
+                        if(args.hasOwnProperty('idx')){
+                            vm.initWithIdx(args.idx);
+                        }
+                        else{
+                            vm.initWithIdx(0);  //init idx
+                        }
+                        vm.bSideOpen = args.bOpen;
+                        */
+
                     }
                     else if(args.result == 'dup'){
 

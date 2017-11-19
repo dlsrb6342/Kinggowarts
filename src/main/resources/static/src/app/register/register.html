@@ -1,6 +1,7 @@
     
 <div id="register" layout="row" layout-align="end end">
-   
+    <img ng-src = "{{vm.surly}}" class = "bgimg" ms-fade ng-show ="vm.bgf" ng-if = "vm.isM == false">
+    <img ng-src = "{{vm.surlm}}" class = "bgimg" ms-fade ng-hide ="vm.bgf" ng-if = "vm.isM == false">
     <div id="register-form-wrapper" class="flex-scrollable md-whiteframe-1dp" layout="column" flex ms-scroll>
         <div id="register-form">
             <div class="title"><h1>Create Account</h1></div>
@@ -80,6 +81,42 @@
                         </div>
                     </div>
                 </md-input-container>
+
+                <div layout="row" flex>
+                    <md-input-container class="md-block" md-no-float flex="50">
+                        <label>캠퍼스</label>
+                        <md-select name="type" ng-model="vm.form.type" required>
+                          <md-option value="Y">
+                            율전
+                          </md-option>
+                          <md-option value="M">
+                            명륜
+                          </md-option>
+                        </md-select>
+                        <div ng-messages="registerForm.type.$error" role="alert">
+                            <div ng-message="required">
+                                <span>캠퍼스를 입력해주세요.</span>
+                            </div>
+                        </div>
+                    </md-input-container>
+                    <md-input-container class="md-block" md-no-float flex="50">
+                        <label>소속 학부</label>
+                        <md-select name="college" ng-model="vm.form.college" required>
+                          <md-option value="Y">
+                            율전
+                          </md-option>
+                          <md-option value="M">
+                            명륜
+                          </md-option>
+                        </md-select>
+                        <div ng-messages="registerForm.college.$error" role="alert">
+                            <div ng-message="required">
+                                <span>소속 학부를 입력해주세요.</span>
+                            </div>
+                        </div>
+                    </md-input-container>
+
+                </div>
 
                 <md-input-container class="md-block" md-no-float>
                     <md-checkbox name="agree" ng-model="vm.form.agree" required>

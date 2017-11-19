@@ -7,7 +7,7 @@
         .service('mapApiService', mapApiService);
 
     /** @ngInject */
-    function mapApiService()
+    function mapApiService($rootScope)
     {
         var service = this;
         
@@ -31,6 +31,11 @@
         service.CategoryMenuData = null;
         service.mapControllerDrawingManager = null;
 
+        //function
+        service.postMarkerDetail = postMarkerDetail;
+        service.putMarkerDetail = putMarkerDetail;
+        service.deleteMarkerDetail = deleteMarkerDetail;
+
         //service.kMarkerData = null;
 
         //comm
@@ -39,7 +44,7 @@
         service.init = init;
 	    
         //TODO : array 초기화 length로 
-        function init(nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj, kMarkerStorageArr, kMarkersOnMap, CategoryMenuData){
+        function init(nMarkerTitleToKMarkerMappingObj, categoriesToKMarkerMappingObj, kMarkerStorageArr, kMarkersOnMap, CategoryMenuData, mapControllerDrawingManager){
             service.nMarkerTitleToKMarkerMappingObj = nMarkerTitleToKMarkerMappingObj;
             service.categoriesToKMarkerMappingObj = categoriesToKMarkerMappingObj;
             service.kMarkerStorageArr = kMarkerStorageArr;
@@ -92,15 +97,15 @@
 
         function postMarkerDetail(inData){     //inData : commKMarker
             //add drawing data into indata
-            var tempdrawingOverlays = mapControllerDrawingManager.getDrawings();
+            var tempdrawingOverlays = service.mapControllerDrawingManager.getDrawings();
             for(var key in tempdrawingOverlays){
                 if(tempdrawingOverlays[key].name == "marker"){
                     var latlng = tempdrawingOverlays[key].getOptions('position');
                     inData.center = latlng; //center setting from drawing
                 }
                 if(tempdrawingOverlays[key].name == "polygon"){
-                    var pathArr = tempdrawingOverlays[key].getOptions('path');
-                    inData.region = pathArr;
+                    var pathArr = tempdrawingOverlays[key].getOptions('paths');
+                    inData.region = pathArr.getAt(0).getArray();
                 }
             }
 
@@ -111,19 +116,14 @@
             var inDataId = 0;   //TODO : get id from server
             inData.id = inDataId;
 
+            
             $rootScope.$broadcast('ToMain', {
                 type : 'api',
                 apiType : 'create',
                 result : 'success',
                 data : inData
             });
-            $rootScope.$broadcast('ToSide', {
-                type : 'api',
-                apiType : 'create',
-                result : 'success',
-                data : inData
-            });
-
+            
             /*
             var respo = postMarkerDetailHttp(inData);
             respo.then(
@@ -163,7 +163,33 @@
 
         //put process
         function putMarkerDetail(inData, kMarkerData){      //commKMarker & kMarker
+            var tempdrawingOverlays = service.mapControllerDrawingManager.getDrawings();
+            for(var key in tempdrawingOverlays){
+                if(tempdrawingOverlays[key].name == "marker"){
+                    var latlng = tempdrawingOverlays[key].getOptions('position');
+                    inData.center = latlng; //center setting from drawing
+                }
+                if(tempdrawingOverlays[key].name == "polygon"){
+                    var pathArr = tempdrawingOverlays[key].getOptions('paths');
+                    inData.region = pathArr.getAt(0).getArray();
+                }
+            }
+
+            if(inData.region == null || inData.region.length == 0){
+                //retion empty
+            }
+
+            $rootScope.$broadcast('ToMain', {
+                type : 'api',
+                apiType : 'modify',
+                result : 'success',
+                data : inData,
+                originData : kMarkerData
+            });
+
+
             //데이터 변경을 위한 statue 전환.
+            /*
             var respo = putMarkerDetailHttp(inData);
             respo.then(
                 function successFunc(response){
@@ -205,12 +231,19 @@
                  function failFunc(response){
                     console.log(response);
                 });
+                */
         };
 
         //커스텀 지역 내용 수정 Process.
         function deleteMarkerDetail(kMarkerData){
+            $rootScope.$broadcast('ToMain', {
+                type : 'api',
+                apiType : 'delete',
+                result : 'success',
+                originData : kMarkerData
+            });
             //데이터 변경을 위한 statue 전환.
-            var respo = deleteMarkerHttp(kMarkerData);
+            /*var respo = deleteMarkerHttp(kMarkerData);
             respo.then(
                 function successFunc(response){
                     if(response.data == "noLocation"){
@@ -239,7 +272,9 @@
                  function failFunc(response){
                     console.log(response);
                 });
+                */
         };
+
     }
 
 })();

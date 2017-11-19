@@ -36,6 +36,10 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
 
         /* 초기화 */
         $rootScope.$broadcast('msSplashScreen::remove'); // 로딩창 비활성화
+        vm.bgf = true;
+        vm.isM = false;
+        vm.surly = 'assets/images/backgrounds/skku_y.jpg';
+        vm.surlm = 'assets/images/backgrounds/skku_m2.JPG';
         
         /* Methods */
         /**********************************************************************//**

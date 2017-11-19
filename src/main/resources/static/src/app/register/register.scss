@@ -1,8 +1,26 @@
 #register {
     height: 100%;
     overflow: hidden;
-    background: url('./../assets/images/backgrounds/skku.jpg') no-repeat;
-    background-size: cover;
+    
+    .bgimg {
+        width : 100%;
+        height : auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+    .bgimg.ng-hide-add, .bgimg.ng-hide-remove {
+        transition: all linear 0.5s;
+        display: block !important;
+    }
+
+    .bgimg.ng-hide-add.ng-hide-add-active, .bgimg.ng-hide-remove {
+        opacity: 0;
+    }
+
+    .bgimg.ng-hide-add, .bgimg.ng-hide-remove.ng-hide-remove-active {
+        opacity: 1;
+    }
 
     #register-intro {
         padding: 128px;
@@ -64,7 +82,6 @@
             form {
                 width: 100%;
                 text-align: left;
-                padding-top: 16px;
 
                 md-checkbox {
                     margin: 0;
@@ -91,7 +108,7 @@
             }
 
             .login {
-                margin: 32px auto 16px auto;
+                margin: 16px auto 16px auto;
                 width: 250px;
                 font-weight: 500;
 
