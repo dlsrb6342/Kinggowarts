@@ -14,4 +14,6 @@ public class NoticeCategory {
     private String name;
     private long page_id;
     private long last_num;
+    private long time;
+    private String type;
 }
