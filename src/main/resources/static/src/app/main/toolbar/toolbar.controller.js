@@ -143,6 +143,17 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
         }
 
         /**********************************************************************//**
+        tutorial을 띄움. */
+        vm.openWideTutorial = function (
+            ev) // 현재 이벤트
+        {
+            $rootScope.$broadcast('ToWide', {
+                type : 'wideTutorial',
+                bOpen : true
+            });
+        }
+
+        /**********************************************************************//**
         검색을 위해 http 요청을 묶어서 보내는 함수.
         @returns {Promise} */
         vm.search = function (
