@@ -60,7 +60,7 @@
 	<md-content layout-padding>
 	<form name = "modifyForm">
 		<!--title-->
-		<div layout-gt-sm="row">
+		<div layout="column">
 		  <md-input-container class="md-block">
 		    <label>제목</label>
 		    <input md-maxlength="30" required md-no-asterisk="" name="title" ng-model="vm.kMarkerTitle">
@@ -69,10 +69,11 @@
           	</div>
 		  </md-input-container>
 		</div>
+		<div layout-xs="column" layout-gt-xs="row">
 		<!-- category -->
 		<md-input-container>
 		  <label>카테고리</label>
-		  <md-select ng-model="vm.selectedCategories" multiple required>
+		  <md-select ng-model="vm.selectedCategories[0]" name="category" required>
 		    <div ng-repeat="cat1 in vm.categoryMenuData">
 		      <div ng-if="cat1.hasOwnProperty('inner')">
 		        <md-optgroup label="{{cat1.name}}">
@@ -87,14 +88,41 @@
 		      </div>
 		    </div>
 		  </md-select>
+		  <div ng-messages="createForm.category.$error">
+            <div ng-message="required">카테고리를 선택해야 합니다.</div>
+          </div>
 		</md-input-container>
 
+		<md-input-container>
+		  <label>캠퍼스</label>
+		  <md-select ng-model="vm.selectedCampus" name="campus" required>
+		    <md-optgroup label="캠퍼스">
+		      <div ng-repeat="cat1 in vm.campusData">
+		          <md-option ng-value="cat1.type">{{cat1.name}}</md-option>
+		      </div>
+		    </md-optgroup>
+		  </md-select>
+		  <div ng-messages="createForm.campus.$error">
+            <div ng-message="required">캠퍼스를 선택해야 합니다.</div>
+          </div>
+		</md-input-container>
+		</div>
+
+		<!--
 		<div ng-if="vm.selectedCategories.length == 0">
 		  <p>최소 하나 이상의 카테고리를 선택해야 합니다.</p>
 		</div>
 		<div ng-if="vm.selectedCategories.length > 0">
 		  <p>{{vm.printSelectedCategories()}} 카테고리를 선택하였습니다.</p>
 		</div>
+		-->
+		<md-input-container class="md-block">
+		  <label>부가설명</label>
+		  <input md-maxlength="30" required md-no-asterisk="" name="detail" ng-model="vm.kMarkerDetail">
+		  <div ng-messages="modifyForm.detail.$error">
+            <div ng-message="required">간략한 추가 설명을 작성하세요.</div>
+          </div>
+		</md-input-container>
 
 
 
@@ -126,7 +154,7 @@
 	<md-content layout-padding>
 	<form name = "createForm">
 		<!--title-->
-		<div layout-gt-sm="row">
+		<div layout="column">
 		  <md-input-container class="md-block">
 		    <label>제목</label>
 		    <input md-maxlength="30" required md-no-asterisk="" name="title" ng-model="vm.kMarkerTitle">
@@ -134,11 +162,12 @@
             	<div ng-message="required">반드시 제목을 작성해야 합니다.</div>
           	</div>
 		  </md-input-container>
-		</div>
+		
+		<div layout-xs="column" layout-gt-xs="row">
 		<!-- category -->
 		<md-input-container>
 		  <label>카테고리</label>
-		  <md-select ng-model="vm.selectedCategories" multiple required name="category">
+		  <md-select ng-model="vm.selectedCategories[0]" required name="category">
 		    <div ng-repeat="cat1 in vm.categoryMenuData">
 		      <div ng-if="cat1.hasOwnProperty('inner')">
 		        <md-optgroup label="{{cat1.name}}">
@@ -154,16 +183,39 @@
 		    </div>
 		  </md-select>
 		  <div ng-messages="createForm.category.$error">
-            	<div ng-message="required">반드시 제목을 작성해야 합니다.</div>
+            	<div ng-message="required">카테고리를 선택해야 합니다.</div>
           </div>
 		</md-input-container>
 
-		<div ng-if="vm.selectedCategories.length == 0">
+		<!-- <div ng-if="vm.selectedCategories.length == 0">
 		  <p>최소 하나 이상의 카테고리를 선택해야 합니다.</p>
 		</div>
 		<div ng-if="vm.selectedCategories.length > 0">
-		  <p>[{{vm.printSelectedCategories()}}] 카테고리를 선택하였습니다.</p>
+		  <p>{{vm.printSelectedCategories()}} 카테고리를 선택하였습니다.</p>
 		</div>
+		-->
+		<md-input-container>
+		  <label>캠퍼스</label>
+		  <md-select ng-model="vm.selectedCampus" name="campus" required>
+		    <md-optgroup label="캠퍼스">
+		      <div ng-repeat="cat1 in vm.campusData">
+		          <md-option ng-value="cat1.type">{{cat1.name}}</md-option>
+		      </div>
+		    </md-optgroup>
+		  </md-select>
+		  <div ng-messages="createForm.campus.$error">
+            <div ng-message="required">캠퍼스를 선택해야 합니다.</div>
+          </div>
+		</md-input-container>
+		</div>
+
+		<md-input-container class="md-block">
+		  <label>부가설명</label>
+		  <input md-maxlength="30" required md-no-asterisk="" name="detail" ng-model="vm.kMarkerDetail">
+		  <div ng-messages="modifyForm.detail.$error">
+            <div ng-message="required">간략한 추가 설명을 작성하세요.</div>
+          </div>
+		</md-input-container>
 
 
 
@@ -183,6 +235,7 @@
 	    </md-button>
 	  	</md-dialog-actions>
 		</md-content>
+		</div>
 	</form>
 	</div>
 	

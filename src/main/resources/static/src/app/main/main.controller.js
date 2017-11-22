@@ -169,6 +169,7 @@ Copyright (c) 2017, kinggowarts team. All Rights Reserved.
             for(var i=0, ii=vm.tutorialMarkArr.length; i<ii; i++){
                 if(!vm.tutorialMarkArr[i].bMarker){ //튜토리얼 마커가 아닌 경우
                     var tempElem = document.getElementById(vm.tutorialMarkArr[i].id);
+                    console.log(tempElem);
                     if(tempElem == null){ //튜토리얼 마크에 해당되는 element를 못찾은 경우
                         vm.tutorialMarkArr[i].bMarkerNgIf = false;    //mark 표시 off
                     }

@@ -75,35 +75,111 @@
             this.id = Id;
         };
 
-/*
-        function commKMarker(id, title, lng, lat, categoriesArr, region, tagsArr){
+
+        function commKMarker(id, title, center, categoriesArr, region, tagsArr, detail, campusType){
             this.id = id;           //id
             this.title = title;       //title TMP
-            this.lng = lng;         //lat TMP 
-            this.lat = lat;         //lat TMP
-            this.categoriesArr = categoriesArr;   //marker's category
-            this.tagsArr = tagsArr;
+            this.center = center;       //naver latlng : {_lat, _lng}
+            this.categoriesArr = categoriesArr;   //marker's Category : ["catname"]
+            this.tagsArr = tagsArr;     // : ["tag1", "tag2, .."]
+            this.region = region;       // naver latlng arr : [{_lat, _lng}, {_lat, _lng}, {_lat, _lng}... ]
+            this.detail = detail;
+            this.campusType = campusType;
+        };
+        commKMarker.prototype.setRegion = function(region){
             this.region = region;
         };
-        */
+        commKMarker.prototype.setTagsArr = function(tagsArr){
+            this.tagsArr = tagsArr;
+        };
+        commKMarker.prototype.makeCommAPIMarker = function(){
+            var retCommAPIMarker = new commAPIMarker(
+                this.id,
+                this.title,
+                {"lat" : this.center._lat, "lng" : this.center._lng},
+                {"name" : this.categoriesArr[0], "type" : this.campusType},
+                [],   //path
+                [],   //tags
+                this.detail,
+                "user"  //default
+            );
+            if(this.region != null && this.region.length != 0){
+                var tempPath = [];
+                for(var i=0, ii = this.region.length; i<ii; i++){
+                    tempPath.push({"lat" : this.region[i]._lat, "lng" : this.region[i]._lng});
+                }
+                retCommAPIMarker.setPath(tempPath);
+            }
+            if(this.tagsArr != null && this.tagsArr.length != 0){
+                var tempTags = [];
+                for(var i=0, ii = this.tagsArr.length; i<ii; i++){
+                    tempTags.push({"name" : this.tagsArr[i]});
+                }
+                retCommAPIMarker.setTags(tempTags);
+            }
+            return retCommAPIMarker;
+        };
 
-        function kMarker (nMarker, id, title, lng, lat, categoriesArr, floor, timeStamp, region) {
+        function commAPIMarker(id, name, center, markerCategory, path, tags, detail, type){
+            this.id = id;           //id
+            this.name = name;       //title TMP
+            this.center = center;       //latlng : {lat, lng}
+            this.detail = "";
+            this.markerCategory = markerCategory;   //marker's Category : [{"name" : "catname", "type" : "M or Y"}]
+            this.tags = tags;     // : [{"name : tag1"}, {"name" : tag2}, .."]
+            this.path = path;       // polygon path : [{lat, lng}, {lat, lng}, {lat, lng}... ]
+            this.detail = detail;
+            this.type = type; //default user value
+        };
+        commAPIMarker.prototype.setTags = function(tags){
+            this.tags = tags;
+        };
+        commAPIMarker.prototype.setPath = function(path){
+            this.path = path;
+        };
+        commAPIMarker.prototype.makeCommKMarker = function(){
+            var retCommKMarker = new commKMarker(
+                this.id,
+                this.name,
+                this.center = new naver.maps.LatLng(this.center.lat, this.center.lng),
+                [this.markerCategory.name],   //category
+                null,   //region
+                [],    //tags
+                this.detail,
+                this.markerCategory.type
+            );
+            if(this.path != null && this.path.length != 0){
+                var tempRegion = [];
+                for(var i=0, ii = this.path.length; i<ii; i++){
+                    tempRegion.push(new naver.maps.LatLng(this.path[i].lat, this.path[i].lng));
+                }
+                retCommKMarker.setRegion(tempRegion);
+            }
+            if(this.tags != null && this.tags.length != 0){
+                var tempTagsArr = [];
+                for(var i=0, ii = this.tags.length; i<ii; i++){
+                    tempTagsArr.push(this.tags[i].name);
+                }
+                retCommKMarker.setTagsArr(tempTagsArr);
+            }
+            return retCommKMarker;
+        };
+
+        function kMarker (nMarker, id, title, center, categoriesArr, detail, campusType, region, tagsArr) {
             this.nMarker = nMarker;   //naver.marker
             this.id = id;           //id
-            this.title = title;       //title TMP
-            this.lng = lng;         //lat TMP 
-            this.lat = lat;         //lat TMP
+            this.title = title;       //title TMP : nMarker
+            this.center = center;       //center TMP : nMarker
             this.categoriesArr = categoriesArr;   //marker's category
-            this.tagsArr = [];
-            this.floor = floor;     //marker's Floor
-            this.timeStamp = timeStamp;
-            this.region = region;
+            this.tagsArr = tagsArr;
+            this.region = region;       //region TMP : nPolygon
+            this.detail = detail;
             //this.option
             this.bOnMap = false;    //kMarker is on map or not
             this.bPolyOnMap = false;
             this.nPolygon = null;
-            this.timeStamp = 0;
-
+            //this.timeStamp = 0;
+            this.campusType = campusType;
         }
         
         kMarker.prototype.getNMarker = function() {
@@ -112,12 +188,7 @@
         kMarker.prototype.getId = function() {
             return this.id;
         };
-        kMarker.prototype.getLat = function() {
-            return this.lat;
-        };
-        kMarker.prototype.getLng = function() {
-            return this.lng;
-        };
+        
         kMarker.prototype.getCategoriesArr = function() {
             return this.categoriesArr;
         };
@@ -149,18 +220,24 @@
         kMarker.prototype.getTagsArr = function(){
             return this.tagsArr;
         };
+        kMarker.prototype.getDetail = function(){
+            return this.detail;
+        };
+        kMarker.prototype.getCampusType = function(){
+            return this.campusType;
+        };
 
 
         kMarker.prototype.isOnMap = function(){
             if(this.nMarker == null){
-                console.log("isOnMap is called with no nMarker");
+                //console.log("isOnMap is called with no nMarker");
                 return false;
             }
             return this.bOnMap;
         }
         kMarker.prototype.setOnMap = function(inMap, recog){
             if(this.nMarker == null){
-                console.log("setOnMap is called with no nMarker");
+                //console.log("setOnMap is called with no nMarker");
                 return;
             }
             if(recog != null){
@@ -172,7 +249,7 @@
         }
         kMarker.prototype.unsetOnMap = function(recog){
             if(this.nMarker == null){
-                console.log("unsetOnMap is called with no nMarker");
+                //console.log("unsetOnMap is called with no nMarker");
                 return;
             }
             if(recog != null){
@@ -184,14 +261,14 @@
         }
         kMarker.prototype.isPolyOnMap = function(){
             if(this.nPolygon == null){
-                console.log("isPolyOnMap is called with no nPolygon");
+                //console.log("isPolyOnMap is called with no nPolygon");
                 return false;
             }
             return this.bPolyOnMap;
         }
         kMarker.prototype.setPolyOnMap = function(inMap){
             if(this.nPolygon == null){
-                console.log("setolyOnMap is called with no nPolygon");
+                //console.log("setolyOnMap is called with no nPolygon");
                 return;
             }
             this.nPolygon.setMap(inMap);
@@ -200,7 +277,7 @@
         }
         kMarker.prototype.unsetPolyOnMap = function(){
             if(this.nPolygon == null){
-                console.log("unsetolyOnMap is called with no nPolygon");
+                //console.log("unsetolyOnMap is called with no nPolygon");
                 return;
             }
             this.nPolygon.setMap(null);
@@ -209,7 +286,7 @@
         }
         kMarker.prototype.getFirstCategoryTitle = function(){
             if(this.categoriesArr.length ==0){
-                console.log("category is none in getFirstCategoryTitle()");
+                //console.log("category is none in getFirstCategoryTitle()");
                 return "none";
             }
             //return this.categoriesArr[0].getTitle()
@@ -235,8 +312,14 @@
         kMarker.prototype.setTimeStamp = function(timeStamp) {
             this.timeStamp = timeStamp
         };
+        kMarker.prototype.setDetail = function(detail){
+            this.detail = detail
+        };
         kMarker.prototype.setRegion = function(region) {
             this.region = region
+        };
+        kMarker.prototype.setCampusType = function(campusType){
+            this.campusType = campusType;
         };
         kMarker.prototype.setTitle = function(title){
             if(this.nMarker == null){
@@ -248,7 +331,7 @@
         };
         kMarker.prototype.setPositionWithPosition = function(position){
             if(this.nMarker == null){
-                console.log('kMarker.prototype.setPositionWithPosition marker == null');
+                //console.log('kMarker.prototype.setPositionWithPosition marker == null');
                 return;
             }
             else{
@@ -257,7 +340,7 @@
         };
         kMarker.prototype.setPositionWithLatLngNew = function(lat, lng){
             if(this.nMarker == null){
-                console.log('kMarker.prototype.setPositionWithLatLngNew marker == null');
+                //console.log('kMarker.prototype.setPositionWithLatLngNew marker == null');
                 return;
             }
             this.nMarker.setPosition(new naver.maps.LatLng(lat, lng));
@@ -301,22 +384,22 @@
                 tolerance: 5,
                 highlightRect: true,
                 highlightRectStyle: {
-                    strokeColor: '#ff0000',
+                    strokeColor: lineBasicColor,
                     strokeOpacity: 1,
                     strokeWeight: 2,
                     strokeStyle: 'dot',
-                    fillColor: '#ff0000',
+                    fillColor: polygonBasicColor,
                     fillOpacity: 0.5
                 },
-                intersectNotice: true,
+                intersectNotice: false,
                 intersectNoticeTemplate: '<div style="width:180px;border:solid 1px #333;background-color:#fff;padding:5px;"><em style="font-weight:bold;color:#f00;">{{count}}</em>개의 마커가 있습니다.</div>',
-                intersectList: true,
-                intersectListTemplate: '<div>'/*'style="width:200px;border:solid 1px #333;background-color:#fff;padding:5px;">'
+                intersectList: false,
+                intersectListTemplate: '<div style="width:200px;border:solid 1px #333;background-color:#fff;padding:5px;">'
                     + '<ul style="list-style:none;margin:0;padding:0;">'
                     + '{{#repeat}}'
                     + '<li style="list-style:none;margin:0;padding:0;"><a href="#">{{order}}. {{title}}</a></li>'
                     + '{{/#repeat}}'
-                    + '</ul>'*/
+                    + '</ul>'
                     + '</div>'
             }, opts);
 
@@ -671,6 +754,25 @@
                 22, 8, 20, 4, 18, 2, 16, 1, 13, 0],
             type: 'poly'
         };
+
+        var polygonBasicColor = '#357080';  //기본 폴리곤 색
+        var lineBasicColor = '#00004d';  //기본 폴리곤 라인 색
+        var polyCreateColor = '#ffff00';    //생성시 drawing color
+        var lineCreateColor = '#ffd100';
+        var polygonMouseOverColor = '#ff0000';  //mouse over
+        var lineMouseOverColor = '#ff0000';
+        var polygonSelectedColor = '#ff0000';  //selected
+        var lineSelectedColor = '#ff0000';
+        var polygonModifyOriginColor = '#ff6600';  //수정되기 전 원래 지역 색
+        var lineModifyOriginColor = '#ff6600';
+        var polygonModifyColor = '#00b33c';  //수정진행중인 색.
+        var lineModifyColor = '#00b33c';
+
+        var anchorPointCreateFillColor = '#ececf9';
+        var anchorPointCreateStrokeColor = '#000000';
+        var anchorMidPointCreateFillColor = '#6666cc';
+        var anchorMidPointCreateStrokeColor = '#131339';
+
         var drawingMenuModify = [
             {"name":"마커", "type":"MARKER", "icon" : "icon-map-marker"}, 
             {"name":"다각형", "type":"POLYGON", "icon" : "icon-polymer"},   
@@ -733,7 +835,7 @@
         //var categoryTypes = CategoryTypes.data;
 
         //vm.categories = MarkerData.data;
-        vm.kMarkerStorageArr = [];    //kMarkerStorageArr
+        vm.kMarkerStorageObj = {};    //kMarkerStorageArr
         //vm.nMarkerStorageArr = [];      //nMarkerStorageArr depreciated
         vm.nMarkerTitleToKMarkerMappingObj = {};      //nMarkerTitleToKMarkerMappingObj. With Title, can get KMarker
         vm.categoriesToKMarkerMappingObj = {};
@@ -808,22 +910,23 @@
             map: map,
             drawingMode : 0, //HAND
             polygonOptions: {
-                strokeColor: '#ffd100',
-                fillColor: '#ffff00',
+                strokeColor: lineCreateColor,
+                fillColor: polyCreateColor,
                 fillOpacity: 0.5,
                 strokeWeight: 3
             },
             controlPointOptions: {
                 anchorPointOptions: {
-                    radius: 10,
-                    fillColor: '#ff0000',
-                    strokeColor: '#0000ff',
-                    strokeWeight: 2
+                    radius: 8,
+                    fillColor: anchorPointCreateFillColor,
+                    strokeColor: anchorPointCreateStrokeColor,
+                    strokeWeight: 2,
+                    fillOpacity: 0.5
                 },
                 midPointOptions: {
-                    radius: 10,
-                    fillColor: '#ff0000',
-                    strokeColor: '#0000ff',
+                    radius: 4,
+                    fillColor: anchorMidPointCreateFillColor,
+                    strokeColor: anchorMidPointCreateStrokeColor,
                     strokeWeight: 2,
                     fillOpacity: 0.5
                 }
@@ -849,7 +952,6 @@
 
 //methods
         vm.userCheckFunc = userCheckFunc;
-        vm.commGetDataFromServerFunc = commGetDataFromServerFunc;
         vm.createKMarkerStorageArrFromDataWithCategoryFunc = createKMarkerStorageArrFromDataWithCategory;
         vm.createNMarkerFromKMarkerStorageArrFunc = createNMarkerFromKMarkerStorageArr;
         vm.setMapToNMarkersWithCategoryKMarkersArrFunc = setMapToNMarkersWithCategoryKMarkersArr;
@@ -906,9 +1008,10 @@
             if(tempKMarker != null && tempKMarker != vm.selectedKMarker){
                 var tempNPolygon = tempKMarker.getNPolygon();
                 if(tempNPolygon != null){
-                    tempNPolygon.setOptions({fillColor: '#357080'});
+                    tempNPolygon.setOptions({fillColor: polygonMouseOverColor, strokeColor : lineMouseOverColor});
                 }
                 var icon = marker.getIcon();
+                //var idx = marker.get('spriteIdx');
                 if (icon.url !== MARKER_HIGHLIGHT_ICON_URL) {
                     icon.url = MARKER_HIGHLIGHT_ICON_URL;
                     marker.setIcon(icon);
@@ -924,10 +1027,19 @@
             if(tempKMarker != null && tempKMarker != vm.selectedKMarker){
                 var tempNPolygon = tempKMarker.getNPolygon();
                 if(tempNPolygon != null){
-                    tempNPolygon.setOptions({fillColor: '#ff0000'});
+                    tempNPolygon.setOptions({fillColor: polygonBasicColor, strokeColor : lineBasicColor});
                 }
                 var icon = marker.getIcon();
+                //var idx = marker.get('spriteIdx');
                 if (icon.url === MARKER_HIGHLIGHT_ICON_URL) {
+                    /*marker.setIcon(
+                        {
+                        url: MARKER_ICON_URL,
+                        size: new naver.maps.Size(24, 37),
+                        anchor: new naver.maps.Point(12, 37),
+                        origin: new naver.maps.Point(MARKER_SPRITE_POSITION[idx][0], MARKER_SPRITE_POSITION[idx][1])
+                        }
+                    );*/
                     icon.url = MARKER_ICON_URL;
                     marker.setIcon(icon);
                 }
@@ -937,10 +1049,8 @@
         };
 
         function selectKMarker(inKMarker){
-            console.log("selectKMarkerFunc");
             //같은 마커인 경우 전환 x
             if(vm.selectedKMarker != null && vm.selectedKMarker != inKMarker){
-                console.log("resetPrevKMarker");
                 //unhighlight previous selectedKMarker
                 var marker = vm.selectedKMarker.getNMarker();
                 var icon = marker.getIcon();
@@ -951,16 +1061,14 @@
                 marker.setZIndex(20);
                 var tempNPolygon = vm.selectedKMarker.getNPolygon();
                 if(tempNPolygon != null){
-                    tempNPolygon.setOptions({fillColor: '#ff0000'});
+                    tempNPolygon.setOptions({fillColor: polygonBasicColor, strokeColor : lineBasicColor});
                 }
             }
 
             if(inKMarker == null){
                 vm.selectedKMarker = null;
-                console.log("select -> null");
             }
             else if(vm.selectedKMarker != inKMarker){
-                console.log("select -> new");
                 vm.selectedKMarker = inKMarker;
                 var marker = vm.selectedKMarker.getNMarker();
                 var icon = marker.getIcon();
@@ -971,10 +1079,17 @@
                 marker.setZIndex(100);
                 var tempNPolygon = vm.selectedKMarker.getNPolygon();
                 if(tempNPolygon != null){
-                    tempNPolygon.setOptions({fillColor: '#131327'});
+                    tempNPolygon.setOptions({fillColor: polygonSelectedColor, strokeColor : lineSelectedColor});
                 }
             }
         };
+
+        function changeKMarkerColorBack(kMarker){
+            var tempNPolygon = vm.selectedKMarker.getNPolygon();
+                if(tempNPolygon != null){
+                    tempNPolygon.setOptions({fillColor: polygonSelectedColor, strokeColor : lineSelectedColor});
+            }
+        }
 
 
 
@@ -1059,70 +1174,11 @@
         };
         */
 
-    //data comm functions
-        //server에서 데이터를 가져 옵니다. arr에 해당하는 catetory로 query 생성/요청합니다.
-        function commGetDataFromServerFunc(inCategoryTitleArr){
-            //vm.markerDataArr = null;
-            if(inCategoryTitleArr == undefined || inCategoryTitleArr == null){
-                console.log("wrong param in ");
-            }
-            else if(inCategoryTitleArr.length == 0 || inCategoryTitleArr[0] == "ALL"){
-                //get all Data)
-            }
-                
-            else{
-                //TODO : get data from server with 'category' query
-            }
-            
-            //DELETE : implement http
-
-            //http
-            /*function GetAreaUser(){
-                return $http({
-                    method: 'GET',
-                    url: './api/map?type=user',
-                    headers: {'x-auth-token': $sessionStorage.get('AuthToken')}
-                });
-            }       */
-        };
-
-        //server에서 데이터를 가져와서 vm.kMarkerStorageArr를 새로 생성합니다..
-        /*function createKMarkerStorageArrFromData(){
-            //TODO : delete left data using kMarkerStorageArr
-
-            vm.kMarkerStorageArr = [];
-            for(var i=0, ii=vm.markerDataArr.length; i<ii; i++){
-
-                var tempMarkerData = vm.markerDataArr[i];
-
-                if(vm.nMarkerTitleToKMarkerMappingObj[vm.markerDataArr[i].title] == 없어)
-
-                    vm.kMarkerStorageArr[i] = new kMarker(null, 
-                    tempMarkerData.id,
-                    tempMarkerData.name,        //to title
-                    tempMarkerData.center.lng,
-                    tempMarkerData.center.lat,
-                    tempMarkerData.markerCategory,  //to categories. TODO : make Object
-                    tempMarkerData.floor,
-                    tempMarkerData.timeStamp,
-                    tempMarkerData.region
-                    );
-            }
-        };*/
-
     //data function
         //카테고리에 해당하는 데이터를 가져와 kMarker를 생성한다. bInit == true 인 경우 새로 생성.
-        function createKMarkerStorageArrFromDataWithCategory(inCategoryTitleArr, bInit){
+        function createKMarkerStorageArrFromDataWithCategory(inCategoryTitleArr, campusType){
             var newKMarkerArr = [];
-            //vm.kMarkerStorageArr = [];
-            /* 우선 제외
-            if(bInit == true){
-                //TODO : delete left data using kMarkerStorageArr
-                vm.kMarkerStorageArr = [];
-            }*/
-
-            //vm.categoriesToKMarkerMappingObj에 해당되는 category key가 없으면 추가.
-            console.log(inCategoryTitleArr);
+            
             for(var i=0, ii=inCategoryTitleArr.length; i<ii; i++){
 
                 //inCategoryTitleArr[i] key가 존재하는가?
@@ -1133,7 +1189,7 @@
                     }
                     else{
                         //해당 카테고리를 조건으로 data를 가져온 적이 이미 있다.
-                        return;
+                        //return;
                     }
                 }
                 else{
@@ -1141,146 +1197,136 @@
                     vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[i]] = new categoriesToKMarkerMappingInnerObj([], "T");
                 }
             }
-            
-            //TODO : get Data From server
-            commGetDataFromServerFunc(inCategoryTitleArr); // --> vm.markerDataArr
 
+            //category에 해당하는 기존의 kMarker mapping delete
+            var tempCategoriedToMarkerMappingObjKMarkersArr = vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[0]].getKMarkersArr();
+
+            for(var i=0, ii=tempCategoriedToMarkerMappingObjKMarkersArr.length; i<ii; i++){
+                var originKMarker = tempCategoriedToMarkerMappingObjKMarkersArr[i];
+                recognizer.remove(originKMarker.getNMarker());
+                
+                delete vm.nMarkerTitleToKMarkerMappingObj[originKMarker.getTitle()];
+                originKMarker.unsetOnMap(recognizer);
+                originKMarker.unsetPolyOnMap();
+                //vm.kMarkersOnMap delete
+                for(var j = 0; j<vm.kMarkersOnMap.length; j++){
+                    if(vm.kMarkersOnMap[j] == originKMarker){
+                        vm.kMarkersOnMap.splice(j, 1);
+                        break;
+                    }
+                }
+
+                
+                //kMarkerStorageArr 해제
+                if(vm.kMarkerStorageObj.hasOwnProperty(originKMarker.id)){
+                    delete vm.kMarkerStorageObj[originKMarker.id];
+                }
+            }
+            //mapping 해제
+            tempCategoriedToMarkerMappingObjKMarkersArr.length = 0;
+            /*
+            var tempKMarkerCategoriesArr = originKMarker.getCategoriesArr();
+            for(var i = 0, ii = tempKMarkerCategoriesArr.length; i<ii; i++){
+                var tempKMarkerInnerObjArr = vm.categoriesToKMarkerMappingObj[tempKMarkerCategoriesArr[i]].getKMarkersArr();
+                tempKMarkerInnerObjArr = [];
+                
+                for(var j =0 , jj = tempKMarkerInnerObjArr.length; j<jj; j++){
+                    if(tempKMarkerInnerObjArr[j] == originKMarker){
+                    //if(tempKMarkerInnerObjArr[j].getTitle() == kMarkerData.getTitle())
+                        tempKMarkerInnerObjArr.splice(j,1);
+                        break;  //한개의 kMarker만 존재 할 것이므로
+                    }
+                }
+                
+            }
+            */
+            
+       
+            //create new kMarker
             for(var i=0, ii=vm.markerDataArr.length; i<ii; i++){
                 var tempMarkerData = vm.markerDataArr[i];
                 
-                //nMarker가 없다. 즉 kMarker도 없다. 생성 필요.
-                if(!vm.nMarkerTitleToKMarkerMappingObj.hasOwnProperty(vm.markerDataArr[i].title)){
-                    //tempMarkerData와 tempCategories[j]가 comm data와 연관.
-                    //console.log(tempMarkerData);
+                var newKMarker = new kMarker(null, 
+                        tempMarkerData.id,
+                        tempMarkerData.title,       //to title
+                        tempMarkerData.center,
+                        [], //to categories
+                        tempMarkerData.detail,
+                        campusType,
+                        null,
+                        tempMarkerData.tagsArr
+                    );
 
-                    var tempRegion = null;
-                    //path가 있는 경우
-                    if(tempMarkerData.path.length != 0){
-                        tempRegion = [];
-                        for(var j=0, jj = tempMarkerData.path.length; j<jj; j++){
-                            tempRegion.push(new naver.maps.LatLng(tempMarkerData.path[j].lat, tempMarkerData.path[j].lng));
-                        }
-                    }
-                    var newKMarker = new kMarker(null, 
-                            tempMarkerData.id,
-                            tempMarkerData.name,        //to title
-                            tempMarkerData.center.lng,
-                            tempMarkerData.center.lat,
-                            [], //to categories
-                            tempMarkerData.floor,
-                            tempMarkerData.timeStamp,
-                            tempRegion
-                        );
-
-                    //create nPolygon
-                    //path가 있는 경우
-                    if(tempMarkerData.path.length != 0){
-                        var tempNPolygon = new naver.maps.Polygon({
-                            //map: map,
-                            paths: tempRegion,
-                            fillColor: '#ff0000',
-                            fillOpacity: 0.3,
-                            strokeColor: '#ff0000',
-                            strokeOpacity: 0.6,
-                            strokeWeight: 3
-                        });
-                        newKMarker.setNPolygon(tempNPolygon);
-                    }
-
-                    //각각의 kMarker에 대해 vm.categoriesToKMarkerMappingObj에 등록.
-                    var tempCategories = tempMarkerData.markerCategory; //newKMarker.getCategoriesArr();
-                    for(var j=0, jj=tempCategories.length; j<jj; j++){  //comm을 통해 얻은 tempMarkerData.markerCategory가 array라고 가정 
-                        //newKMarker.addCategoryObjInArr(new kMarkerCategoryObj(tempCategories[j].id, tempCategories[j].name));
-                        newKMarker.addCategoryObjInArr(tempCategories[j].name);
-                        //kMarker에 해당하는 모든 categories에 대해 vm.categoriesToKMarkerMappingObj에 등록한다.
-                        if(!vm.categoriesToKMarkerMappingObj.hasOwnProperty(tempCategories[j].name)){             
-                            //해당 카테고리가 categoriesToKMarkerMappingObj의 key로 존재하지 않는 경우
-                            vm.categoriesToKMarkerMappingObj[tempCategories[j].name] = new categoriesToKMarkerMappingInnerObj([], "F");
-                        }
-                        vm.categoriesToKMarkerMappingObj[tempCategories[j].name].getKMarkersArr().push(newKMarker);   //category mapping kMarker추가
-                    }
-
-                    vm.kMarkerStorageArr.push(newKMarker);  //kMarker storage에 추가
-                    newKMarkerArr.push(newKMarker); //새로 추가된 kMarker만으로 createNMarkerFromKMarkerStorageArr()에서 nMarker를 만들기 위해서.
-
-                    //nMarkerTitleToKMarker에 kMarker 추가는 다른 함수에서 추가.
+                //create nPolygon
+                //path가 있는 경우
+                if(tempMarkerData.region != null && tempMarkerData.region.length != 0){
+                    var tempNPolygon = new naver.maps.Polygon({
+                        //map: map,
+                        paths: tempMarkerData.region,
+                        fillColor: polygonBasicColor,
+                        fillOpacity: 0.3,
+                        strokeColor: lineBasicColor,
+                        strokeOpacity: 0.6,
+                        strokeWeight: 3
+                    });
+                    newKMarker.setNPolygon(tempNPolygon);
                 }
+
+
+                //각각의 kMarker에 대해 vm.categoriesToKMarkerMappingObj에 등록.
+                var tempCategories = tempMarkerData.categoriesArr; //newKMarker.getCategoriesArr();
+                for(var j=0, jj=tempCategories.length; j<jj; j++){  //comm을 통해 얻은 tempMarkerData.markerCategory가 array라고 가정 
+                    //newKMarker.addCategoryObjInArr(new kMarkerCategoryObj(tempCategories[j].id, tempCategories[j].name));
+                    newKMarker.addCategoryObjInArr(tempCategories[j]);
+                    //kMarker에 해당하는 모든 categories에 대해 vm.categoriesToKMarkerMappingObj에 등록한다.
+                    if(!vm.categoriesToKMarkerMappingObj.hasOwnProperty(tempCategories[j])){             
+                        //해당 카테고리가 categoriesToKMarkerMappingObj의 key로 존재하지 않는 경우
+                        vm.categoriesToKMarkerMappingObj[tempCategories[j]] = new categoriesToKMarkerMappingInnerObj([], "F");
+                    }
+                    vm.categoriesToKMarkerMappingObj[tempCategories[j]].getKMarkersArr().push(newKMarker);   //category mapping kMarker추가
+                }
+                vm.kMarkerStorageObj[newKMarker.id] = newKMarker;  //kMarker storage에 추가
+                newKMarkerArr.push(newKMarker); //새로 추가된 kMarker만으로 createNMarkerFromKMarkerStorageArr()에서 nMarker를 만들기 위해서.
+
+                //create nMarker
+                var tempNMarker = new naver.maps.Marker({
+                    //map: map,
+                    position: newKMarker.center,
+                    title: newKMarker.getTitle(),    //set title with kMarker.title(TMP)
+                    icon: {
+                        url: MARKER_ICON_URL,
+                        size: new naver.maps.Size(24, 37),
+                        anchor: new naver.maps.Point(12, 37),
+                        origin: new naver.maps.Point(MARKER_SPRITE_POSITION[newKMarker.getFirstCategoryTitle()][0], MARKER_SPRITE_POSITION[newKMarker.getFirstCategoryTitle()][1])
+                    },
+                    shape: MARKER_SPRITE_SHAPE,
+                    zIndex: 20
+                });
+                newKMarker.setNMarker(tempNMarker);
+                    
+                vm.nMarkerTitleToKMarkerMappingObj[newKMarker.getTitle()] = newKMarker;   //nMarkerTitleToKMarkerMappingObj에 등록
+
+                //register listener
+                tempNMarker.addListener('mouseover', nMarkerListenerMouseover);
+                tempNMarker.addListener('mouseout', nMarkerListenerMouseout);
+                tempNMarker.addListener('click', nMarkerListenerClick);
+                //recognizer.add(tempNMarker);
+
+                window.MARKER = tempNMarker;
+
                 
             }
             return newKMarkerArr;   //새로 추가된 kMarkers. 주의)이미 생성되어있는 마커의 경우 리턴값에 포함되지 않는다.
-            //ex) category2,3에 포함되어있는 마커가 존재하며, catetory3에 대해 이 함수를 호출하면, 처음 서술한 마커는 다음 return값에 포함되지 않음.
-                    
+            //ex) category2,3에 포함되어있는 마커가 존재하며, catetory3에 대해 이 함수를 호출하면, 처음 서술한 마커는 다음 return값에 포함되지 않음.                    
         };
 
+        function createNMarkerFromKMarkerStorageArr(newKMarkerArr, inCategoryTitle){
 
-        //kMarker.marker == null... then add naver.marker to kMarker & add vm.nMarkerTitleToKMarkerMappingObj & vm.nMarkerStorageArr
-        /*
-            newKMarkerArr를 모르거나 존재하지 않고 category 1개에 대한 nMarker 생성인 경우 param(null, inCategoryTitle,)
-            newKMarkerArr를 알면 param(newKMarkerArr, null,) OR prarm(newKMarkerArr, inCategoryTitle,). 동작 방식은 같음.
-            newKMarkerArr를 모르거나 존재하지 않고 category 또한 모르면 존재하는 모든 kMarker에 대해 nMarker를 생성 시작한다. param(null, null,)
-        */
-        function createNMarkerFromKMarkerStorageArr(newKMarkerArr, inCategoryTitle, bInit){
-
-            if(bInit == true){
-                //TODO : delete left data using vm.nMarkerStorageArr, vm.nMarkerTitleToKMarkerMappingObj
-                //vm.nMarkerStorageArr = [];  
-            }
-            var tempKMarkerArr;
-
-            if(newKMarkerArr == null && inCategoryTitle != null){
-                //create nMarker with catetory
-                tempKMarkerArr = vm.categoriesToKMarkerMappingObj[inCategoryTitle].getKMarkersArr();
-                
-            }
-            else if(newKMarkerArr != null){
-                //newKMarkerArr nMarker with list.
-                tempKMarkerArr = newKMarkerArr;
-            }
-            else{
-                //newKMarkerArr == null && inCategoryTitle == null... create nMarker All
-                tempKMarkerArr = vm.kMarkerStorageArr;
-            }
-            
-            for(var i=0, ii=tempKMarkerArr.length; i<ii; i++){
-                if(!vm.nMarkerTitleToKMarkerMappingObj.hasOwnProperty(tempKMarkerArr[i].getTitle())){
-                    if(tempKMarkerArr[i].getNMarker == null){
-                        console.log("createNMarkerFromKMarkerStorageArr. 없어야(null) 할 kMarker의 marker가 존재함.");
-                    }
-                    var tempNMarker = new naver.maps.Marker({
-                        //map: map,
-                        position: new naver.maps.LatLng(tempKMarkerArr[i].getLat(), tempKMarkerArr[i].getLng()),
-                        title: tempKMarkerArr[i].getTitle(),    //set title with kMarker.title(TMP)
-                        icon: {
-                            url: MARKER_ICON_URL,
-                            size: new naver.maps.Size(24, 37),
-                            anchor: new naver.maps.Point(12, 37),
-                            origin: new naver.maps.Point(MARKER_SPRITE_POSITION[tempKMarkerArr[i].getFirstCategoryTitle()][0], MARKER_SPRITE_POSITION[tempKMarkerArr[i].getFirstCategoryTitle()][1])
-                        },
-                        shape: MARKER_SPRITE_SHAPE,
-                        zIndex: 20
-                    });
-
-                    tempKMarkerArr[i].setNMarker(tempNMarker);
-                    
-                    vm.nMarkerTitleToKMarkerMappingObj[tempKMarkerArr[i].getTitle()] = tempKMarkerArr[i];   //nMarkerTitleToKMarkerMappingObj에 등록
-
-                    //register listener
-                    tempNMarker.addListener('mouseover', nMarkerListenerMouseover);
-                    tempNMarker.addListener('mouseout', nMarkerListenerMouseout);
-                    tempNMarker.addListener('click', nMarkerListenerClick);
-                    //recognizer.add(tempNMarker);
-
-                    window.MARKER = tempNMarker;
-                }
-                else{
-                    //aleady has nMarker in kMarker
-                }
-            }
         };
 
         //inCategoryTitleArr(표시할 카테고리들)에 해당하는 nMarkers를 map상에 올림. bSetMapNullNMarkersOnMap인 경우 현재 map상에 표시되는 모든 nMarker를 내림.
         //inCategoryTitleArr는 array만 받으며 ALL을 전달 할 때 ["ALL"]을 전달, 해제하는 경우 ["none"]
-        function setMapToNMarkersWithCategoryKMarkersArr(inCategoryTitleArr, bSetMapNullNMarkersOnMap){
+        function setMapToNMarkersWithCategoryKMarkersArr(inCategoryTitleArr, bSetMapNullNMarkersOnMap, inCampusType){
             //현재 map상에 있는 nMarker 해제
             if(bSetMapNullNMarkersOnMap == true){
                 //setMap 모두 해제
@@ -1303,11 +1349,11 @@
 
             //inCategoryTitleArr All case
             if(inCategoryTitleArr[0] == "ALL"){
-                for(var i=0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
-                    vm.kMarkerStorageArr[i].setOnMap(map, recognizer);
-                    vm.kMarkerStorageArr[i].setPolyOnMap(map);
-                    //register on vm.kMarkersOnMap
-                    vm.kMarkersOnMap.push(vm.kMarkerStorageArr[i]);
+                for (var key in vm.kMarkerStorageObj) {
+                    var tempKMarker = vm.kMarkerStorageObj[key];
+                    tempKMarker.setOnMap(map, recognizer);
+                    tempKMarker.setPolyOnMap(map);
+                    vm.kMarkersOnMap.push(tempKMarker);
                 }
             }
             else if(inCategoryTitleArr[0] == "none"){
@@ -1317,13 +1363,11 @@
             else{   
                 for(var i=0, ii = inCategoryTitleArr.length; i<ii; i++){
                     //use inCategoryTitleArr[i]
-
-                    //console.log(vm.categoriesToKMarkerMappingObj);
+                    //use vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[i]].getKMarkersArr()
+                    var tempKMarkersArr = vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[i]].getKMarkersArr();
                     for(var j = 0, jj = vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[i]].getKMarkersArr().length; j<jj; j++){
-                        //use vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[i]].getKMarkersArr()
-                         var tempKMarkersArr = vm.categoriesToKMarkerMappingObj[inCategoryTitleArr[i]].getKMarkersArr();
-                         //use tempKMarkersArr[j] typeof kMarker
-                         if(tempKMarkersArr[j].isOnMap() == false){
+                         //use tempKMarkersArr[j] typeof kMarker. 캠퍼스타입 확인 및 맵에 올려져있는지 확인.
+                         if(tempKMarkersArr[j].getCampusType() == inCampusType && tempKMarkersArr[j].isOnMap() == false){
                             tempKMarkersArr[j].setOnMap(map, recognizer);
                             tempKMarkersArr[j].setPolyOnMap(map);
                             vm.kMarkersOnMap.push(tempKMarkersArr[j]);
@@ -1373,11 +1417,9 @@
         //표시할 4개의 카테고리 리스트를 가져오는 함수.
         function get4CategoryObj(curIdx, objc){
             var ret = [];
-            //console.log("oblen : " + objc.length);
             var fixedCurIdx = curIdx;
             for(var i = 0; i<objc.length-fixedCurIdx && i<CATEGORY_LIMIT_NUM; i++, curIdx++){
                 ret[i] = objc[curIdx];
-                //console.log("...");
             }
             if(objc.length > curIdx){
                 vm.nextCat = true;
@@ -1386,7 +1428,6 @@
                 vm.nextCat = false;
             }
             vm.limitNum = i;
-            //console.log("lmitm : " + vm.limitNum);
             return ret;
         }
 
@@ -1398,12 +1439,16 @@
             vm.selectedCategoryType = "none";
             currentCategoryIdx = 0;
             currentWholeCategoryData = categoryMenu; //초기 데이터
-            //console.log(vm.categoryMenu);
             vm.currentCategoryData = get4CategoryObj(currentCategoryIdx, currentWholeCategoryData);
             vm.limitNum = CATEGORY_LIMIT_NUM;
-            
-            //console.log(vm.currentCategoryData);
         }
+
+        function initCategoryObject(){   //카테고리 mapping 관련 초기화
+            for(var i=0, ii=categoryMenu_PC.length; i<ii; i++){
+                vm.categoriesToKMarkerMappingObj[categoryMenu_PC.type] = new categoriesToKMarkerMappingInnerObj([], "F");
+            }
+        }
+
         function configNextCat(){
             if(vm.currentCategoryData.length > CATEGORY_LIMIT_NUM){
                 vm.nextCat = true;
@@ -1430,14 +1475,25 @@
                     if(vm.currentCategoryData["type"] == "none"){
                         //없는 카테고리이므로 되돌아간다.
                         initCategorySelect();
-                        vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["none"], true);
+                        vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["none"], true, "X");    //none이라서 campus type 필요 x 
                     }
                     else{
                         initCategorySelect();
                         vm.selectedCategoryType = answer;
+                        var tempCampusType = "M";
+                        if(vm.univName == "인사캠"){
+                            tempCampusType = "M";
+                        }
+                        else{
+                            tempCampusType = "Y";
+                        }
+                        vm.selectedCategoryType = answer;
+                        mapApiService.getMarkerDetail(vm.selectedCategoryType, tempCampusType, true);
+                        /*
                         var categoryArrParam = [];
                         categoryArrParam.push(vm.selectedCategoryType);
-                        vm.setMapToNMarkersWithCategoryKMarkersArrFunc(categoryArrParam, true);      
+                        vm.setMapToNMarkersWithCategoryKMarkersArrFunc(categoryArrParam, true);
+                        */
                     }
                     
                 }
@@ -1462,12 +1518,23 @@
                 vm.selectedCategoryType = answer.type;
                 if(answer.type == "none"){
                     //marker delete
-                    vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["none"], true);
+                    vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["none"], true, "X");
                 }
                 else{
+                    var tempCampusType = "M";
+                    if(vm.univName == "인사캠"){
+                        tempCampusType = "M";
+                    }
+                    else{
+                        tempCampusType = "Y";
+                    }
+                    vm.selectedCategoryType = answer;
+                    mapApiService.getMarkerDetail(vm.selectedCategoryType.type, tempCampusType, true);
+                    /*
                     var categoryArrParam = [];
-                    categoryArrParam.push(answer.type);
+                    categoryArrParam.push(vm.selectedCategoryType);
                     vm.setMapToNMarkersWithCategoryKMarkersArrFunc(categoryArrParam, true);
+                    */
                     //type에 따라 마커 인쇄
                 }
             }
@@ -1489,8 +1556,8 @@
             for(var i=0, ii=categoryMenu_PC.length; i<ii; i++){
                 typeArr.push(categoryMenu_PC[i].type);
             }
-            var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(typeArr, false); //kMarker생성
-            vm.createNMarkerFromKMarkerStorageArrFunc(null, null, false);         //nMarker생성
+            //var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(typeArr, false); //kMarker생성
+            //vm.createNMarkerFromKMarkerStorageArrFunc(null, null, false);         //nMarker생성
         };
 
 
@@ -1501,8 +1568,15 @@
             vm.bIsModifyMode = true;            //modify mode
             vm.drawingMenu = drawingMenuModify; //도구모음 리스트 변경
             vm.bCategoryButtonIsEnable = false;
-            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+            /*for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
                 var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(false);
+                }
+            }
+            */
+            for (var key in vm.kMarkerStorageObj) {
+                var tempNMarker = vm.kMarkerStorageObj[key].getNMarker();
                 if(tempNMarker != null){
                     tempNMarker.setClickable(false);
                 }
@@ -1521,8 +1595,14 @@
             vm.bIsModifyMode = false;           //create mode
             vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
             vm.bCategoryButtonIsEnable = true;
-            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+            /*for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
                 var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(true);
+                }
+            }*/
+            for (var key in vm.kMarkerStorageObj) {
+                var tempNMarker = vm.kMarkerStorageObj[key].getNMarker();
                 if(tempNMarker != null){
                     tempNMarker.setClickable(true);
                 }
@@ -1534,13 +1614,27 @@
             //all marker click disable(peer, category marker, category button)
             vm.bIsCreateMode = true;            //modify mode
             selectKMarker(null);    //selectedKMarker init
+            var tempCampusType = "M";
+            if(vm.univName == "인사캠"){
+                tempCampusType = "M";
+            }
+            else{
+                tempCampusType = "Y";
+            }
             $rootScope.$broadcast('ToSide', {
                     type : 'gotoCreate',
+                    campusType : tempCampusType
                 });
             vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
             //vm.bCategoryButtonIsEnable = false;
-            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+            /*for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
                 var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(false);
+                }
+            }*/
+            for (var key in vm.kMarkerStorageObj) {
+                var tempNMarker = vm.kMarkerStorageObj[key].getNMarker();
                 if(tempNMarker != null){
                     tempNMarker.setClickable(false);
                 }
@@ -1553,8 +1647,15 @@
             vm.bIsCreateMode = false;           //create mode
             vm.drawingMenu = drawingMenuCreate; //도구모음 리스트 변경
             //vm.bCategoryButtonIsEnable = true;
-            for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
+            /*for(var i = 0, ii = vm.kMarkerStorageArr.length; i<ii; i++){
                 var tempNMarker = vm.kMarkerStorageArr[i].getNMarker();
+                if(tempNMarker != null){
+                    tempNMarker.setClickable(true);
+                }
+            }*/
+            
+            for (var key in vm.kMarkerStorageObj) {
+                var tempNMarker = vm.kMarkerStorageObj[key].getNMarker();
                 if(tempNMarker != null){
                     tempNMarker.setClickable(true);
                 }
@@ -1619,7 +1720,7 @@
         };
         function mapApiServiceInit(){
             //init(nMarkerTitleToKMarkerMappingObj, vm.categoriesToKMarkerMappingObj, vm.kMarkerStorageArr, vm.kMarkersOnMap, categoryMenu)
-            mapApiService.init(vm.nMarkerTitleToKMarkerMappingObj, vm.categoriesToKMarkerMappingObj, vm.kMarkerStorageArr, vm.kMarkersOnMap, categoryMenu, drawingManager);
+            mapApiService.init(vm.nMarkerTitleToKMarkerMappingObj, vm.categoriesToKMarkerMappingObj, vm.kMarkerStorageObj, vm.kMarkersOnMap, categoryMenu, drawingManager);
         }
 
     //etc
@@ -1639,7 +1740,7 @@
             
             if(vm.isMobile){
                 console.log('모바일 환경 접속 확인 완료');
-                vm.ngShowDrawingButton = false;
+                //vm.ngShowDrawingButton = false;
                 //$("#drawingButton").hide();
                 //document.getElementById("drawingButton").hide();
             }
@@ -1678,7 +1779,6 @@
 
         //주어진 sidebar width로 map과 button들의 size를 조절한다.
         function updateDocumentElementSize(sideWitdh, sideOpen){
-            console.log("updateDocumentcalled");
             //tutorialMarkService.notifyDOMChangeForTutorialMark();  //notify DOM modified to map.tutorial.service
             if(sideOpen){
                 var winWitdh = $(window).width();
@@ -1734,10 +1834,12 @@
         function univButtonClicked(){
             if(vm.univName == "자과캠"){
                 vm.univName = "인사캠";    // move to 인사캠
+                categorySelectPC(vm.selectedCategoryType);  //이동하면서 해당 캠퍼스 category 선택.
                 univMoveToSeoul();
             }
             else{
                 vm.univName = "자과캠";    // move to 자과캠
+                categorySelectPC(vm.selectedCategoryType);  //이동하면서 해당 캠퍼스 category 선택.
                 univMoveToSuwon();
             }
         };
@@ -1755,7 +1857,6 @@
             mapLocation.lastLng = LATLNG_UNIV_SEOUL.lng();  //app 첫 진입시 사용자 위치가 아닌 성대 중앙으로 이동
             map.panTo(LATLNG_UNIV_SEOUL, {duration : 400, easing : 'easeOutCubic'});
             
-            //console.log(peerLocation);
         };
 
         $scope.safeApply = function(fn) {
@@ -1804,38 +1905,9 @@
         mobileConfig();
         initCategorySelect();   //카테고리 variable 초기화
         mapApiServiceInit();    //mapApiService Init
-        //stream
-
-        /* 단일 카테고리 가져오기
-        vm.commGetDataFromServerFunc(["프린터"]);
-        var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["프린터"], false);
-        vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "프린터", false);
-        */
-
-        initKMarkerAndNMarker();    //모든 카테고리에 해당하는 data 불러와 setting
-        
-
-        //var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["프린터"], false); //kMarker생성
-        //vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "편의점", false);         //nMarker생성
-        //var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["교내식당"], false); //kMarker생성
-        //vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "편의점", false);         //nMarker생성
-        //var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc(["편의점"], false); //kMarker생성
-        //vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, "편의점", false);         //nMarker생성
-        //stream end
-
-        //vm.setMapToNMarkersWithCategoryKMarkersArrFunc(["교내식당"], true);
-
-
-/*
-        console.log(vm.nMarkerTitleToKMarkerMappingObj);
-        console.log(vm.categoriesToKMarkerMappingObj);
-        console.log(vm.kMarkerStorageArr);
-        console.log(vm.kMarkersOnMap);
-        */
-
-        //vm.kMarkerStorageArr[0].setOnMap(map);
-
-        
+        console.log($sessionStorage.get('AuthToken'));
+        initCategoryObject();   //카테고리 mapping 관련 초기화
+       
         
 // watch
     //카테고리버튼
@@ -1852,7 +1924,6 @@
 
         //카테고리 툴팁 고정
         $scope.$watch(function() { return vm.tooltipVisible}, function(newVal) {
-            //console.log(newVal);
             //if vm.categoryIsOpen then
             vm.tooltipVisible = vm.categoryIsOpen;
         }, true);
@@ -1865,7 +1936,6 @@
                 return(peerLocation.modified);   //갱신 버튼 누른 경우
             },
             function handleEvent(newValue, oldValue){
-                console.log(peerLocation);
                 if(peerLocation.peer == ""){
                     return; //아직 peerlist를 받지 않음.
                 }
@@ -1959,8 +2029,6 @@
                             //inData region
                             if(inData.region != null && inData.region.length != 0){
                                 tempRegion = [];
-                                //console.log(inData.region._array);
-                                //console.log(inData.region._array.length);
                                 for(var j=0, jj = inData.region.length; j<jj; j++){
                                     tempRegion.push(new naver.maps.LatLng(inData.region[j]._lat, inData.region[j]._lng));
                                 }
@@ -1980,6 +2048,7 @@
                                 shape: MARKER_SPRITE_SHAPE,
                                 zIndex: 20
                             });
+                            //tempNMarker.set('spriteIdx', inData.categoriesArr[0]);
 
                             
                             //register listener
@@ -1992,15 +2061,14 @@
                             var newKMarker = new kMarker(
                                     tempNMarker, //nMarker
                                     inData.id,
-                                    null,
-                                    0.0,
-                                    0.0,
+                                    null,   //title
+                                    null,   //center
                                     inData.categoriesArr, //categories
-                                    0,
-                                    0,
-                                    tempRegion
+                                    inData.detail,  //inData.detail
+                                    inData.campusType,  //campusType
+                                    null,
+                                    inData.tagsArr //tagsArr
                                 );
-                            newKMarker.setTagsArr(inData.tagsArr);
 
                             //create nPolygon
                             //path가 있는 경우
@@ -2008,9 +2076,9 @@
                                 var tempNPolygon = new naver.maps.Polygon({
                                     //map: map,
                                     paths: tempRegion,
-                                    fillColor: '#ff0000',
+                                    fillColor: polygonBasicColor,
                                     fillOpacity: 0.3,
-                                    strokeColor: '#ff0000',
+                                    strokeColor: lineBasicColor,
                                     strokeOpacity: 0.6,
                                     strokeWeight: 3
                                 });
@@ -2021,18 +2089,16 @@
 
                             //각각의 kMarker에 대해 vm.categoriesToKMarkerMappingObj에 등록.
                             var tempCategoriesForNewMarker = inData.categoriesArr; //newKMarker.getCategoriesArr();
-                            //console.log(inData);
                             for(var j=0, jj=tempCategoriesForNewMarker.length; j<jj; j++){  //comm을 통해 얻은 tempMarkerData.markerCategory가 array라고 가정 
-                                console.log(1);
                                 //kMarker에 해당하는 모든 categories에 대해 vm.categoriesToKMarkerMappingObj에 등록한다.
                                 if(!vm.categoriesToKMarkerMappingObj.hasOwnProperty(tempCategoriesForNewMarker[j])){             
                                     //해당 카테고리가 categoriesToKMarkerMappingObj의 key로 존재하지 않는 경우
-                                    vm.categoriesToKMarkerMappingObj[tempCatetempCategoriesForNewMarkergories[j]] = new categoriesToKMarkerMappingInnerObj([], "F");
+                                    vm.categoriesToKMarkerMappingObj[tempCategoriesForNewMarker[j]] = new categoriesToKMarkerMappingInnerObj([], "F");
                                 }
                                 vm.categoriesToKMarkerMappingObj[tempCategoriesForNewMarker[j]].getKMarkersArr().push(newKMarker);   //category mapping kMarker추가
                             }
 
-                            vm.kMarkerStorageArr.push(newKMarker);  //kMarker storage에 추가
+                            vm.kMarkerStorageObj[newKMarker.id] = newKMarker;  //kMarker storage에 추가
 
                             drawingManagerClear();
                             newKMarker.setOnMap(map, recognizer);
@@ -2040,56 +2106,54 @@
                             vm.kMarkersOnMap.push(newKMarker);
 
                             startSideBarWithKMarker(newKMarker);    //open side bar with new marker
+                            selectKMarker(newKMarker);
                             endCreateMode();    //enable clickable
-
-                            //selectKMarker(newKMarker);
 
                            /*
                             disable -> enable
                             */
                         }
                         else if(args.result == "fail"){
-                            
+                            if(args.error == "duplicatedName"){
+                                alert('중복되는 마커 이름입니다.');
+                            }
                         }
                     }
                     else if(args.apiType == "modify"){
                         if(args.result == "success"){
                             var inData = args.data;    //commKMarker
                             var originKMarker = args.originData;
-                            var tempRegion = null;
+                            //var tempRegion = null;
 
                             if(inData.title != originKMarker.getTitle()){
                                 vm.nMarkerTitleToKMarkerMappingObj[inData.title] = originKMarker;
                                 delete vm.nMarkerTitleToKMarkerMappingObj[originKMarker.getTitle()]
                             }
 
-                            //inData region
-                            if(inData.region != null && inData.region.length != 0){
-                                tempRegion = [];
-                                //console.log(inData.region._array);
-                                //console.log(inData.region._array.length);
-                                for(var j=0, jj = inData.region.length; j<jj; j++){
-                                    tempRegion.push(new naver.maps.LatLng(inData.region[j]._lat, inData.region[j]._lng));
-                                }
-                            }
-
-
                             originKMarker.setTitle(inData.title);
+                            originKMarker.setCampusType(inData.campusType);
                             originKMarker.setPositionWithLatLngNew(inData.center._lat, inData.center._lng);
+                            originKMarker.setDetail(inData.detail);
                             originKMarker.setTagsArr(inData.tagsArr);
-                            originKMarker.setRegion(inData.region);
+                            //originKMarker.setRegion(inData.region);
                             originKMarker.unsetPolyOnMap();
+
                             if(inData.region != null && inData.region.length != 0){
                                 var tempNPolygon = new naver.maps.Polygon({
                                     //map: map,
-                                    paths: tempRegion,
-                                    fillColor: '#ff0000',
+                                    paths: inData.region,
+                                    fillColor: polygonBasicColor,
                                     fillOpacity: 0.3,
-                                    strokeColor: '#ff0000',
+                                    strokeColor: lineBasicColor,
                                     strokeOpacity: 0.6,
                                     strokeWeight: 3
                                 });
                                 originKMarker.setNPolygon(tempNPolygon);
+                            }
+                            else{
+                                //기존 폴리곤 해제
+                                originKMarker.unsetPolyOnMap();
+                                originKMarker.setNPolygon(null);
                             }
                             
                             //mapping 해제
@@ -2109,27 +2173,22 @@
                             originKMarker.setCategoriesArr(inData.categoriesArr);
                             for(var i = 0, ii = inData.categoriesArr.length; i<ii; i++){
                                 //service.categoriesToKMarkerMappingObj[inData.categoriesArr[i]] == innerMappingObj
-                                vm.categoriesToKMarkerMappingObj[inData.categoriesArr[i]].getKMarkersArr().push(originKMarker);;
+                                vm.categoriesToKMarkerMappingObj[inData.categoriesArr[i]].getKMarkersArr().push(originKMarker);
                             }
+
+                            var icon = originKMarker.getNMarker().getIcon();
+                            icon.origin = new naver.maps.Point(MARKER_SPRITE_POSITION[inData.categoriesArr[0]][0], MARKER_SPRITE_POSITION[inData.categoriesArr[0]][1]);
+                            //tempNMarker.set('spriteIdx', inData.categoriesArr[0]);
+                            originKMarker.getNMarker().setIcon(icon);
+
                             
                             originKMarker.setPolyOnMap(map);
 
                             drawingManagerClear();
 
                             startSideBarWithKMarker(originKMarker);    //open side bar with new marker
-                            /*
-                            for(var i=0; i < sideMapCommService.kMarkerResolvedArr.length; i++){
-                                if(sideMapCommService.kMarkerResolvedArr == originKMarker){
-                                    //sidebar arr를 변경하지 않고 있는 상태에서 해당 index로 open
-                                    $rootScope.$broadcast('ToSide', {
-                                        type : 'bOpen',
-                                        bOpen : true,
-                                        idx : i
-                                    });
-                                    break;
-                                }
-                            }
-                            */
+                            
+                            changeKMarkerColorBack(originKMarker);
                             endModifyMode();
                             
                         }
@@ -2167,6 +2226,11 @@
                                 }
                             }
 
+                            //kMarkerStorageArr 해제
+                            if(vm.kMarkerStorageObj.hasOwnProperty(originKMarker.id)){
+                                delete vm.kMarkerStorageObj[originKMarker.id];
+                            }
+                            
                             $rootScope.$broadcast('ToSide', {
                                 type : 'api',
                                 apiType : 'delete',
@@ -2182,6 +2246,18 @@
                         else if(args.result == "other state"){
 
                         }
+                    }
+                    else if(args.apiType == "get"){
+                        if(args.result == "success"){
+                            vm.markerDataArr = args.data;
+                            
+                            var newKMarkerArr = vm.createKMarkerStorageArrFromDataWithCategoryFunc([args.categoryType], args.campusType); //kMarker생성
+                            //vm.createNMarkerFromKMarkerStorageArrFunc(newKMarkerArr, null, false);         //nMarker생성
+                            var categoryArrParam = [];
+                            categoryArrParam.push(args.categoryType);
+                            vm.setMapToNMarkersWithCategoryKMarkersArrFunc(categoryArrParam, true, args.campusType);
+                        }
+                            
                     }
                 }
                 else if(args.type == "bOpen"){
@@ -2236,7 +2312,7 @@
                     var tempPolyPath = [];
                     if(vm.modifiedKMarker.getNPolygon() != null && vm.modifiedKMarker.getNPolygon() != undefined){
                         //originNPolygon 색 변경
-                        vm.modifiedKMarker.getNPolygon().setOptions({fillColor: '#112244'});
+                        vm.modifiedKMarker.getNPolygon().setOptions({fillColor: polygonModifyOriginColor, strokeColor : lineModifyOriginColor});
                         var tempOriginPath = vm.modifiedKMarker.getNPolygon().getPath();
                         for(var i=0, ii=tempOriginPath.length; i<ii; i++){
                             tempPolyPath.push(new naver.maps.LatLng(tempOriginPath._array[i]._lat, tempOriginPath._array[i]._lng));
@@ -2244,9 +2320,9 @@
                         var tempPoly = new naver.maps.Polygon({
                             //map: map,
                             paths: tempPolyPath,
-                            fillColor: '#00ff00',
+                            fillColor: polygonModifyColor,
                             fillOpacity: 0.3,
-                            strokeColor: '#ff0000',
+                            strokeColor: lineModifyColor,
                             strokeOpacity: 0.6,
                             strokeWeight: 3
                         });
@@ -2255,6 +2331,9 @@
                 }
                 else if(args.type == "selectKMarker"){
                     selectKMarker(args.kMarker);
+                }
+                else if(args.type == "changeKMarkerColorBack"){
+                    changeKMarkerColorBack(args.kMarker);
                 }
             }
         );
