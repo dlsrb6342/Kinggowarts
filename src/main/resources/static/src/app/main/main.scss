@@ -1,0 +1,41 @@
+.whiteLine {
+  position: absolute;
+  background-color: #FFFFFF;
+}
+
+.verticalLine { 
+   width: 1px;
+   height: 100px;
+}
+
+.horizontalLine {
+   width: 140px;
+   height: 1px;
+}
+
+.aboveWideBlack {
+	z-Index:150;
+	position:absolute;
+}
+
+.whiteFont{
+	color: #FFFFFF;
+}
+
+.blackPanel{
+	background-color: #000000;
+	opacity:0.5;
+	z-Index:149;
+	width:100%;
+	height:100%;
+	position:absolute;
+}
+
+#layout-content-with-toolbar{
+	#wideTutorial{
+		width:100%;
+		height:100%;
+	}
+}
+
+

@@ -14,7 +14,43 @@
 
 	<!-- ng-repeat를 사용하는 경우 img를 포함하는 사각형의 div 형태로 absolue가 생성이 되며 이로 인해 하단 레이아웃 클릭이 불가능해짐. 따라서 모두 일일히 지정해야함.-->
 	<img ng-if="vm.tutorialMarkArr[0].bMarkerNgIf" id= {{vm.tutorialMarkArr[0].markerId}} ng-click="vm.tutorialMarkClicked(0)" ng-src="{{vm.tutorialMarkArr[0].imgSrc}}" ng-style="vm.tutorialMarkArr[0].ngStyle" style="z-index:70;position:absolute;">
-	<img ng-if="vm.tutorialMarkArr[1].bMarkerNgIf" id= {{vm.tutorialMarkArr[1].markerId}} ng-click="vm.tutorialMarkClicked(1)" ng-src="{{vm.tutorialMarkArr[1].imgSrc}}" ng-style="vm.tutorialMarkArr[1].ngStyle" style="z-index:70;position:absolute;">
+	<!--<img ng-if="vm.tutorialMarkArr[1].bMarkerNgIf" id= {{vm.tutorialMarkArr[1].markerId}} ng-click="vm.tutorialMarkClicked(1)" ng-src="{{vm.tutorialMarkArr[1].imgSrc}}" ng-style="vm.tutorialMarkArr[1].ngStyle" style="z-index:70;position:absolute;"> -->
+
+	<div id="wideTutorial" ng-hide="!vm.isWideTutorialOn" style="z-index:148;position:absolute;">
+		<div id="wideTutorialBlank" class="blackPanel" ng-click="vm.isWideTutorialOn = false" ></div>
+		
+
+		<div id= {{vm.tutorialMarkArr[1].markerId}} ng-hide="!vm.tutorialMarkArr[1].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[1].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[2].markerId}} ng-hide="!vm.tutorialMarkArr[2].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[2].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(2)">{{vm.tutorialMarkArr[2].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[3].markerId}} ng-hide="!vm.tutorialMarkArr[3].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[3].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[4].markerId}} ng-hide="!vm.tutorialMarkArr[4].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[4].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(4)">{{vm.tutorialMarkArr[4].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[5].markerId}} ng-hide="!vm.tutorialMarkArr[5].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[5].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[6].markerId}} ng-hide="!vm.tutorialMarkArr[6].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[6].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(6)">{{vm.tutorialMarkArr[6].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[7].markerId}} ng-hide="!vm.tutorialMarkArr[7].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[7].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[8].markerId}} ng-hide="!vm.tutorialMarkArr[8].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[8].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(8)">{{vm.tutorialMarkArr[8].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[9].markerId}} ng-hide="!vm.tutorialMarkArr[9].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[9].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[10].markerId}} ng-hide="!vm.tutorialMarkArr[10].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[10].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(10)">{{vm.tutorialMarkArr[10].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[11].markerId}} ng-hide="!vm.tutorialMarkArr[11].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[11].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[12].markerId}} ng-hide="!vm.tutorialMarkArr[12].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[12].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(12)">{{vm.tutorialMarkArr[12].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[13].markerId}} ng-hide="!vm.tutorialMarkArr[13].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[13].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[14].markerId}} ng-hide="!vm.tutorialMarkArr[14].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[14].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(14)">{{vm.tutorialMarkArr[14].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[15].markerId}} ng-hide="!vm.tutorialMarkArr[15].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[15].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[16].markerId}} ng-hide="!vm.tutorialMarkArr[16].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[16].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(16)">{{vm.tutorialMarkArr[16].imgSrc}}</md-button>
+		
+		<div id= {{vm.tutorialMarkArr[17].markerId}} ng-hide="!vm.tutorialMarkArr[17].bMarkerNgIf" class="whiteLine verticalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[17].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[18].markerId}} ng-hide="!vm.tutorialMarkArr[18].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[18].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(18)">{{vm.tutorialMarkArr[18].imgSrc}}</md-button>
+
+		<div id= {{vm.tutorialMarkArr[19].markerId}} ng-hide="!vm.tutorialMarkArr[19].bMarkerNgIf" class="whiteLine horizontalLine aboveWideBlack" ng-style="vm.tutorialMarkArr[19].ngStyle"></div>
+		<md-button id= {{vm.tutorialMarkArr[20].markerId}} ng-hide="!vm.tutorialMarkArr[20].bMarkerNgIf" class="whiteFont aboveWideBlack" ng-style="vm.tutorialMarkArr[20].ngStyle" ng-click="vm.tutoriaClickedWithMiddle(20)">{{vm.tutorialMarkArr[20].imgSrc}}</md-button>
+		
+	</div>
 </div>
 </div>
 
