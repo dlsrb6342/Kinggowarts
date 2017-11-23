@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/member")
@@ -102,4 +103,15 @@ public class MemberController {
         return memberService.changePassword(user.getMemSeq(), newPassword, lastPassword);
     }
 
+    @PostMapping(value = "/findPassword")
+    public String findPassword(String email, String name) {
+        return memberService.findPassword(email, name);
+    }
+
+    @PutMapping(value = "/setAgreement")
+    public String setAgreement(@RequestParam String b) {
+        UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Boolean agreement = Boolean.valueOf(b);
+        return memberService.setAgreement(user.getMemSeq(), agreement);
+    }
 }

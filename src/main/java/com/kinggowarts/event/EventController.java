@@ -14,7 +14,7 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping("")
-    public List<OnlyCreatorName> findAllEvent(){
+    public List<EventProjection> findAllEvent(){
         return eventService.findAll();
     }
 

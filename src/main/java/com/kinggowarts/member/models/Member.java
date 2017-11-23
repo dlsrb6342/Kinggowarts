@@ -58,6 +58,7 @@ public class Member{
     private Double lng;
     private Double lat;
     private String profileImgPath;
+    private Boolean agreement;
 
     //나를 따르는 사람들- 나를 친하다고 생각해주는 사람들
     @ManyToMany
@@ -86,7 +87,7 @@ public class Member{
             joinColumns= {@JoinColumn(name="REQ_FROM_SEQ")},
             inverseJoinColumns= {@JoinColumn(name="REQ_TO_SEQ")})
     @JsonIgnore
-    private Set<Member> reqFollowing = new HashSet<Member>();
+    private Set<Member> reqFollowing = new HashSet<>();
 
     private ArrayList<String> favorite = new ArrayList<>();
 

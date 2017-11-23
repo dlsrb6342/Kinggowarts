@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.Date;
 import java.util.List;
 
-public interface OnlyCreatorName {
+public interface EventProjection {
     long getId();
     @Value("#{target.l_id}")
     long getL_id();

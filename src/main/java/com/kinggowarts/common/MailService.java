@@ -72,5 +72,16 @@ public class MailService {
         }
     }
 
+    @Async
+    public void sendNewPassword(String email, String newPassword) {
+        try {
+            String subject = "비밀번호 재발급 메일입니다.";
+            StringBuilder sb = new StringBuilder();
+            sb.append("<p>새로운 비밀번호입니다. 로그인 후 비밀번호를 변경해주세요.<br>" +
+                    newPassword + "</p>");
+            send(subject, sb.toString(), env.getProperty("spring.mail.username"), email, null);
+        }catch (Exception e){
 
+        }
+    }
 }

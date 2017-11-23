@@ -13,7 +13,41 @@
         border-radius: 0;
     }
 
-    #user-menu {
+    #user-menu-drop-down {
+        height: $toolbarHeight;
+        padding: 0;
+
+        md-menu-item .md-button {
+            font-size: 15px;
+
+            md-icon {
+                margin: auto 16px auto 0;
+            }
+        }
+
+        .user-button {
+            margin: 0;
+            padding: 0 16px;
+            height: $toolbarHeight;
+            text-transform: none;
+
+            .avatar-wrapper {
+                position: relative;
+
+                .status {
+                    position: absolute;
+                    bottom: -3px;
+                    right: 5px;
+                }
+            }
+
+            .username {
+                margin: 0 12px 0 8px;
+            }
+        }
+    }
+
+    #user-menu-right-toolbar {
         height: $toolbarHeight;
         padding: 0;
 
@@ -105,7 +139,15 @@
 
     #toolbar {
 
-        #user-menu {
+        #user-menu-drop-down {
+
+            .user-button {
+                min-width: 64px;
+                padding: 0 2px 0 10px;
+            }
+        }
+
+        #user-menu-right-toolbar {
 
             .user-button {
                 min-width: 64px;

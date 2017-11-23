@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MarkerService {
@@ -22,19 +24,19 @@ public class MarkerService {
     @Autowired
     private TagRepository tagDao;
 
-    List<Marker> findAllByCategory(String q, String type){
+    List<MarkerProjection> findAllByCategory(String q, String type){
         if(markerCategoryDao.findByName(q) == null){
             return null;
         }
         return markerDao.findAllByMarkerCategory_NameAndMarkerCategory_Type(q, type);
     }
 
-    List<Marker> searchMarker(String q){
-        List<Marker> searchListByName = searchMarkerByName(q);
-        List<Marker> searchListByTag = markerSearchDao.findAllByTagsName(q);
+    List<MarkerProjection> searchMarker(String q){
+        List<MarkerProjection> searchListByName = searchMarkerByName(q);
+        List<MarkerProjection> searchListByTag = markerSearchDao.findAllByTagsName(q);
         int nameSize = searchListByName.size();
         int tagSize = searchListByTag.size();
-        List<Marker> markerList = new ArrayList<>();
+        List<MarkerProjection> markerList = new ArrayList<>();
 
         for(int i = 0; i < Math.max(nameSize, tagSize); i++){
             if(i < nameSize)
@@ -46,7 +48,7 @@ public class MarkerService {
         return markerList;
     }
 
-    private List<Marker> searchMarkerByName(String q){
+    private List<MarkerProjection> searchMarkerByName(String q){
         if(q.equals("공대")) {
             return markerSearchDao.findAllByNameLike(q);
         } else {
@@ -55,23 +57,29 @@ public class MarkerService {
     }
 
     @Transactional
-    String saveMarker(Marker marker) {
+    Map<String, Object> saveMarker(Marker marker) {
         MarkerCategory markerCategory = markerCategoryDao.findByName(marker.getMarkerCategory().getName());
+        Map<String, Object> jsonObject = new HashMap<>();
+
         if(markerDao.findByName(marker.getName()) != null){
-            return "duplicatedName";
+            jsonObject.put("success", false);
+            jsonObject.put("error", "duplicatedName");
+            return jsonObject;
         } else if(markerCategory == null) {
-            return "noCategory";
+            jsonObject.put("success", false);
+            jsonObject.put("error", "noCategory");
+            return jsonObject;
         } else {
-            if(!marker.getType().equals("user")){
-                return "notAllowed";
-            }
+            marker.setType("user");
             marker.setMarkerCategory(markerCategory);
             coordinateDao.save(marker.getCenter());
             coordinateDao.save(marker.getPath());
             tagDao.save(marker.getTags());
             markerDao.save(marker);
             markerSearchDao.save(marker);
-            return "success";
+            jsonObject.put("success", true);
+            jsonObject.put("id", marker.getId());
+            return jsonObject;
         }
     }
 
