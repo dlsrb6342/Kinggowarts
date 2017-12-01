@@ -89,8 +89,6 @@ public class Member{
     @JsonIgnore
     private Set<Member> reqFollowing = new HashSet<>();
 
-    private ArrayList<String> favorite = new ArrayList<>();
-
     public Member(Long memberSeq, String nickname, String name, String profileImgPath, Double lng, Double lat){
         this.memberSeq = memberSeq;
         this.nickname = nickname;

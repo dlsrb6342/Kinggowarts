@@ -91,7 +91,7 @@ public class MarkerService {
             return "noMarker";
         } else if(markerCategory == null) {
             return "noCategory";
-        } else if (markerDao.findByName(newMarker.getName()).getId() != id) {
+        } else if (markerDao.findByName(newMarker.getName()) != null) {
             return "duplicatedName";
         } else {
             if (!newMarker.getType().equals("user")){

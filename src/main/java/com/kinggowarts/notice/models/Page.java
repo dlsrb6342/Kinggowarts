@@ -1,19 +1,21 @@
 package com.kinggowarts.notice.models;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import javax.persistence.Id;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+
 
 @Data @Entity @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class NoticeCategory {
-    @Id @GeneratedValue
+public class Page {
+    @Id
+    @GeneratedValue
     private long id;
-    private String name;
+    private String detail;
     private long page_id;
-    private long last_num;
     private long time;
     private String type;
 }
