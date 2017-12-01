@@ -15,9 +15,6 @@ public class Notice {
     @Id @GeneratedValue
     private long id;
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="c_id")
-    private NoticeCategory category;
-    @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="m_id")
     private Marker marker;
     @Field(type= FieldType.String, analyzer="korean")
@@ -28,4 +25,10 @@ public class Notice {
     private String link;
     @Lob @Column(columnDefinition="TEXT")
     private String img_src;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="p_id")
+    private Page page;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="c_id")
+    private Category category;
 }
