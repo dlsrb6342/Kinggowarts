@@ -19,13 +19,12 @@ public class NoticeController {
 
 
     @GetMapping("")
-    public Object findByFavorite(@RequestParam(value="all") String all,
-                          @PageableDefault(sort={ "id" }, direction= Sort.Direction.DESC) Pageable pageable){
+    public Object findByFavorite(@RequestParam(value="all") String all){
         UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(all.equals("true")){
-            return noticeService.findByFavorite(user.getMemSeq());
+            return noticeService.findAllByFavorite(user.getMemSeq());
         } else {
-            return noticeService.findByFavorite(user.getMemSeq(), pageable);
+            return noticeService.findByFavorite(user.getMemSeq());
         }
     }
 

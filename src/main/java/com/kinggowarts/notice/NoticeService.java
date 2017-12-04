@@ -25,14 +25,13 @@ public class NoticeService {
         return noticeRepository.findById(id);
     }
 
-    Object findByFavorite(Long memSeq) {
+    Object findAllByFavorite(Long memSeq) {
         List<FavoriteProjection> favorites = favoriteRepository.findAllByMember_MemberSeq(memSeq);
         HashMap<String, List<NoticeProjection>> hashMap = new HashMap<>();
         for(FavoriteProjection f : favorites){
             List<NoticeProjection> result = new ArrayList<>();
-            result.addAll(noticeRepository.findByCategory_Id(f.getC_id()));
-            for(Long p : f.getP_id())
-                result.addAll(noticeRepository.findByPage_Id(p));
+            result.addAll(noticeRepository.findByCategory_IdAndPageIsNull(f.getC_id()));
+            result.addAll(noticeRepository.findByPage_IdIn(f.getP_id()));
             result.sort(Comparator.comparing(NoticeProjection::getTime));
             String name = categoryRepository.findOne(f.getC_id()).getDetail();
             hashMap.put(name, result);
@@ -40,10 +39,17 @@ public class NoticeService {
         return hashMap;
     }
 
-    Object findByFavorite(Long memSeq, Pageable pageable){
+    Object findByFavorite(Long memSeq){
         List<FavoriteProjection> favorites = favoriteRepository.findAllByMember_MemberSeq(memSeq);
-
-        return null;
+        HashMap<String, List<NoticeProjection>> hashMap = new HashMap<>();
+        for(FavoriteProjection f : favorites){
+            List<NoticeProjection> result = new ArrayList<>();
+            result.addAll(noticeRepository.findTop30ByCategory_IdOrPage_IdIn(f.getC_id(), f.getP_id()));
+            result.sort(Comparator.comparing(NoticeProjection::getTime));
+            String name = categoryRepository.findOne(f.getC_id()).getDetail();
+            hashMap.put(name, result);
+        }
+        return hashMap;
     }
 
     List<Notice> searchNotice(String q){
