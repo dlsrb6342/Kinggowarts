@@ -1,10 +1,12 @@
 package com.kinggowarts.notice;
 
+import com.kinggowarts.authentication.UserAuth;
 import com.kinggowarts.notice.models.Notice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,27 +17,24 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
+
     @GetMapping("")
-    public Object findAll(@RequestParam(value="category", required=false) String category,
-                                @RequestParam(value="all") String all,
-                                @PageableDefault(sort={ "id" }, direction= Sort.Direction.DESC) Pageable pageable){
+    public Object findByFavorite(@RequestParam(value="all") String all){
+        UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(all.equals("true")){
-            if(category != null){
-                return noticeService.findAllByCategory(category);
-            } else {
-                return noticeService.findAll();
-            }
+            return noticeService.findAllByFavorite(user.getMemSeq());
         } else {
-            if(category != null){
-                return noticeService.findAllByCategory(category, pageable);
-            } else {
-                return noticeService.findAll(pageable);
-            }
+            return noticeService.findByFavorite(user.getMemSeq());
         }
     }
 
+    @GetMapping("/category")
+    public List<CategoryProjection> findAll() {
+        return noticeService.findAllCategory();
+    }
+
     @GetMapping("/{id}")
-    public Notice findById(@PathVariable("id") long id){
+    public NoticeProjection findById(@PathVariable("id") long id){
         return noticeService.findById(id);
     }
 
@@ -43,4 +42,5 @@ public class NoticeController {
     public List<Notice> searchNotice(@RequestParam("q") String q){
         return noticeService.searchNotice(q);
     }
+
 }

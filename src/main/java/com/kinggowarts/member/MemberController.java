@@ -12,12 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/member")
 public class MemberController {
     @Autowired
-    MemberService memberService;
+    private MemberService memberService;
 
     @PostMapping(value = "/signup")
     public String signUp(@Valid Member member, BindingResult bindingResult, HttpServletRequest req) {
@@ -113,5 +114,11 @@ public class MemberController {
         UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Boolean agreement = Boolean.valueOf(b);
         return memberService.setAgreement(user.getMemSeq(), agreement);
+    }
+
+    @PostMapping(value = "/favorite")
+    public String updateFavorite(@RequestBody Map<Long, ArrayList<Long>> body) {
+        UserAuth user = (UserAuth) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return memberService.updateFavorite(user.getMemSeq(), body);
     }
 }

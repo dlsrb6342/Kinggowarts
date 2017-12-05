@@ -3,7 +3,9 @@ package com.kinggowarts.member;
 import com.kinggowarts.common.FileService;
 import com.kinggowarts.common.MailService;
 import com.kinggowarts.common.utils.EncryptString;
+import com.kinggowarts.member.models.Favorite;
 import com.kinggowarts.member.models.Member;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -35,6 +37,9 @@ import java.util.regex.Pattern;
 public class MemberService {
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    FavoriteRepository favoriteRepository;
 
     @Autowired
     MailService mailService;
@@ -298,5 +303,16 @@ public class MemberService {
             fileService.deleteFile(member.getProfileImgPath());
         member.setProfileImgPath(message);
         return message;
+    }
+
+    @Transactional
+    public String updateFavorite(Long memSeq, Map<Long, ArrayList<Long>> body){
+        Member member = getMemberBySeq(memSeq);
+        Set<Long> keySet = body.keySet();
+        for(Long i : keySet) {
+            Favorite favorite = new Favorite(member, i, body.get(i));
+            favoriteRepository.save(favorite);
+        }
+        return "success";
     }
 }
